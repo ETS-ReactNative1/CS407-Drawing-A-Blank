@@ -59,3 +59,4 @@ class EventPerformance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     contribution = models.PositiveIntegerField()  # work out what we want to track when we develop events further
+
