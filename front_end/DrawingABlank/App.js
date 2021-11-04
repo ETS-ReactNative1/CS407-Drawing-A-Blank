@@ -4,12 +4,15 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import AccountAuthUI from './src/components/account_ui/account_ui.js';
 import LoginScreen from './src/components/account_ui/login_form/login_form.js';
-import CreateAccountScreen from './src/components/account_ui/create_account_form/create_account_form.js';
 
 export default function App() {
   return(
-    //<LoginScreen></LoginScreen>
-    <CreateAccountScreen></CreateAccountScreen>  
+    //<CreateAccountScreen></CreateAccountScreen>
+    <NavigationContainer>
+      <AccountAuthUI></AccountAuthUI>
+    </NavigationContainer>
   );
 }

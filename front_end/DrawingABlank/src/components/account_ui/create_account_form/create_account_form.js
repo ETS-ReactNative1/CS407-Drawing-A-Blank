@@ -53,6 +53,10 @@ class CreateAccountScreen extends Component{
         //Continue with the login process...
     }
     
+    changeToLogin = () =>{
+        this.props.navigation.navigate('login_screen');
+    }
+
     render(){
         return(
             <View style={styles.mainContainer}>
@@ -96,7 +100,7 @@ class CreateAccountScreen extends Component{
                 </View>
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
-                    <Text style={styles.footerText}>Already have an account? <Text style={styles.footerText}>Sign in!</Text></Text>
+                    <Text style={styles.footerText}>Already have an account? <Text style={styles.footerText} onPress={this.changeToLogin}>Sign in!</Text></Text>
                 </View>
             </View>
         );

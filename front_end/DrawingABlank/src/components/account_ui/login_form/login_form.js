@@ -1,5 +1,7 @@
+import { NavigationRouteContext } from '@react-navigation/core';
 import React, {Component} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 
 class LoginScreen extends Component{
@@ -36,6 +38,11 @@ class LoginScreen extends Component{
         }
         //Continue with the login process...
     }
+
+    changeToRegister = () =>{
+        //Is there a better way to do this?
+        this.props.navigation.navigate('create_account_screen');
+    }
     
     render(){
         return(
@@ -68,7 +75,7 @@ class LoginScreen extends Component{
                 </View>
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
-                    <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerText}>Sign up!</Text></Text>
+                    <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerText} onPress={this.changeToRegister}>Sign up!</Text></Text>
                 </View>
             </View>
         );

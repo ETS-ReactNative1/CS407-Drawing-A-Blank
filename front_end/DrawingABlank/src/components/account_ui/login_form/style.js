@@ -39,7 +39,8 @@ const styles = StyleSheet.create({
     footer:{
     },
     footerText:{
-        fontSize:18
+        fontSize:18,
+        color:"black"
     }
 })
 
