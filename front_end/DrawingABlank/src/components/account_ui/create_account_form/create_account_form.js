@@ -2,10 +2,12 @@ import React, {Component} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-native';
 import {styles, buttons} from './style.js';
 
-class LoginScreen extends Component{
+class CreateAccountScreen extends Component{
     state = {
         email:"",
-        password:""
+        password:"",
+        password_confirm:"",
+        team_name:""
     }
 
     handleEmail = (text) => {
@@ -16,6 +18,14 @@ class LoginScreen extends Component{
         this.state.password = text;
     }
 
+    handleConfirmPassword = (text) => {
+        this.state.password_confirm = text;
+    }
+
+    handleTeamName = (text) => {
+        this.state.team_name = text;
+    }
+
     detailsComplete = () =>{
         //Accepts unicode: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
         const rex_email = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -24,6 +34,12 @@ class LoginScreen extends Component{
         }
         if(this.state.password == ""){
             return [false, "Please enter a password."];
+        }
+        if(this.state.password != this.state.password_confirm){
+            return [false, "Your passwords do not match, please try again."];
+        }
+        if(this.state.team_name == ""){
+            return [false, "Please enter a team name."];
         }
         return [true, ""];
     }
@@ -44,8 +60,8 @@ class LoginScreen extends Component{
                     <Text style={styles.title}>Drawing A Blank</Text>
                 </View>
                 <View style={styles.description}>
-                    <Text style={styles.title}>Login</Text>
-                    <Text style={styles.descriptionText}>Please sign in to continue.</Text>
+                    <Text style={styles.title}>Create an account</Text>
+                    <Text style={styles.descriptionText}>Sign up and begin your journey today!</Text>
                 </View>
                 <View style={styles.loginForm}>
                     <View style={styles.loginFormInputs}>
@@ -61,18 +77,30 @@ class LoginScreen extends Component{
                         secureTextEntry={true}
                         textContentType="password"
                         onChangeText={this.handlePassword}/>
+                        <TextInput style={styles.credentialsInput}
+                        placeholder="Confirm Password"
+                        placeholderTextColor="black"
+                        ref="password"
+                        secureTextEntry={true}
+                        textContentType="password"
+                        onChangeText={this.handleConfirmPassword}/>
+                        <TextInput style={styles.credentialsInput}
+                        placeholder="Team Name"
+                        placeholderTextColor="black"
+                        ref="username"
+                        onChangeText={this.handleTeamName}/>
                     </View>
                     <TouchableOpacity style={buttons.loginFormButton}>
-                        <Text style={buttons.buttonText} onPress={this.processLogin}>Login</Text>
+                        <Text style={buttons.buttonText} onPress={this.processLogin}>Register</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
-                    <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerText}>Sign up!</Text></Text>
+                    <Text style={styles.footerText}>Already have an account? <Text style={styles.footerText}>Sign in!</Text></Text>
                 </View>
             </View>
         );
     }
 }
 
-export default LoginScreen;
+export default CreateAccountScreen;

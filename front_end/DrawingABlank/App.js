@@ -4,10 +4,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import LoginScreen from './src/components/account_ui/login_form/login_form.js'
+import LoginScreen from './src/components/account_ui/login_form/login_form.js';
+import CreateAccountScreen from './src/components/account_ui/create_account_form/create_account_form.js';
 
 export default function App() {
   return(
-    <LoginScreen></LoginScreen>
+    //<LoginScreen></LoginScreen>
+    <CreateAccountScreen></CreateAccountScreen>  
   );
 }
