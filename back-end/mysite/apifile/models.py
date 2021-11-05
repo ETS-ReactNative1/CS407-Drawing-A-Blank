@@ -9,6 +9,11 @@ class Team(models.Model):
     name = models.CharField(max_length=10, unique=True)
     colour = models.CharField(max_length=6)  # hex colour
 
+    def get_colour():
+        retval = Team.objects.filter(id=1)[0].colour
+
+        return retval
+
 
 class Grid(models.Model):
     location = models.CharField(max_length=12, primary_key=True)  # bng ref
