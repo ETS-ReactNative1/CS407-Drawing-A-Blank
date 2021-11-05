@@ -6,28 +6,20 @@
  * @flow strict-local
  */
 
-import React, {useState} from 'react';
+import React from 'react';
 import type {Node} from 'react';
-import {Button, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
-import Overlay from './containers/Overlay';
+import OverlayDemo from './containers/OverlayDemo';
 
 const App: () => Node = () => {
-  const [overlayVisible, setOverlayVisible] = useState(true);
-
   return (
     <View>
-      <Button title={'showmodal'}>Click</Button>
-      <Overlay visible={overlayVisible} setVisible={setOverlayVisible()} />
+      <OverlayDemo />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-});
+const styles = StyleSheet.create({});
 
 export default App;
