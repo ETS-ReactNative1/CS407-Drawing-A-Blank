@@ -13,7 +13,7 @@ latlong coordinates should be in a tuple: [0] = latitude, [1] = longitude
 Note: conversions back and forth will introduce a slight error: can be by 1 square. 
 Should be fine due to GPS error and latlong coordinate rounding. But can apparently fix by making a geoid correction.
 
-#TODO: havent dealt with boundary conditions: e.g. SP 99999 99999 will need to increment the ltter when the numbers are incremented.
+#TODO: havent dealt with boundary conditions: e.g. SP 99999 99999 will need to increment the letter when the numbers are incremented. will bug out if you do tho.
 
 
 #TODO: Need to integrate into django!!!!
@@ -83,7 +83,7 @@ def gridsInRadius(position, radius=5):
     return 0
 
 #Function input: Current and old latitude longitude position
-#Function output: A list of grids within the path.
+#Function output: A list of grids within the straight line path.
 def gridsInPath(positionA, positionB):
 
     return 0

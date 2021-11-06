@@ -5,6 +5,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
+router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
 # example
 # router.register(r'heroes', views.HeroViewSet)
 
