@@ -2,6 +2,7 @@ import bng
 from pyproj import Transformer
 
 """
+bng is main library used: https://pypi.org/project/bng/
 
 Coordinate systems:
 Latitude longitude coordinates will use WGS84("EPSG:4326"): https://en.wikipedia.org/wiki/World_Geodetic_System
@@ -13,10 +14,9 @@ latlong coordinates should be in a tuple: [0] = latitude, [1] = longitude
 Note: conversions back and forth will introduce a slight error: can be by 1 square. 
 Should be fine due to GPS error and latlong coordinate rounding. But can apparently fix by making a geoid correction.
 
-#TODO: havent dealt with boundary conditions: e.g. SP 99999 99999 will need to increment the letter when the numbers are incremented. will bug out if you do tho.
+Dealt with boundary conditions: e.g. SP 99999 99999 when incremented needs to modify the letter: 
+Fixed by first converted to all numeric so that the library converts it to the correct letter.(cant just increment letter due to how the bng coordinates work)
 
-
-#TODO: Need to integrate into django!!!!
 """
 
 
@@ -51,24 +51,21 @@ def latlongToGrid(latlong):
 #Function output: A list of tuples containing converted latitude and longitude coordinates for all 4 corners of the current grid.
 def latlongsOfGrid(grid):
 
-    #get the length of eastings/northings and extract components
-    figs = int((len(grid)-2)//2)
-    letters = grid[0:2]
-    eastings = int(grid[2:2+figs])
-    northings = int(grid[2+figs:])
+    #Extract eastings and northings and make numerical only for easy manipulation.
+    eastings, northings = bng.to_osgb36(grid)
 
 
     coordinates = []
 
-    #get the 4 points on the square/grid
+
     #grid references refer to the bottom left corner of the grid so need to get positively adjacent grids coordinates.
     grids = [(0,0),(1,0),(1,1),(0,1)]
     for i in range(len(grids)):
         newEastings = eastings +grids[i][0]
         newNorthings = northings + grids[i][1]
 
-        #concatenating strings to construct new grid
-        newGrid = letters + str(newEastings) + str(newNorthings) 
+        #convert to 2 letter + 10 digit form to convert to latlong
+        newGrid = bng.from_osgb36((newEastings, newNorthings), figs=10)
         coordinates.append(gridToLatlong(newGrid))
 
     return coordinates
@@ -78,7 +75,7 @@ def latlongsOfGrid(grid):
 
 #Function input: Current latitude longitude position
 #Function output: A list of grids within the radius.
-def gridsInRadius(position, radius=5):
+def gridsInRadius(position, radius=4):
 
     return 0
 
@@ -91,10 +88,29 @@ def gridsInPath(positionA, positionB):
 
 
 #Function input: 4 longitude/latitude coordinates that the screen can see
-#Function output: 4 corner grids + everything that the screen can see(?)
+#Function output: coordinates of every grid that is visible.
 def gridsVisible(coords):
+    
+    #if quadrilateral and bottomleft < topRight then only need two coords.
+    bottomLeft = coords[0]
+    topRight = coords[2]
 
-    return 0
+    blGrid = latlongToGrid(bottomLeft)
+    trGrid = latlongToGrid(topRight)
+
+    eastBL, northBL = bng.to_osgb36(blGrid)
+    eastTR, northTR = bng.to_osgb36(trGrid)
+
+    allCoords = []
+
+    #this is quite slow: zooming out means theres a lot of blocks and repeated coordinates/calculations
+    #Could fix by "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid.
+    for i in range(northBL,northTR+1):
+        for j in range(eastBL,eastTR+1):
+            currentGrid = bng.from_osgb36((j,i), figs=10)
+            colour = "red" #get from database?
+            allCoords.append({"colour": colour, "coords": latlongsOfGrid(currentGrid)})
+
+    return allCoords
 
 #print(latlongToGrid((52.28595049078488 , -1.5329988849241394)))
-print(latlongsOfGrid("SP3195365415"))

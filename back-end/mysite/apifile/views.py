@@ -19,16 +19,17 @@ from . import grids
 
 class LatlongsOfGrid(viewsets.ViewSet):
 
-
-    #get 4 coordinats of a grid for testing:
+    #get 4 coordinates of a grid for testing:
     #http://127.0.0.1:8000/gridsCoords/?grid=SP3003376262 enter a grid reference and you should get 4 coordinates.
     def list(self, request):    
 
         #need to get actual grid + colour from database.
         grid =request.query_params.get("grid")
-        #grid = "SP3195365415"
+        if(grid==None):
+            return Response("need a grid reference, try: http://127.0.0.1:8000/gridsCoords/?grid=SP3195365415", 400)
+        
         coords = grids.latlongsOfGrid(grid)
-        color = "red" #get from database
+        color = "red" #get colour data from database
         jsonString = [
             {
                 "colour":color,
@@ -39,11 +40,17 @@ class LatlongsOfGrid(viewsets.ViewSet):
     
 
     #post - receiving 4 coordinates => respond with all grids visible.
+    #function works but quite slow
     def create(self,request):
-        coords = request.data
-        first = coords[0]
+        coords = request.data[0]
+        print(coords)
+        bl = coords['bottom_left']
+        br = coords['bottom_right']
+        tr = coords['top_right']
+        tl = coords['top_left']
 
-        return Response(first)
+        allGrids = grids.gridsVisible([bl,br,tr,tl])
+        return Response(allGrids)
 
 
 
