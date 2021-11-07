@@ -1,4 +1,5 @@
 import bng
+from bresenham import bresenham
 from pyproj import Transformer
 
 """
@@ -49,7 +50,7 @@ def latlongToGrid(latlong):
 
 #Function input: Grid reference as String
 #Function output: A list of tuples containing converted latitude and longitude coordinates for all 4 corners of the current grid.
-def latlongsOfGrid(grid):
+def latlongsOfGrid(grid,distance=1):
 
     #Extract eastings and northings and make numerical only for easy manipulation.
     eastings, northings = bng.to_osgb36(grid)
@@ -59,7 +60,7 @@ def latlongsOfGrid(grid):
 
 
     #grid references refer to the bottom left corner of the grid so need to get positively adjacent grids coordinates.
-    grids = [(0,0),(1,0),(1,1),(0,1)]
+    grids = [(0,0),(distance,0),(distance,distance),(0,distance)]
     for i in range(len(grids)):
         newEastings = eastings +grids[i][0]
         newNorthings = northings + grids[i][1]
@@ -84,8 +85,45 @@ def gridsInRadius(position, radius=4):
 #Function output: A list of grids within the straight line path.
 #https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 def gridsInPath(positionA, positionB):
+    '''
+    xA,yA = bng.to_osgb36(positionA)
+    xB,yB = bng.to_osgb36(positionB)
 
-    return 0
+    if(xA!=xB):
+        gradient = (yB-yA)/(xB-xA)
+    else:
+        return None
+
+    xIncrement = 0
+    if(xA<xB):
+        xIncrement = 1
+    elif(xA>xB):
+        xIncrement = -1
+
+    
+    grids = []
+    
+    currentX = xA
+    currentY = yA
+    grids.append(bng.from_osgb36((currentX,currentY),figs=10))
+    while(currentX!=xB or currentY!=yB):
+        currentX += xIncrement
+        currentY = int(round(gradient*(currentX-xA)+yA))
+        print(currentX,currentY)
+        grids.append(bng.from_osgb36((currentX,currentY),figs=10))
+    
+    '''
+    xA,yA = bng.to_osgb36(positionA)
+    xB,yB = bng.to_osgb36(positionB)
+
+    #just use the library :)
+    grids = list(bresenham(xA,yA,xB,yB))
+
+    #https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
+    grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
+
+
+    return grids
 
 
 
@@ -117,3 +155,4 @@ def gridsVisible(coords):
     return allCoords
 
 #print(latlongToGrid((52.28595049078488 , -1.5329988849241394)))
+#print(gridsInPath("SP3195565415","SP3195565419"))
