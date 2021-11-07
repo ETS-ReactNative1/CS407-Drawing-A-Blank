@@ -75,12 +75,14 @@ def latlongsOfGrid(grid):
 
 #Function input: Current latitude longitude position
 #Function output: A list of grids within the radius.
+#https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
 def gridsInRadius(position, radius=4):
 
     return 0
 
 #Function input: Current and old latitude longitude position
 #Function output: A list of grids within the straight line path.
+#https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
 def gridsInPath(positionA, positionB):
 
     return 0
@@ -103,8 +105,9 @@ def gridsVisible(coords):
 
     allCoords = []
 
-    #this is quite slow: zooming out means theres a lot of blocks and repeated coordinates/calculations
-    #Could fix by "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid.
+    #this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations
+    #Could fix by "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
+    #Then you can access less coordinates and do less calculations.
     for i in range(northBL,northTR+1):
         for j in range(eastBL,eastTR+1):
             currentGrid = bng.from_osgb36((j,i), figs=10)
