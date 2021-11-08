@@ -1,6 +1,8 @@
 import bng
+import numpy as np
 from bresenham import bresenham
 from pyproj import Transformer
+
 
 """
 bng is main library used: https://pypi.org/project/bng/
@@ -73,13 +75,22 @@ def latlongsOfGrid(grid,distance=1):
 
 
 
+#https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
+def points_in_circle_np(radius, x0=0, y0=0):
+    x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
+    y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
+    x, y = np.where((x_[:,np.newaxis] - x0)**2 + (y_ - y0)**2 <= radius**2)
+    # x, y = np.where((np.hypot((x_-x0)[:,np.newaxis], y_-y0)<= radius)) # alternative implementation
+    for x, y in zip(x_[x], y_[y]):
+        yield x, y
 
 #Function input: Current latitude longitude position
 #Function output: A list of grids within the radius.
-#https://en.wikipedia.org/wiki/Midpoint_circle_algorithm
 def gridsInRadius(position, radius=4):
-
-    return 0
+    x,y = bng.to_osgb36(position)
+    grids = points_in_circle_np(radius,x,y)
+    grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
+    return grids
 
 #Function input: Current and old latitude longitude position
 #Function output: A list of grids within the straight line path.
