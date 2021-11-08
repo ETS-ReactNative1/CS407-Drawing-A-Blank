@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  SafeAreaView,
-  Alert,
-} from 'react-native';
+import {View, Button} from 'react-native';
 
 import AbsoluteComponent from './AbsoluteComponent';
 import {styles} from './style.js';
@@ -21,8 +14,4 @@ export default function MapControls({}) {
       </View>
     </AbsoluteComponent>
   );
-
-  function generateButton(title, onPress, style) {
-    return <Button title={title} onPress={onPress} style={style} />;
-  }
 }
