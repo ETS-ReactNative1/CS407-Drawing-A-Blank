@@ -7,20 +7,14 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import AbsoluteComponent from './AbsoluteComponent';
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-  },
-  button: {},
-});
+import AbsoluteComponent from './AbsoluteComponent';
+import {styles} from './style.js';
 
 export default function MapControls({}) {
   return (
     <AbsoluteComponent style={{bottom: 70}}>
-      <View style={styles.container}>
+      <View style={styles.buttonContainer}>
         <Button title={'Ghost Mode'} style={styles.button}></Button>
         <Button title={'Start Workout'} style={styles.button}></Button>
         <Button title={'See Events'} style={styles.button}></Button>

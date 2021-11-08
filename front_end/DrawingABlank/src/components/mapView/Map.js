@@ -3,16 +3,7 @@ import {View, Text, StyleSheet} from 'react-native';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import MapControls from './MapControls';
 
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-
-    flex: 1,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});
+import {styles} from './style.js';
 
 function Map() {
   const [region, setRegion] = useState(getInitialState().region);
@@ -43,15 +34,13 @@ function Map() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.mapContainer}>
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={region}
         mapType={'standard'}
-
-        //onRegionChange={region => onRegionChange(region)}
-      >
+        onRegionChange={region => onRegionChange(region)}>
         {markers.map((marker, index) => (
           <Marker
             key={index}
@@ -62,7 +51,6 @@ function Map() {
           />
         ))}
       </MapView>
-
       <MapControls />
     </View>
   );
