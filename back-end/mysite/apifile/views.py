@@ -17,8 +17,31 @@ from . import grids
 #     queryset = Hero.objects.all().order_by('name')
 #     serializer_class = HeroSerializer
 
+class PlayerLocation(viewsets.ViewSet):
+ 
+    #Not a full implementation, mostly for testing.
+    #Instead of responding with the grids, it should replace the entries in the database with your player's colour.
+    #Might need the user to send their current + previous location to calculate speed + path. 
+    def create(self,request):
+        playerInfo = request.data
+        coords = playerInfo["coords"]
+        colour = playerInfo["colour"]
+        gridLoc = grids.latlongToGrid(coords)
+
+        radius = 4 #calculate radius depending on speed
+
+        allGrids = grids.gridsInRadius(gridLoc,radius)
+
+        ##update colour database.
+
+
+        return Response(allGrids)
+
+
+
 class LatlongsOfGrid(viewsets.ViewSet):
 
+    #GET request: parameter = a grid coordinate, responds with the 4 coordinates.
     #get 4 coordinates of a grid for testing:
     #http://127.0.0.1:8000/gridsCoords/?grid=SP3003376262 enter a grid reference and you should get 4 coordinates.
     def list(self, request):    
@@ -40,10 +63,9 @@ class LatlongsOfGrid(viewsets.ViewSet):
     
 
     #post - receiving 4 coordinates => respond with all grids visible.
-    #function works but quite slow
+    #function works but quite slow especially if the bounding box is big.
     def create(self,request):
         coords = request.data[0]
-        print(coords)
         bl = coords['bottom_left']
         br = coords['bottom_right']
         tr = coords['top_right']

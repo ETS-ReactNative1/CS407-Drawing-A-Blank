@@ -88,7 +88,7 @@ def points_in_circle_np(radius, x0=0, y0=0):
 #Function output: A list of grids within the radius.
 def gridsInRadius(position, radius=4):
     x,y = bng.to_osgb36(position)
-    grids = points_in_circle_np(radius,x,y)
+    grids = points_in_circle_np(radius,x,y) #seems fine for now, could set the function's center at 0,0 and just add the offset to the origin of the square.
     grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
     return grids
 
@@ -103,7 +103,7 @@ def gridsInPath(positionA, positionB):
     if(xA!=xB):
         gradient = (yB-yA)/(xB-xA)
     else:
-        return None
+        gradient = 1
 
     xIncrement = 0
     if(xA<xB):
@@ -155,12 +155,12 @@ def gridsVisible(coords):
     allCoords = []
 
     #this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations
-    #Could fix by "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
+    #Could fix by "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour) or by saving coordinates to not calculate again.
     #Then you can access less coordinates and do less calculations.
     for i in range(northBL,northTR+1):
         for j in range(eastBL,eastTR+1):
             currentGrid = bng.from_osgb36((j,i), figs=10)
-            colour = "red" #get from database?
+            colour = "red" #TODO: get colour from database?
             allCoords.append({"colour": colour, "coords": latlongsOfGrid(currentGrid)})
 
     return allCoords
