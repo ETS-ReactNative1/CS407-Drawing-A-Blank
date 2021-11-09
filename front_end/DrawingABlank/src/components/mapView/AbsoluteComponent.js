@@ -15,5 +15,3 @@ export default function AbsoluteComponent(props) {
     </View>
   );
 }
-
-//src: https://stackoverflow.com/questions/37317568/react-native-absolute-positioning-horizontal-centre

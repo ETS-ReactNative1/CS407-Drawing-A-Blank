@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Button} from 'react-native';
-
 import AbsoluteComponent from './AbsoluteComponent';
+
 import {styles} from './style.js';
 
 export default function MapControls({}) {
