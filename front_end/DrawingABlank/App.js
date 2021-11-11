@@ -10,7 +10,7 @@ import React from 'react';
 import type {Node} from 'react';
 import {StyleSheet, View} from 'react-native';
 
-import OverlayDemo from './containers/OverlayDemo';
+import OverlayDemo from './src/containers/OverlayDemo';
 
 const App: () => Node = () => {
   return (
