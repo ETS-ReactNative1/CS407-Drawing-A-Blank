@@ -11,10 +11,20 @@ class Team(models.Model):
 
 
 class Grid(models.Model):
-    location = models.CharField(max_length=12, primary_key=True)  # bng ref
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
     time = models.DateTimeField()
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (("easting", "northing"),)
+
+    def check_tile_override(self, date_time):
+        if self.time < date_time:
+            return True
+        else:
+            return False
 
 
 class Item(models.Model):
@@ -52,11 +62,11 @@ class Workout(models.Model):
 class WorkoutPoint(models.Model):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
     time = models.DateTimeField()
-    location = models.CharField(max_length=12)  # bng ref
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
 
 
 class EventPerformance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     contribution = models.PositiveIntegerField()  # work out what we want to track when we develop events further
-
