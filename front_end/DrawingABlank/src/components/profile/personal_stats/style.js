@@ -10,9 +10,9 @@ const styles = StyleSheet.create({
     singleData:{
         borderTopColor:"#979797",
         borderTopWidth:1,
-        paddingTop:20,
         display:"flex",
         padding:10,
+        paddingTop:15,
         flexDirection:"row",
         flexWrap:"wrap",
     },
