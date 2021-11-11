@@ -86,7 +86,10 @@ def bounds_of_grid(location, distance=1):
     Function output: A list of tuples containing converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
 
-    easting, northing = location
+    if type(location) == str:
+        easting, northing = bng.to_osgb36(location)
+    else:
+        easting, northing = location
 
     coordinates = []
 
@@ -147,7 +150,7 @@ def gridsInPath(point_a, point_b):
     return grids
 
 
-def gridsVisible(coords):
+def grids_visible(coords):
     """
     Function input: 4 longitude/latitude coordinates that the screen can see
     Function output: coordinates of every grid that is visible.

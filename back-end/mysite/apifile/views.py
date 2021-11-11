@@ -2,12 +2,12 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
+
+
 # Create your views here.
 
 
-
-
-# example query on data 
+# example query on data
 
 # from .serializers import HeroSerializer
 # from .models import Hero
@@ -18,61 +18,54 @@ from . import grids
 #     serializer_class = HeroSerializer
 
 class PlayerLocation(viewsets.ViewSet):
- 
-    #Not a full implementation, mostly for testing.
-    #Instead of responding with the grids, it should replace the entries in the database with your player's colour.
-    #Might need the user to send their current + previous location to calculate speed + path. 
-    def create(self,request):
+
+    # Not a full implementation, mostly for testing.
+    # Instead of responding with the grids, it should replace the entries in the database with your player's colour.
+    # Might need the user to send their current + previous location to calculate speed + path.
+    def create(self, request):
         playerInfo = request.data
         coords = playerInfo["coords"]
         colour = playerInfo["colour"]
         gridLoc = grids.latlongToGrid(coords)
 
-        radius = 4 #calculate radius depending on speed
+        radius = 4  # calculate radius depending on speed
 
-        allGrids = grids.gridsInRadius(gridLoc,radius)
+        allGrids = grids.gridsInRadius(gridLoc, radius)
 
-        ##update colour database.
-
+        # update colour database.
 
         return Response(allGrids)
 
 
-
 class LatlongsOfGrid(viewsets.ViewSet):
 
-    #GET request: parameter = a grid coordinate, responds with the 4 coordinates.
-    #get 4 coordinates of a grid for testing:
-    #http://127.0.0.1:8000/gridsCoords/?grid=SP3003376262 enter a grid reference and you should get 4 coordinates.
-    def list(self, request):    
-
-        #need to get actual grid + colour from database.
-        grid =request.query_params.get("grid")
-        if(grid==None):
+    # GET request: parameter = a grid coordinate, responds with the 4 coordinates.
+    # get 4 coordinates of a grid for testing:
+    # http://127.0.0.1:8000/gridsCoords/?grid=SP3003376262 enter a grid reference and you should get 4 coordinates.
+    def list(self, request):
+        # need to get actual grid + colour from database.
+        grid = request.query_params.get("grid")
+        if (grid == None):
             return Response("need a grid reference, try: http://127.0.0.1:8000/gridsCoords/?grid=SP3195365415", 400)
-        
-        coords = grids.latlongsOfGrid(grid)
-        color = "red" #get colour data from database
+
+        coords = grids.bounds_of_grid(grid)
+        color = "red"  # get colour data from database
         jsonString = [
             {
-                "colour":color,
-                "coords":coords
+                "colour": color,
+                "coords": coords
             }
         ]
         return Response(jsonString)
-    
 
-    #post - receiving 4 coordinates => respond with all grids visible.
-    #function works but quite slow especially if the bounding box is big.
-    def create(self,request):
+    # post - receiving 4 coordinates => respond with all grids visible.
+    # function works but quite slow especially if the bounding box is big.
+    def create(self, request):
         coords = request.data[0]
         bl = coords['bottom_left']
         br = coords['bottom_right']
         tr = coords['top_right']
         tl = coords['top_left']
 
-        allGrids = grids.gridsVisible([bl,br,tr,tl])
+        allGrids = grids.grids_visible([bl, br, tr, tl])
         return Response(allGrids)
-
-
-
