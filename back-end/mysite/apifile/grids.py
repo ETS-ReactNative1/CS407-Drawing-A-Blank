@@ -2,7 +2,7 @@ import bng
 import numpy as np
 from bresenham import bresenham
 from pyproj import Transformer
-
+from geopy import distance
 
 """
 bng is main library used: https://pypi.org/project/bng/
@@ -22,11 +22,36 @@ Fixed by first converted to all numeric so that the library converts it to the c
 
 """
 
+def latLongDistance(pointA, pointB):
+    """
+    Function input: 2 tuples each containing latitude and longitude
+    Function output: the calculated distance between the two points in meters(float).
+
+    https://geopy.readthedocs.io/en/stable/#module-geopy.distance
+
+    a = (52.285951 , -1.5329989)    SP 31953 65415
+    b = (52.285945 , -1.5315330)    SP 32053 65415
+    Produces a result of ~100m which aligns with the bng distances.   
+    """
+    return distance.geodesic(pointA, pointB, ellipsoid='WGS-84').meters
+
+def calculateSpeed(pointA, pointB, timeInbetween):
+    """
+    Function input: 2 tuples each containing latitude and longitude and the time taken to get from point A to point B
+    Function output: the calculated speed in meters per unit time(for example if timeInbetween was in seconds then output is X m/s).
+    """
+    distance = latLongDistance(pointA,pointB)
+    return distance/timeInbetween
 
 
-#Function input: Grid reference of BNG as a string
-#Function output: A tuple containing converted latitude and longitude (both floats).
 def gridToLatlong(grid):
+    """
+    Converts a BNG grid number to the latitude and longitude of the bottom left corner of the input grid.
+
+    Function input: Grid reference of BNG as a string
+    Function output: A tuple containing converted latitude and longitude (both floats).
+    """
+
 
     #defines the transformation from UK ordinance survey to lat long
     transformer = Transformer.from_crs("EPSG:27700", "EPSG:4326")
@@ -37,10 +62,13 @@ def gridToLatlong(grid):
 
 
 
-#Function input: A tuple containing converted latitude and longitude (both floats): Requires a couple of decimal places for accuracy
-#Function output: Grid reference of BNG as a string returns 2 letters + 10 digits.
-def latlongToGrid(latlong):
 
+def latlongToGrid(latlong):
+    """
+
+    Function input: A tuple containing converted latitude and longitude (both floats): Requires a couple of decimal places for accuracy
+    Function output: Grid reference of BNG as a string returns 2 letters + 10 digits.
+    """
     #defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326","EPSG:27700")
 
@@ -50,9 +78,16 @@ def latlongToGrid(latlong):
 
 
 
-#Function input: Grid reference as String
-#Function output: A list of tuples containing converted latitude and longitude coordinates for all 4 corners of the current grid.
+
 def latlongsOfGrid(grid,distance=1):
+
+    """
+    Returns the latitude and longitudes of the input grid. 
+    The distance argument determines how large the grid is e.g. distance=1 means the grid is 1x1 meters.
+
+    Function input: Grid reference as String
+    Function output: A list of tuples containing converted latitude and longitude coordinates for all 4 corners of the current grid.
+    """
 
     #Extract eastings and northings and make numerical only for easy manipulation.
     eastings, northings = bng.to_osgb36(grid)
@@ -75,8 +110,11 @@ def latlongsOfGrid(grid,distance=1):
 
 
 
-#https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
+
 def points_in_circle_np(radius, x0=0, y0=0):
+    """
+    https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
+    """
     x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
     y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
     x, y = np.where((x_[:,np.newaxis] - x0)**2 + (y_ - y0)**2 <= radius**2)
@@ -84,50 +122,30 @@ def points_in_circle_np(radius, x0=0, y0=0):
     for x, y in zip(x_[x], y_[y]):
         yield x, y
 
-#Function input: Current latitude longitude position
-#Function output: A list of grids within the radius.
+
 def gridsInRadius(position, radius=4):
+    """
+    Function input: Current latitude longitude position
+    Function output: A list of grids within the radius.
+    """
     x,y = bng.to_osgb36(position)
     grids = points_in_circle_np(radius,x,y) #seems fine for now, could set the function's center at 0,0 and just add the offset to the origin of the square.
     grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
     return grids
 
-#Function input: Current and old latitude longitude position
-#Function output: A list of grids within the straight line path.
-#https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+
+
 def gridsInPath(positionA, positionB):
-    '''
+    """
+    Function input: Current and old latitude longitude position
+    Function output: A list of grids within the straight line path.
+
+    Library: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+    """
     xA,yA = bng.to_osgb36(positionA)
     xB,yB = bng.to_osgb36(positionB)
 
-    if(xA!=xB):
-        gradient = (yB-yA)/(xB-xA)
-    else:
-        gradient = 1
-
-    xIncrement = 0
-    if(xA<xB):
-        xIncrement = 1
-    elif(xA>xB):
-        xIncrement = -1
-
-    
-    grids = []
-    
-    currentX = xA
-    currentY = yA
-    grids.append(bng.from_osgb36((currentX,currentY),figs=10))
-    while(currentX!=xB or currentY!=yB):
-        currentX += xIncrement
-        currentY = int(round(gradient*(currentX-xA)+yA))
-        print(currentX,currentY)
-        grids.append(bng.from_osgb36((currentX,currentY),figs=10))
-    
-    '''
-    xA,yA = bng.to_osgb36(positionA)
-    xB,yB = bng.to_osgb36(positionB)
-
-    #just use the library :)
+    #Using the bresenham line algorithm implemented using a library.
     grids = list(bresenham(xA,yA,xB,yB))
 
     #https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
@@ -138,10 +156,12 @@ def gridsInPath(positionA, positionB):
 
 
 
-#Function input: 4 longitude/latitude coordinates that the screen can see
-#Function output: coordinates of every grid that is visible.
+
 def gridsVisible(coords):
-    
+    """
+    Function input: 4 longitude/latitude coordinates that the screen can see
+    Function output: coordinates of every grid that is visible.
+    """
     #if quadrilateral and bottomleft < topRight then only need two coords.
     bottomLeft = coords[0]
     topRight = coords[2]
@@ -164,6 +184,3 @@ def gridsVisible(coords):
             allCoords.append({"colour": colour, "coords": latlongsOfGrid(currentGrid)})
 
     return allCoords
-
-#print(latlongToGrid((52.28595049078488 , -1.5329988849241394)))
-#print(gridsInPath("SP3195565415","SP3195565419"))
