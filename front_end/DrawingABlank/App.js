@@ -7,19 +7,14 @@
  */
 
 import React from 'react';
+import Map from './src/components/mapView/Map.js';
 import type {Node} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 import OverlayDemo from './src/containers/OverlayDemo';
 
-const App: () => Node = () => {
-  return (
-    <View>
-      <OverlayDemo />
-    </View>
-  );
+const App = () => {
+  return <Map></Map>;
 };
-
-const styles = StyleSheet.create({});
 
 export default App;
