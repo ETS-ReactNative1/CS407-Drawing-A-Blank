@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderColor: '#000000',
     borderWidth: 1,
-    backgroundColor: '#d9e3f0',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
   },
   closeButton: {
     width: '10%',

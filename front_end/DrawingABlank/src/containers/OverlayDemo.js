@@ -9,8 +9,8 @@ import React, {useState} from 'react';
 import type {Node} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
 import Overlay from './Overlay';
-import EventDetails from '../components/EventDetails';
-import ExampleOverlay from '../components/ExampleOverlay';
+import EventDetails from '../components/events/EventDetails';
+import ExampleOverlay from '../components/events/ExampleOverlay';
 
 const OverlayDemo = (): Node => {
   const exampleEvent = (
