@@ -3,7 +3,7 @@ import numpy as np
 from bresenham import bresenham
 from pyproj import Transformer
 from geopy import distance
-from models import Grid
+from .models import Grid
 
 """
 bng is main library used: https://pypi.org/project/bng/
@@ -59,7 +59,10 @@ def gridToLatlong(grid):
     transformer = Transformer.from_crs("EPSG:27700", "EPSG:4326")
 
     # converts to numeric only grid references
-    x, y = bng.to_osgb36(grid)
+    if type(grid) == str:
+        x, y = bng.to_osgb36(grid)
+    else:
+        x, y = grid
     return transformer.transform(x, y)
 
 
@@ -173,6 +176,41 @@ def grids_visible(coords):
     tiles = Grid.objects.filter(northing__lte=upper_north, northing__gte=lower_north,
                                 easting__lte=upper_east, easting__gte=upper_east)
     for tile in tiles:
-        allCoords.append({"colour": tiles.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
+        allCoords.append({"colour": tile.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
 
     return allCoords
+
+
+def grids_visible_alt(coords):
+    """
+    Function input: 4 longitude/latitude coordinates that the screen can see
+    Function output: coordinates of every grid that is visible.
+    """
+    # if quadrilateral and bottomleft < topRight then only need two coords.
+    bottomLeft = coords[0]
+    topRight = coords[2]
+
+    blGrid = latlongToGrid(bottomLeft)
+    trGrid = latlongToGrid(topRight)
+
+    lower_east, lower_north = bng.to_osgb36(blGrid)
+    upper_east, upper_north = bng.to_osgb36(trGrid)
+
+    bounds = np.zeros(shape=(upper_east-lower_east+1, upper_north-lower_north+1, 2))
+    colours = np.empty(shape=(upper_east-lower_east, upper_north-lower_north), dtype=np.str)
+
+    # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
+    # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
+    # or by saving coordinates to not calculate again. Then you can access less coordinates and do less calculations.
+    tiles = Grid.objects.filter(northing__lte=upper_north, northing__gt=lower_north,
+                                easting__lte=upper_east, easting__gt=upper_east)
+    for tile in tiles:
+        index = (tile.easting - lower_east, tile.northing - lower_north)
+        colours[index[0]][index[1]] = tile.colour
+        for bound in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            if bounds[index[0] + bound[0]][index[1] + bound[1]][0] == 0:
+                coords = gridToLatlong((tile.easting + bound[0], tile.northing + bound[1]))
+                bounds[index[0] + bound[0]][index[1] + bound[1]][0] = coords[0]
+                bounds[index[0] + bound[0]][index[1] + bound[1]][1] = coords[1]
+
+    return {"colour": colours.tolist(), "bounds:": bounds.tolist()}
