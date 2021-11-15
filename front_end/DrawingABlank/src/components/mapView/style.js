@@ -6,6 +6,10 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   map: {...StyleSheet.absoluteFillObject},
-  buttonContainer: {flexDirection: 'row', justifyContent: 'space-evenly'},
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    elevation: 1,
+  },
   button: {},
 });
