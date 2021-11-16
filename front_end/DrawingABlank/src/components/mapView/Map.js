@@ -5,6 +5,7 @@ import Geolocation from 'react-native-geolocation-service';
 import MapControls from './MapControls';
 
 import {styles} from './style.js';
+import EventDetails from '../events/EventDetails';
 
 const requestLocationPermission = async () => {
   try {
@@ -17,9 +18,25 @@ const requestLocationPermission = async () => {
   }
 };
 
-function Map() {
+function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
   const [markers, setMarkers] = useState(getInitialState().markers);
+  const [event_markers, setEventMarkers] = useState(
+    getInitialState().event_markers,
+  );
+
+  function onEventPress() {
+    // eventType, timeRemaining, radius, desc
+    setOverlayContent(
+      <EventDetails
+        eventType={'running'}
+        timeRemaining={'10'}
+        radius={'10'}
+        desc={'tet'}
+      />,
+    );
+    setOverlayVisible(true);
+  }
 
   function getInitialState() {
     return {
@@ -34,8 +51,20 @@ function Map() {
           id: 0,
           title: 'firstMarker',
           description: 'checking this works',
+          // geo fix -122.4324 37.78825
           latlng: {latitude: 37.78825, longitude: -122.4324},
           draggable: true,
+        },
+      ],
+      event_markers: [
+        {
+          id: 1,
+          title: 'Example Event',
+          description: 'Example clickable event werweR',
+          //geo fix -120.4324 38.78825
+          latlng: {latitude: 38.78825, longitude: -120.4324},
+          image_uri: 'http://clipart-library.com/data_images/165937.png',
+          draggable: false,
         },
       ],
     };
@@ -74,8 +103,8 @@ function Map() {
         style={styles.map}
         region={region}
         mapType={'standard'}
-        onRegionChange={region => onRegionChange(region)}
-        on>
+        // onRegionChange={region => onRegionChange(region)}
+      >
         {markers.map((marker, index) => (
           <Marker
             key={index}
@@ -85,7 +114,21 @@ function Map() {
             draggable={marker.draggable}
           />
         ))}
+        {event_markers.map((marker, index) => (
+          <Marker
+            key={index}
+            coordinate={marker.latlng}
+            title={marker.title}
+            description={marker.description}
+            draggable={marker.draggable}
+            image={{
+              uri: String(marker.image_uri),
+            }}
+            onPress={() => onEventPress()}
+          />
+        ))}
       </MapView>
+
       <MapControls />
     </View>
   );

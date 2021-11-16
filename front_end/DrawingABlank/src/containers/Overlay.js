@@ -28,9 +28,9 @@ const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: '20%',
     height: '130%',
-    marginLeft: '15%',
-    marginRight: '15%',
-    width: '70%',
+    // marginLeft: '15%',
+    // marginRight: '15%',
+    // width: '70%',
     flexDirection: 'column',
     borderColor: '#000000',
     borderWidth: 1,

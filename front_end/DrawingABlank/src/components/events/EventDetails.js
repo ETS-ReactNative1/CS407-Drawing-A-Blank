@@ -10,7 +10,7 @@ import React from 'react';
 import type {Node} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-const EventDetails = ({eventType, timeRemaining, radius, notes}): Node => {
+const EventDetails = ({eventType, timeRemaining, radius, desc}): Node => {
   return (
     <View>
       <Text style={styles.header}>Event details</Text>
@@ -20,8 +20,8 @@ const EventDetails = ({eventType, timeRemaining, radius, notes}): Node => {
       <Text style={styles.body}>{`\t\t\t${timeRemaining}`}</Text>
       <Text style={styles.header2}>{'\tEvent radius'}</Text>
       <Text style={styles.body}>{`\t\t\t${radius}`}</Text>
-      <Text style={styles.header2}>{'\tEvent notes'}</Text>
-      <Text style={styles.body}>{`\t\t\t${notes}`}</Text>
+      <Text style={styles.header2}>{'\tDescription'}</Text>
+      <Text style={styles.body}>{`\t\t\t${desc}`}</Text>
     </View>
   );
 };
