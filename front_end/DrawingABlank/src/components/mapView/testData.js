@@ -44,7 +44,20 @@ export function getInitialStateAnimated() {
         //draggable: true,
       },
     ],
-    tiles: [],
+    colourSpaces: [
+      [
+        {
+          coordinates: [
+            {longtitude: 37.785, latitude: -122.43},
+            {longtitude: 37.79, latitude: -122.42},
+            {longtitude: 37.78, latitude: -122.44},
+          ],
+          colour: 'blue',
+          name: 'Example area',
+          id: 0,
+        },
+      ],
+    ],
   };
 }
 
