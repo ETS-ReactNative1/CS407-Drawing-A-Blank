@@ -10,7 +10,7 @@ import React from 'react';
 import type {Node} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-const ExampleOverlay = ({content}): Node => {
+const ExampleOverlay = ({content}) => {
   return (
     <View>
       <Text style={styles.header}>{content}</Text>

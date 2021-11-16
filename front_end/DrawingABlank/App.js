@@ -17,7 +17,6 @@ import ExampleOverlay from './src/components/events/ExampleOverlay';
 import Overlay from './src/containers/Overlay';
 
 export default function App() {
-
   const [overlayVisible, setOverlayVisible] = useState(false);
   // use setOverlayContent to change the content of the overlay
   const [overlayContent, setOverlayContent] = useState();

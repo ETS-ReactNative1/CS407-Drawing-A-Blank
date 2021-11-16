@@ -6,6 +6,7 @@ import MapControls from './MapControls';
 
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
+import ExampleMarkers from '../events/resources/ExampleMarkers';
 
 const requestLocationPermission = async () => {
   try {
@@ -22,7 +23,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
   const [markers, setMarkers] = useState(getInitialState().markers);
   const [event_markers, setEventMarkers] = useState(
-    getInitialState().event_markers,
+    ExampleMarkers().event_markers,
   );
 
   function onEventPress() {
@@ -54,17 +55,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
           // geo fix -122.4324 37.78825
           latlng: {latitude: 37.78825, longitude: -122.4324},
           draggable: true,
-        },
-      ],
-      event_markers: [
-        {
-          id: 1,
-          title: 'Example Event',
-          description: 'Example clickable event werweR',
-          //geo fix -120.4324 38.78825
-          latlng: {latitude: 38.78825, longitude: -120.4324},
-          image_uri: 'http://clipart-library.com/data_images/165937.png',
-          draggable: false,
         },
       ],
     };
