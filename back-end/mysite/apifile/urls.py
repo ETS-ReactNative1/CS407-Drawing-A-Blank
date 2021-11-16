@@ -13,5 +13,6 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('test/', views.test_colour)
+    path('test/', views.test_colour),
+    path('current-events/', views.current_events),
 ]
