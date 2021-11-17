@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
@@ -13,7 +14,7 @@ class Team(models.Model):
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
-    time = models.DateTimeField()
+    time = models.DateTimeField(default=timezone.now())
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
 

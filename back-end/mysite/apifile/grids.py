@@ -1,16 +1,17 @@
+import math
+
 import bng
 import numpy as np
 from bresenham import bresenham
 from pyproj import Transformer
-from geopy import distance
 from .models import Grid
 
 """
 bng is main library used: https://pypi.org/project/bng/
 
-Coordinate systems:
-Latitude longitude coordinates will use WGS84("EPSG:4326"): https://en.wikipedia.org/wiki/World_Geodetic_System
-British National grid(BNG) will use the 1936 datum OSGB36("EPSG:27700"): https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid 
+Coordinate systems: Latitude longitude coordinates will use WGS84("EPSG:4326"): 
+https://en.wikipedia.org/wiki/World_Geodetic_System British National grid(BNG) will use the 1936 datum OSGB36(
+"EPSG:27700"): https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid 
 
 Grid reference of BNG as = a String data type of form 2 letters followed by {4,6,8,10} integers.
 latlong coordinates should be in a tuple: [0] = latitude, [1] = longitude
@@ -18,36 +19,28 @@ latlong coordinates should be in a tuple: [0] = latitude, [1] = longitude
 Note: conversions back and forth will introduce a slight error: can be by 1 square. 
 Should be fine due to GPS error and latlong coordinate rounding. But can apparently fix by making a geoid correction.
 
-Dealt with boundary conditions: e.g. SP 99999 99999 when incremented needs to modify the letter: 
-Fixed by first converted to all numeric so that the library converts it to the correct letter.(cant just increment letter due to how the bng coordinates work)
+Dealt with boundary conditions: e.g. SP 99999 99999 when incremented needs to modify the letter: Fixed by first 
+converted to all numeric so that the library converts it to the correct letter.(cant just increment letter due to how 
+the bng coordinates work) 
 
 """
 
 
-def latLongDistance(pointA, pointB):
-    """
-    Function input: 2 tuples each containing latitude and longitude
-    Function output: the calculated distance between the two points in meters(float).
-
-    https://geopy.readthedocs.io/en/stable/#module-geopy.distance
-
-    a = (52.285951 , -1.5329989)    SP 31953 65415
-    b = (52.285945 , -1.5315330)    SP 32053 65415
-    Produces a result of ~100m which aligns with the bng distances.   
-    """
-    return distance.geodesic(pointA, pointB, ellipsoid='WGS-84').meters
+def distance(point_a, point_b):
+    return math.sqrt((point_a.easting - point_b.easting) ^ 2 + (point_a.northing - point_b.northing) ^ 2)
 
 
-def calculateSpeed(pointA, pointB, timeInbetween):
+def calculate_speed(point_a, point_b, time_in_between):
     """
     Function input: 2 tuples each containing latitude and longitude and the time taken to get from point A to point B
-    Function output: the calculated speed in meters per unit time(for example if timeInbetween was in seconds then output is X m/s).
+    Function output: the calculated speed in meters per unit time(for example if timeInbetween was in seconds then
+    output is X m/s).
     """
-    distance = latLongDistance(pointA, pointB)
-    return distance / timeInbetween
+    dist = distance(point_a, point_b)
+    return dist / time_in_between
 
 
-def gridToLatlong(grid):
+def grid_to_latlong(grid):
     """
     Converts a BNG grid number to the latitude and longitude of the bottom left corner of the input grid.
 
@@ -66,11 +59,11 @@ def gridToLatlong(grid):
     return transformer.transform(x, y)
 
 
-def latlongToGrid(latlong):
+def latlong_to_grid(latlong):
     """
 
-    Function input: A tuple containing converted latitude and longitude (both floats): Requires a couple of decimal places for accuracy
-    Function output: Grid reference of BNG as a string returns 2 letters + 10 digits.
+    Function input: A tuple containing converted latitude and longitude (both floats): Requires a couple of decimal
+    places for accuracy Function output: Grid reference of BNG as a string returns 2 letters + 10 digits.
     """
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
@@ -80,13 +73,13 @@ def latlongToGrid(latlong):
     return bng.from_osgb36((x, y), figs=10)
 
 
-def bounds_of_grid(location, distance=1):
+def bounds_of_grid(location, dist=1):
     """
     Returns the latitude and longitudes of the input grid. 
     The distance argument determines how large the grid is e.g. distance=1 means the grid is 1x1 meters.
 
-    Function input: Grid reference as easting and northing tuple
-    Function output: A list of tuples containing converted latitude and longitude coordinates for all 4 corners of the current grid.
+    Function input: Grid reference as easting and northing tuple Function output: A list of tuples containing
+    converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
 
     if type(location) == str:
@@ -97,14 +90,14 @@ def bounds_of_grid(location, distance=1):
     coordinates = []
 
     # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids coordinates.
-    grids = [(0, 0), (distance, 0), (distance, distance), (0, distance)]
+    grids = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
     for i in range(len(grids)):
         new_eastings = easting + grids[i][0]
         new_northings = northing + grids[i][1]
 
         # convert to 2 letter + 10 digit form to convert to latlong
         new_grid = bng.from_osgb36((new_eastings, new_northings), figs=10)
-        coordinates.append(gridToLatlong(new_grid))
+        coordinates.append(grid_to_latlong(new_grid))
 
     return coordinates
 
@@ -121,7 +114,7 @@ def points_in_circle_np(radius, x0=0, y0=0):
         yield x, y
 
 
-def gridsInRadius(position, radius=4):
+def grids_in_radius(position, radius=4):
     """
     Function input: Current latitude longitude position
     Function output: A list of grids within the radius.
@@ -133,7 +126,7 @@ def gridsInRadius(position, radius=4):
     return grids
 
 
-def gridsInPath(point_a, point_b):
+def grids_in_path(point_a, point_b):
     """
     Function input: Current and old easting and northing tuples
     Function output: A list of grids within the straight line path.
@@ -162,8 +155,8 @@ def grids_visible(coords):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    blGrid = latlongToGrid(bottomLeft)
-    trGrid = latlongToGrid(topRight)
+    blGrid = latlong_to_grid(bottomLeft)
+    trGrid = latlong_to_grid(topRight)
 
     lower_east, lower_north = bng.to_osgb36(blGrid)
     upper_east, upper_north = bng.to_osgb36(trGrid)
@@ -190,8 +183,8 @@ def grids_visible_alt(coords):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    blGrid = latlongToGrid(bottomLeft)
-    trGrid = latlongToGrid(topRight)
+    blGrid = latlong_to_grid(bottomLeft)
+    trGrid = latlong_to_grid(topRight)
 
     lower_east, lower_north = bng.to_osgb36(blGrid)
     upper_east, upper_north = bng.to_osgb36(trGrid)
@@ -209,7 +202,7 @@ def grids_visible_alt(coords):
         colours[index[0]][index[1]] = tile.colour
         for bound in ((0, 0), (1, 0), (0, 1), (1, 1)):
             if bounds[index[0] + bound[0]][index[1] + bound[1]][0] == 0:
-                coords = gridToLatlong((tile.easting + bound[0], tile.northing + bound[1]))
+                coords = grid_to_latlong((tile.easting + bound[0], tile.northing + bound[1]))
                 bounds[index[0] + bound[0]][index[1] + bound[1]][0] = coords[0]
                 bounds[index[0] + bound[0]][index[1] + bound[1]][1] = coords[1]
 
