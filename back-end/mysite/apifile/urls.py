@@ -14,5 +14,7 @@ router.register("playerLocation", views.PlayerLocation, "playerLocation")
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('test/', views.test_colour),
+    path('current-events/', views.current_events),
 ]

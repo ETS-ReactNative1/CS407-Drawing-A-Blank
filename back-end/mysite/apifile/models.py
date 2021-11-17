@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
@@ -8,6 +9,11 @@ from django.contrib.auth.models import User
 class Team(models.Model):
     name = models.CharField(max_length=10, unique=True)
     colour = models.CharField(max_length=6)  # hex colour
+
+    def get_colour():
+        retval = Team.objects.filter(id=1)[0].colour
+
+        return retval
 
 
 class Grid(models.Model):
@@ -39,11 +45,23 @@ class Event(models.Model):
     end = models.DateTimeField()
     users = models.ManyToManyField(User, through='EventPerformance')
 
+    @staticmethod
+    def get_current_events():
+        today = date.today()
+        curr_events = Event.objects.filter(start__lte=today, end__gte=today)
+
+        return curr_events
+
 
 class EventBounds(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
+
+    def get_bound(event_id):
+        bounds = EventBounds.objects.filter(id = event_id).bound
+
+        return bounds
 
 
 # alter the base django user table with extra fields

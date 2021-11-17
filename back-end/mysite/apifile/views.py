@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
+from django.http import JsonResponse
+from .models import Team, Event
 
 
 # Create your views here.
@@ -69,3 +71,32 @@ class LatlongsOfGrid(viewsets.ViewSet):
 
         allGrids = grids.grids_visible([bl, br, tr, tl])
         return Response(allGrids)
+
+
+def current_events(self):
+    ret_val = dict()
+    # events = Event.get_current_events()
+    events = [1,2,3]
+
+    for event in events:
+        # bound = Event.get_bound(event.id)
+
+        bound = 1
+
+        # values = {
+        #     'start': event.start,
+        #     'end': event.end,
+        #     'bound': bound
+        # }
+
+        values = {
+            "start": 1,
+            "end": 2,
+            "bound": 3
+        }
+
+        # ret_val[event.id] = values
+
+        ret_val[event] = values
+
+    return JsonResponse(ret_val, safe=False)
