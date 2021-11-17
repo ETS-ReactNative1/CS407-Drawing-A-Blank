@@ -60,7 +60,12 @@ function Map({setOverlayVisible, setOverlayContent}) {
           uri: 'http://clipart-library.com/data_images/165937.png',
         }}
         onPress={() =>
-          onEventPress('Running', 'X:XX', marker.latlng, marker.description)
+          onEventPress(
+            'Running event #' + index,
+            'X:XX',
+            'X',
+            marker.description,
+          )
         }
       />
     ));

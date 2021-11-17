@@ -33,8 +33,10 @@ const styles = StyleSheet.create({
     // width: '70%',
     flexDirection: 'column',
     borderColor: '#000000',
-    borderWidth: 1,
+    borderWidth: 0.9,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
   },
   closeButton: {
     width: '10%',
