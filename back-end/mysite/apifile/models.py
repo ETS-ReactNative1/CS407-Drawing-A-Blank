@@ -48,7 +48,8 @@ class Event(models.Model):
     @staticmethod
     def get_current_events():
         today = date.today()
-        curr_events = Event.objects.filter(start__lte=today, end__gte=today)
+        curr_events = Event.objects.filter(start__lte=today) 
+        # , end__gte=today
 
         return curr_events
 
@@ -59,9 +60,10 @@ class EventBounds(models.Model):
     northing = models.PositiveIntegerField()
 
     def get_bound(event_id):
-        bounds = EventBounds.objects.filter(id = event_id).bound
+        bounds = EventBounds.objects.filter(id = event_id)
 
-        return bounds
+        for bound in bounds:
+            return [bound.northing, bound.easting]
 
 
 # alter the base django user table with extra fields
