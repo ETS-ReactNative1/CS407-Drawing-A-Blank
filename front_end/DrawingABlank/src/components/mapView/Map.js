@@ -34,19 +34,19 @@ function Map({setOverlayVisible, setOverlayContent}) {
     setRegion(region);
   }
 
-  function drawInk() {
-    return colourSpaces.map(space => (
-      // currently rendering every colour space as a polygon
-      // in future, will condense colour spaces by merging them
-      // doabke after seeing backedn data type for tile colour
-      // (will also need to add "holes" prop eventually )
-      <Polygon
-        key={'space' + space.id}
-        fillColor={USER_INK_COLOUR}
-        coordinates={space.coordinates}
-      />
-    ));
-  }
+  // function drawInk() {
+  //   return colourSpaces.map(space => (
+  //     // currently rendering every colour space as a polygon
+  //     // in future, will condense colour spaces by merging them
+  //     // doabke after seeing backedn data type for tile colour
+  //     // (will also need to add "holes" prop eventually )
+  //     <Polygon
+  //       key={'space' + space.id}
+  //       fillColor={USER_INK_COLOUR}
+  //       coordinates={space.coordinates}
+  //     />
+  //   ));
+  // }
 
   function drawMarkers() {
     return markers.map((marker, index) => (
@@ -56,8 +56,27 @@ function Map({setOverlayVisible, setOverlayContent}) {
         title={marker.title}
         description={marker.description}
         draggable={marker.draggable}
+        image={{
+          uri: 'http://clipart-library.com/data_images/165937.png',
+        }}
+        onPress={() =>
+          onEventPress('Running', 'X:XX', marker.latlng, marker.description)
+        }
       />
     ));
+  }
+
+  function onEventPress(type, time, radius, desc) {
+    // eventType, timeRemaining, radius, desc
+    setOverlayContent(
+      <EventDetails
+        eventType={type}
+        timeRemaining={time}
+        radius={radius}
+        desc={desc}
+      />,
+    );
+    setOverlayVisible(true);
   }
 
   useEffect(() => {
@@ -83,7 +102,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         region={region}
         mapType={'standard'}>
         {drawMarkers()}
-        {drawInk()}
+        {/*{drawInk()}*/}
       </Animated>
 
       <MapControls
