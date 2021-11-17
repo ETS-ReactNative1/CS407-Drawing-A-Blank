@@ -1,5 +1,4 @@
 import math
-
 import bng
 import numpy as np
 from bresenham import bresenham
@@ -166,10 +165,11 @@ def grids_visible(coords):
     # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
     # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
     # or by saving coordinates to not calculate again. Then you can access less coordinates and do less calculations.
-    tiles = Grid.objects.filter(northing__lte=upper_north, northing__gte=lower_north,
-                                easting__lte=upper_east, easting__gte=upper_east)
+    tiles = Grid.objects.filter(northing__range=(lower_north, upper_north),
+                                easting__range=(lower_east, upper_east))
+
     for tile in tiles:
-        allCoords.append({"colour": tile.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
+        allCoords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
 
     return allCoords
 
@@ -186,24 +186,28 @@ def grids_visible_alt(coords):
     blGrid = latlong_to_grid(bottomLeft)
     trGrid = latlong_to_grid(topRight)
 
-    lower_east, lower_north = bng.to_osgb36(blGrid)
-    upper_east, upper_north = bng.to_osgb36(trGrid)
+    lower = bng.to_osgb36(blGrid)
+    upper = bng.to_osgb36(trGrid)
+    lower_east = round(lower[0])
+    lower_north = round(lower[1])
+    upper_east = round(upper[0])
+    upper_north = round(upper[1])
 
-    bounds = np.zeros(shape=(upper_east-lower_east+1, upper_north-lower_north+1, 2))
-    colours = np.empty(shape=(upper_east-lower_east, upper_north-lower_north), dtype=np.str)
+    bounds = np.zeros(shape=(upper_east - lower_east + 2, upper_north - lower_north + 2, 2))
+    colours = np.zeros(shape=(upper_east - lower_east + 1, upper_north - lower_north + 1), dtype="S6")
 
     # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
     # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
     # or by saving coordinates to not calculate again. Then you can access less coordinates and do less calculations.
-    tiles = Grid.objects.filter(northing__lte=upper_north, northing__gt=lower_north,
-                                easting__lte=upper_east, easting__gt=upper_east)
+    tiles = Grid.objects.filter(northing__range=(lower_north, upper_north),
+                                easting__range=(lower_east, upper_east))
     for tile in tiles:
         index = (tile.easting - lower_east, tile.northing - lower_north)
-        colours[index[0]][index[1]] = tile.colour
+        colours[index[0]][index[1]] = tile.team.colour
         for bound in ((0, 0), (1, 0), (0, 1), (1, 1)):
             if bounds[index[0] + bound[0]][index[1] + bound[1]][0] == 0:
                 coords = grid_to_latlong((tile.easting + bound[0], tile.northing + bound[1]))
                 bounds[index[0] + bound[0]][index[1] + bound[1]][0] = coords[0]
                 bounds[index[0] + bound[0]][index[1] + bound[1]][1] = coords[1]
 
-    return {"colour": colours.tolist(), "bounds:": bounds.tolist()}
+    return {"colour": colours.tolist(), "bounds": bounds.tolist()}
