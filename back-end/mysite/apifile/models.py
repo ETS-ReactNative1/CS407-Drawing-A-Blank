@@ -42,7 +42,8 @@ class Event(models.Model):
 
 class EventBounds(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    bound = models.CharField(max_length=12)  # bng ref
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
 
 
 # alter the base django user table with extra fields
