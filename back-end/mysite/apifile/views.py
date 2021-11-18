@@ -40,6 +40,28 @@ class PlayerLocation(viewsets.ViewSet):
         return Response(allGrids)
 
 
+class PlayerPath(viewsets.ViewSet):
+    
+
+    def create(self, request):
+        playerInfo = request.data[0]
+        current_coords = playerInfo["current_coords"]
+        old_coords = playerInfo["old_coords"]
+        colour = playerInfo["colour"]
+
+        current_grid= grids.latlong_to_grid(current_coords)
+        old_grid = grids.latlong_to_grid(old_coords)
+
+
+        radius = 4  # calculate radius depending on speed
+
+        allGrids = grids.all_grids_path(old_grid, current_grid, radius)
+
+        # update colour database.
+
+        return Response(allGrids)
+
+
 class LatlongsOfGrid(viewsets.ViewSet):
 
     # GET request: parameter = a grid coordinate, responds with the 4 coordinates.

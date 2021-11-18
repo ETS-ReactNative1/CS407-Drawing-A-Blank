@@ -119,9 +119,11 @@ def grids_in_radius(position, radius=4):
     Function output: A list of grids within the radius.
     """
     x, y = position
-    grids = points_in_circle_np(radius, x, y)  # seems fine for now, could set the function's center at 0,0 and just
+    # seems fine for now, could set the function's center at 0,0 and just
     # add the offset to the origin of the square.
-    grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
+    grids = points_in_circle_np(radius, x, y)  
+
+    #grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
     return grids
 
 
@@ -140,9 +142,23 @@ def grids_in_path(point_a, point_b):
     grids = list(bresenham(east_a, north_a, east_b, north_b))
 
     # https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
-    grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
+    #grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
 
     return grids
+
+def all_grids_path(point_a, point_b, radius):
+    
+    point_a = bng.to_osgb36(point_a)
+    point_b = bng.to_osgb36(point_b)
+    grids_path = grids_in_path(point_a, point_b)
+    all_grids = set()
+     
+    for grid in grids_path:
+        grids_radius = grids_in_radius(grid,radius)
+        all_grids.update(grids_radius)
+
+    return all_grids
+
 
 
 def grids_visible(coords):
