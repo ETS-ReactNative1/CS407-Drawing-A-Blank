@@ -49,6 +49,10 @@ This part is pretty straight forward. Firstly, run the android emulator with the
 
 `npx react-native run-android` - This connects React Native to your emulator or device to run the application. This can be closed once finished.
 
+If you have errors relating to missing dependencies, you may need to run the following command:
+
+`npm install` - This installs all dependencies listed in package.json.
+
 This process can take some time at first, but afterwards it should automatically load the app into the emulator. You can then use the first terminal to reload the project and also open a developer menu. The project should reload automatically each time you change a file.
 
 Now you can start writing code. If you have any trouble with this process, do not hesitate to send me a message.
