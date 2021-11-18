@@ -29,11 +29,11 @@ class PlayerLocation(viewsets.ViewSet):
         playerInfo = request.data
         coords = playerInfo["coords"]
         colour = playerInfo["colour"]
-        gridLoc = grids.latlongToGrid(coords)
+        gridLoc = grids.latlong_to_grid(coords)
 
         radius = 4  # calculate radius depending on speed
 
-        allGrids = grids.gridsInRadius(gridLoc, radius)
+        allGrids = grids.grids_in_radius(gridLoc, radius)
 
         # update colour database.
 
