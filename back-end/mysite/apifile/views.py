@@ -75,7 +75,7 @@ class LatlongsOfGrid(viewsets.ViewSet):
 
 
 # test view to add events to db
-def add_events(self):
+def add_events(request):
     Event.objects.create(start=datetime.datetime.now(),
                          end=datetime.datetime.now() + datetime.timedelta(days=10))
     Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=4),
@@ -94,7 +94,7 @@ def add_events(self):
     return Response("events added")
 
 
-def current_events(self):
+def current_events(request):
     ret_val = dict()
     events = Event.get_current_events()
     for event in Event.objects.all():
