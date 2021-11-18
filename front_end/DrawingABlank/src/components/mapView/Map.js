@@ -13,6 +13,7 @@ import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 import {requestLocationPermission} from './permissions';
 import {getInitialStateAnimated as getInitialState} from './testData';
+import { getEvents } from '../../api/api_events';
 
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
@@ -24,7 +25,7 @@ const USER_INK_COLOUR = 'blue';
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
-  const [markers, setMarkers] = useState(getInitialState().markers);
+  const [markers, setMarkers] = useState([]);
   const [colourSpaces, setColourSpaces] = useState(
     getInitialState().colourSpaces,
   ); //getInitialState().colourSpaces)
@@ -96,7 +97,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
         latitude,
         longitude,
       });
-    });
+    })
+    //This will get the events through the api, then update the markers state.
+    getEvents().then(result => setMarkers(result));
+
   }, []);
 
   return (
