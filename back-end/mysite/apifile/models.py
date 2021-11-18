@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date
 from django.utils import timezone
 
 
@@ -48,23 +47,23 @@ class Event(models.Model):
 
     @staticmethod
     def get_current_events():
-        today = date.today()
-        curr_events = Event.objects.filter(start__lte=today) 
-        # , end__gte=today
+        today = timezone.now()
+        curr_events = Event.objects.filter(start__lte=today, end__gte=today)
 
         return curr_events
+
+    def get_bounds(self):
+        bounds = EventBounds.objects.filter(event_id=self.id).order_by('id')
+        bounds_list = []
+        for bound in bounds:
+            bounds_list.append((bound.easting, bound.northing))
+        return bounds_list
 
 
 class EventBounds(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
-
-    def get_bound(event_id):
-        bounds = EventBounds.objects.filter(id = event_id)
-
-        for bound in bounds:
-            return [bound.northing, bound.easting]
 
 
 # alter the base django user table with extra fields
