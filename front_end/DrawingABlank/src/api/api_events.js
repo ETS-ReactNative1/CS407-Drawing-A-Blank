@@ -16,8 +16,8 @@ export const getEvents = () => {
                 //No title or description has been provided by the endpoint at the moment.
                 //Therefore, we are going to use default title names.
                 id: key,
-                title: 'Default Title.',
-                description: 'Default Description.',
+                title: 'Event number ' + key,
+                description: 'This is a description for event ' + key,
                 latlng: {latitude: converted_point.latitude, longitude: converted_point.longitude}
             };
             markers.push(new_object);
