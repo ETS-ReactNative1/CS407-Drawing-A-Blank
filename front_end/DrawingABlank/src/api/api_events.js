@@ -29,4 +29,4 @@ export const getEvents = () => {
       return markers;
     })
     .catch(err => console.log(err));
-};
+}
