@@ -13,7 +13,7 @@ import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 import {requestLocationPermission} from './permissions';
 import {getInitialStateAnimated as getInitialState} from './testData';
-import { getEvents } from '../../api/api_events';
+import {getEvents} from '../../api/api_events';
 
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
@@ -55,6 +55,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         key={index}
         coordinate={marker.latlng}
         title={marker.title}
+        anchor={{x: 0, y: 1}}
         description={marker.description}
         draggable={marker.draggable}
         image={{
@@ -97,10 +98,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
         latitude,
         longitude,
       });
-    })
+    });
     //This will get the events through the api, then update the markers state.
     getEvents().then(result => setMarkers(result));
-
   }, []);
 
   return (
