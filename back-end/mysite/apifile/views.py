@@ -97,14 +97,11 @@ def add_events(request):
 def current_events(request):
     ret_val = dict()
     events = Event.get_current_events()
-    for event in Event.objects.all():
-        print(event.id)
-        print(event.start)
-        print(event.end)
-
     for event in events:
         bounds = event.get_bounds()
-        map(grids.grid_to_latlong, bounds)
+        for i in range(0, len(bounds)):
+            bounds[i] = grids.grid_to_latlong(bounds[i])
+        print(str(bounds))
         values = {
             'start': event.start,
             'end': event.end,
