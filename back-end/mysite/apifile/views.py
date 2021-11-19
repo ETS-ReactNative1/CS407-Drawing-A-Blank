@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
@@ -48,7 +47,7 @@ class LatlongsOfGrid(viewsets.ViewSet):
     def list(self, request):
         # need to get actual grid + colour from database.
         grid = request.query_params.get("grid")
-        if (grid == None):
+        if grid is None:
             return Response("need a grid reference, try: http://127.0.0.1:8000/gridsCoords/?grid=SP3195365415", 400)
 
         coords = grids.bounds_of_grid(grid)
@@ -75,7 +74,7 @@ class LatlongsOfGrid(viewsets.ViewSet):
 
 
 # test view to add events to db
-def add_events(request):
+def add_events(_):
     Event.objects.create(start=datetime.datetime.now(),
                          end=datetime.datetime.now() + datetime.timedelta(days=10))
     Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=4),
@@ -94,14 +93,13 @@ def add_events(request):
     return Response("events added")
 
 
-def current_events(request):
+def current_events(_):
     ret_val = dict()
     events = Event.get_current_events()
     for event in events:
         bounds = event.get_bounds()
         for i in range(0, len(bounds)):
             bounds[i] = grids.grid_to_latlong(bounds[i])
-        print(str(bounds))
         values = {
             'start': event.start,
             'end': event.end,
