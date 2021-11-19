@@ -43,19 +43,30 @@ class PlayerLocation(viewsets.ViewSet):
 class PlayerPath(viewsets.ViewSet):
     
 
+    """
+    {
+    "current_coords": [52.286849 , -1.5329895],
+    "old_coords": [52.285951 , -1.5329989],
+    "colour":  "red",
+    "time_elapsed": 18
+    }
+    """
+
+
     def create(self, request):
-        playerInfo = request.data[0]
+        playerInfo = request.data
         current_coords = playerInfo["current_coords"]
         old_coords = playerInfo["old_coords"]
         colour = playerInfo["colour"]
-
+        time_elapsed = playerInfo["time_elapsed"]
+        
         current_grid= grids.latlong_to_grid(current_coords)
         old_grid = grids.latlong_to_grid(old_coords)
+        speed = grids.calculate_speed(current_grid, old_grid, time_elapsed)
+        radius = grids.calculate_radius(speed)  # calculate radius depending on speed
+        print(radius)
 
-
-        radius = 4  # calculate radius depending on speed
-
-        allGrids = grids.all_grids_path(old_grid, current_grid, radius)
+        allGrids = grids.all_grids_with_path(old_grid, current_grid, radius)
 
         # update colour database.
 

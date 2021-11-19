@@ -26,17 +26,24 @@ the bng coordinates work)
 
 
 def distance(point_a, point_b):
-    return math.sqrt((point_a.easting - point_b.easting) ^ 2 + (point_a.northing - point_b.northing) ^ 2)
+    a_east, a_north = bng.to_osgb36(point_a)
+    b_east, b_north = bng.to_osgb36(point_b)
+    return math.sqrt((a_east- b_east) ** 2 + (a_north - b_north) ** 2)
 
 
 def calculate_speed(point_a, point_b, time_in_between):
     """
-    Function input: 2 tuples each containing latitude and longitude and the time taken to get from point A to point B
+    Function input: 2 grid coordinates and the time taken to get from point A to point B
     Function output: the calculated speed in meters per unit time(for example if timeInbetween was in seconds then
     output is X m/s).
     """
     dist = distance(point_a, point_b)
     return dist / time_in_between
+
+def calculate_radius(speed):
+
+    #https://www.desmos.com/calculator/hhnpngcpsr
+    return math.floor(-0.1000*speed*speed+1.500*speed)
 
 
 def grid_to_latlong(grid):
@@ -146,18 +153,40 @@ def grids_in_path(point_a, point_b):
 
     return grids
 
-def all_grids_path(point_a, point_b, radius):
-    
+def all_grids_with_path(point_a, point_b, radius):
+    """
+    All grids in the path given the old and current easting and northings including the radius around the path to colour in.
+    """
     point_a = bng.to_osgb36(point_a)
     point_b = bng.to_osgb36(point_b)
     grids_path = grids_in_path(point_a, point_b)
-    all_grids = set()
-     
+    
+    #lots of overlapping circles so use set to remove duplicates (seems fine for efficiency for now).
+    all_grids = set()   
     for grid in grids_path:
         grids_radius = grids_in_radius(grid,radius)
         all_grids.update(grids_radius)
 
     return all_grids
+
+def super_sample(tiles, zoom_level=1):
+    """
+    uses all tiles visible and ensures that not too many grids are sent back to the user.
+    
+    """
+
+    allCoords = []
+
+    #group grids into NxN blocks based on zoom level: where zoom_level=1 means no division and zoom_level=1 means 2x2 blocks.
+
+    #get the average colour per nxn block
+
+    #get coordinates of the entire nxn block
+
+    #return this data to user
+    return allCoords
+
+
 
 
 
