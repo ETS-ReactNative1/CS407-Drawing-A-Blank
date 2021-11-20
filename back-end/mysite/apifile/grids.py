@@ -212,7 +212,14 @@ def super_sample(coords, zoom_level=1):
 
             #TODO: get average colour (done by putting colours[] outside of if condition and gather a list per enlarged bound then average each block at the end(?))
             colours[index[0]//zoom_level][index[1]//zoom_level] = tile.team.colour
-    return {"colour": colours.tolist(), "bounds": coords.tolist()}
+    
+    coords =coords.flatten()
+    colours =colours.flatten()
+    allCoords = []
+    print(coords.size)
+    for i in range(coords.size):
+        allCoords.append({"colour":colours[i], "bounds":coords[i]})
+    return allCoords
 
 def grids_visible(coords):
     """
