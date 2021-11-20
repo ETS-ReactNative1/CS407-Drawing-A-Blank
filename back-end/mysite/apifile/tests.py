@@ -37,3 +37,20 @@ class GridTestCase(TestCase):
         self.assertEqual(numpy.count_nonzero(out["colour"]), 2)
         # Check 8 coords output (4 x 2 coords)
         self.assertEqual(numpy.count_nonzero(out["bounds"]), 12)
+
+
+class SuperSampleTest(TestCase):
+    def setUp(self):
+        models.Team.objects.create(name="Test Team1", colour="FF0000")
+        models.Team.objects.create(name="Test Team2", colour="00FF00")
+        team = models.Team.objects.get(name="Test Team1")
+        east = 431950 
+        north = 265410
+        for i in range(20):
+            for j in range(20):
+                models.Grid.objects.create(easting=str(east+i), northing=str(north+j), team=team)
+        
+    def test_super(self):
+        print("")
+        out = grids.super_sample([[52.285951 , -1.5329989], [0, 0], [52.286022 , -1.5328809], [0, 0]],zoom_level=4)
+        print(str(out))

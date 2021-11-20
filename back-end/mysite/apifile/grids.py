@@ -45,7 +45,6 @@ def calculate_radius(speed):
     #https://www.desmos.com/calculator/hhnpngcpsr
     return math.floor(-0.1000*speed*speed+1.500*speed)
 
-
 def grid_to_latlong(grid):
     """
     Converts a BNG grid number to the latitude and longitude of the bottom left corner of the input grid.
@@ -64,7 +63,6 @@ def grid_to_latlong(grid):
         x, y = grid
     return transformer.transform(x, y)
 
-
 def latlong_to_grid(latlong):
     """
 
@@ -77,7 +75,6 @@ def latlong_to_grid(latlong):
     # Converts to grid, specified 10 figs for accuracy.
     x, y = transformer.transform(latlong[0], latlong[1])
     return bng.from_osgb36((x, y), figs=10)
-
 
 def bounds_of_grid(location, dist=1):
     """
@@ -107,7 +104,6 @@ def bounds_of_grid(location, dist=1):
 
     return coordinates
 
-
 def points_in_circle_np(radius, x0=0, y0=0):
     """
     https://stackoverflow.com/questions/49551440/python-all-points-on-circle-given-radius-and-center
@@ -118,7 +114,6 @@ def points_in_circle_np(radius, x0=0, y0=0):
     # x, y = np.where((np.hypot((x_-x0)[:,np.newaxis], y_-y0)<= radius)) # alternative implementation
     for x, y in zip(x_[x], y_[y]):
         yield x, y
-
 
 def grids_in_radius(position, radius=4):
     """
@@ -132,7 +127,6 @@ def grids_in_radius(position, radius=4):
 
     #grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
     return grids
-
 
 def grids_in_path(point_a, point_b):
     """
@@ -169,26 +163,56 @@ def all_grids_with_path(point_a, point_b, radius):
 
     return all_grids
 
-def super_sample(tiles, zoom_level=1):
+
+
+
+def super_sample(coords, zoom_level=1):
     """
     uses all tiles visible and ensures that not too many grids are sent back to the user.
+    zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
+    zoom_level=2 means 2x2m grids.
     
     """
 
-    allCoords = []
+    bottomLeft = coords[0]
+    topRight = coords[2]
 
-    #group grids into NxN blocks based on zoom level: where zoom_level=1 means no division and zoom_level=1 means 2x2 blocks.
+    blGrid = latlong_to_grid(bottomLeft)
+    trGrid = latlong_to_grid(topRight)
 
-    #get the average colour per nxn block
+    lower_east, lower_north = bng.to_osgb36(blGrid)
+    upper_east, upper_north = bng.to_osgb36(trGrid)
 
-    #get coordinates of the entire nxn block
+    #get the differences 
+    east_diff = abs(upper_east-lower_east)
+    north_diff = abs(upper_north-lower_north)
 
-    #return this data to user
-    return allCoords
+    #ensure both E and N are both divisible by zoom_level
+    padding_E = (east_diff)%zoom_level 
+    padding_N = (north_diff)%zoom_level 
+    tiles_E = Grid.objects.filter(northing__range=(lower_north, upper_north+padding_N),
+                                easting__range=(lower_east, upper_east+padding_E))
 
 
+    #create 2d arrays that are smaller dimensions due to larger grids.
+    east_size = (east_diff+padding_E)//zoom_level
+    north_size = (north_diff+padding_N)//zoom_level
+    coords = np.zeros(shape=(east_size,north_size), dtype=object)
+    colours = np.zeros(shape=(east_size,north_size ),dtype=object)
 
+    #group grids into NxN blocks based on zoom level.
+    for tile in tiles_E:
+        index = ((tile.easting - lower_east), (tile.northing - lower_north))
 
+        #gets the bottom left per NxN grid. and also not the top row as that is divisible by zoom_level due to padding.
+        if(index[0] % zoom_level == 0 and index[1] % zoom_level ==0 and index[0]<east_diff and index[1]<north_diff):
+
+            #uses zoom level to get larger bounds.
+            coords[index[0]//zoom_level][index[1]//zoom_level] = bounds_of_grid(bng.from_osgb36((tile.easting, tile.northing), figs=10),zoom_level)
+
+            #TODO: get average colour (done by putting colours[] outside of if condition and gather a list per enlarged bound then average each block at the end(?))
+            colours[index[0]//zoom_level][index[1]//zoom_level] = tile.team.colour
+    return {"colour": colours.tolist(), "bounds": coords.tolist()}
 
 def grids_visible(coords):
     """
@@ -207,6 +231,7 @@ def grids_visible(coords):
 
     allCoords = []
 
+
     # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
     # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
     # or by saving coordinates to not calculate again. Then you can access less coordinates and do less calculations.
@@ -217,7 +242,6 @@ def grids_visible(coords):
         allCoords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
 
     return allCoords
-
 
 def grids_visible_alt(coords):
     """
