@@ -4,7 +4,7 @@ import numpy as np
 from bresenham import bresenham
 from pyproj import Transformer
 from .models import Grid
-
+from PIL import ImageColor
 """
 bng is main library used: https://pypi.org/project/bng/
 
@@ -172,6 +172,7 @@ def super_sample(coords, zoom_level=1):
     zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
     zoom_level=2 means 2x2m grids.
     
+    also considers the colours and finds the average colour for that larger grid.
     """
 
     bottomLeft = coords[0]
@@ -199,7 +200,9 @@ def super_sample(coords, zoom_level=1):
     north_size = (north_diff+padding_N)//zoom_level
     coords = np.zeros(shape=(east_size,north_size), dtype=object)
     colours = np.zeros(shape=(east_size,north_size ),dtype=object)
-
+    for i in range(len(colours)):
+        for j in range(len(colours[i])):
+            colours[i][j] = (0,0,0)
     #group grids into NxN blocks based on zoom level.
     for tile in tiles_E:
         index = ((tile.easting - lower_east), (tile.northing - lower_north))
@@ -210,15 +213,22 @@ def super_sample(coords, zoom_level=1):
             #uses zoom level to get larger bounds.
             coords[index[0]//zoom_level][index[1]//zoom_level] = bounds_of_grid(bng.from_osgb36((tile.easting, tile.northing), figs=10),zoom_level)
 
-            #TODO: get average colour (done by putting colours[] outside of if condition and gather a list per enlarged bound then average each block at the end(?))
-            colours[index[0]//zoom_level][index[1]//zoom_level] = tile.team.colour
+        if( index[0]<east_diff and index[1]<north_diff):
+            colours[index[0]//zoom_level][index[1]//zoom_level] = [sum(x) for x in zip(ImageColor.getcolor("#" + tile.team.colour, "RGB"),colours[index[0]//zoom_level][index[1]//zoom_level])]
     
     coords =coords.flatten()
     colours =colours.flatten()
     allCoords = []
-    print(coords.size)
     for i in range(coords.size):
-        allCoords.append({"colour":colours[i], "bounds":coords[i]})
+
+        #blend colour: largest value will always be FF(255) and then everything will be scaled relative to that.
+        avg_colour = tuple( ti//(zoom_level*zoom_level) for ti in colours[i])
+        avg_colour = tuple( ti/(max(avg_colour)) for ti in avg_colour)
+        avg_colour = tuple( int(ti*255) for ti in avg_colour)
+
+        
+        #https://www.codespeedy.com/convert-rgb-to-hex-color-code-in-python/
+        allCoords.append({"colour":'%02x%02x%02x' % avg_colour, "bounds":coords[i]})
     return allCoords
 
 def grids_visible(coords):

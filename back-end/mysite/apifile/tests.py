@@ -44,11 +44,17 @@ class SuperSampleTest(TestCase):
         models.Team.objects.create(name="Test Team1", colour="FF0000")
         models.Team.objects.create(name="Test Team2", colour="00FF00")
         team = models.Team.objects.get(name="Test Team1")
+        team2 = models.Team.objects.get(name="Test Team2")
         east = 431950 
         north = 265410
+        teams = [team,team2]
         for i in range(20):
+            if(i%3==0):
+                current_team = team2
+            else:
+                current_team=team
             for j in range(20):
-                models.Grid.objects.create(easting=str(east+i), northing=str(north+j), team=team)
+                models.Grid.objects.create(easting=str(east+i), northing=str(north+j), team=current_team)
         
     def test_super(self):
         print("")
