@@ -187,6 +187,7 @@ def super_sample(coords, zoom_level=1):
     #get the differences 
     east_diff = abs(upper_east-lower_east)
     north_diff = abs(upper_north-lower_north)
+    print(east_diff,north_diff)
 
     #ensure both E and N are both divisible by zoom_level
     padding_E = (east_diff)%zoom_level 
@@ -200,21 +201,27 @@ def super_sample(coords, zoom_level=1):
     north_size = (north_diff+padding_N)//zoom_level
     coords = np.zeros(shape=(east_size,north_size), dtype=object)
     colours = np.zeros(shape=(east_size,north_size ),dtype=object)
+
+    #rgb values to get avg.
     for i in range(len(colours)):
         for j in range(len(colours[i])):
             colours[i][j] = (0,0,0)
+
     #group grids into NxN blocks based on zoom level.
     for tile in tiles_E:
         index = ((tile.easting - lower_east), (tile.northing - lower_north))
 
         #gets the bottom left per NxN grid. and also not the top row as that is divisible by zoom_level due to padding.
-        if(index[0] % zoom_level == 0 and index[1] % zoom_level ==0 and index[0]<east_diff and index[1]<north_diff):
-
-            #uses zoom level to get larger bounds.
-            coords[index[0]//zoom_level][index[1]//zoom_level] = bounds_of_grid(bng.from_osgb36((tile.easting, tile.northing), figs=10),zoom_level)
-
         if( index[0]<east_diff and index[1]<north_diff):
+
+            #do element wise addition in 3 tuple (rgb) for avg per grid. 
             colours[index[0]//zoom_level][index[1]//zoom_level] = [sum(x) for x in zip(ImageColor.getcolor("#" + tile.team.colour, "RGB"),colours[index[0]//zoom_level][index[1]//zoom_level])]
+            
+            #check if bottom left of large grid.
+            if(index[0] % zoom_level == 0 and index[1] % zoom_level ==0):
+
+                #uses zoom level to get larger bounds.
+                coords[index[0]//zoom_level][index[1]//zoom_level] = bounds_of_grid(bng.from_osgb36((tile.easting, tile.northing), figs=10),zoom_level)
     
     coords =coords.flatten()
     colours =colours.flatten()
@@ -226,7 +233,6 @@ def super_sample(coords, zoom_level=1):
         avg_colour = tuple( ti/(max(avg_colour)) for ti in avg_colour)
         avg_colour = tuple( int(ti*255) for ti in avg_colour)
 
-        
         #https://www.codespeedy.com/convert-rgb-to-hex-color-code-in-python/
         allCoords.append({"colour":'%02x%02x%02x' % avg_colour, "bounds":coords[i]})
     return allCoords
