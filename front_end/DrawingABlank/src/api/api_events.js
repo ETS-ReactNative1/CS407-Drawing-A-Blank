@@ -4,7 +4,7 @@ const OSPoint = require('ospoint');
 
 export const getEvents = () => {
   return request('GET', 'current-events', '', '')
-    .then(response => response.json())
+    .then(response => {console.log(response);response.json();})
     .then(data => {
       var markers = [];
       for (var key in data) {
