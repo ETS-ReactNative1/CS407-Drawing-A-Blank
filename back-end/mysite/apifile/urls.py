@@ -7,6 +7,7 @@ from . import views
 router = routers.DefaultRouter()
 router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
 router.register("playerLocation", views.PlayerLocation, "playerLocation")
+router.register("playerPath", views.PlayerPath, "playerPath")
 # example
 # router.register(r'heroes', views.HeroViewSet)
 
