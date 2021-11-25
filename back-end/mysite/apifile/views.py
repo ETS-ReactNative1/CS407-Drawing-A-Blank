@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
-from .models import Team, Event, EventBounds
-from datetime import date
+from .models import Event, EventBounds
+import datetime
 
 
 # Create your views here.
@@ -81,7 +80,7 @@ class LatlongsOfGrid(viewsets.ViewSet):
     def list(self, request):
         # need to get actual grid + colour from database.
         grid = request.query_params.get("grid")
-        if (grid == None):
+        if grid is None:
             return Response("need a grid reference, try: http://127.0.0.1:8000/gridsCoords/?grid=SP3195365415", 400)
 
         coords = grids.bounds_of_grid(grid)
@@ -107,18 +106,37 @@ class LatlongsOfGrid(viewsets.ViewSet):
         return Response(allGrids)
 
 
-def current_events(self):
+# test view to add events to db
+def add_events(_):
+    Event.objects.create(start=datetime.datetime.now(),
+                         end=datetime.datetime.now() + datetime.timedelta(days=10))
+    Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=4),
+                         end=datetime.datetime.now() + datetime.timedelta(days=4))
+    evs = Event.objects.all()
+    ev1 = evs[0]
+    ev2 = evs[1]
+    EventBounds.objects.create(event=ev1, easting=431890, northing=265592)
+    EventBounds.objects.create(event=ev1, easting=432315, northing=265866)
+    EventBounds.objects.create(event=ev1, easting=431932, northing=265511)
+    EventBounds.objects.create(event=ev1, easting=432360, northing=265781)
+    EventBounds.objects.create(event=ev2, easting=431258, northing=265593)
+    EventBounds.objects.create(event=ev2, easting=430952, northing=265558)
+    EventBounds.objects.create(event=ev2, easting=430986, northing=265463)
+    EventBounds.objects.create(event=ev2, easting=431259, northing=265432)
+    return Response("events added")
+
+
+def current_events(_):
     ret_val = dict()
     events = Event.get_current_events()
-
     for event in events:
-        bound = EventBounds.get_bound(event.id)
-
+        bounds = event.get_bounds()
+        for i in range(0, len(bounds)):
+            bounds[i] = grids.grid_to_latlong(bounds[i])
         values = {
             'start': event.start,
             'end': event.end,
-            'northing': bound[0],
-            'easting': bound[1]
+            'bounds': bounds
         }
 
         ret_val[event.id] = values
