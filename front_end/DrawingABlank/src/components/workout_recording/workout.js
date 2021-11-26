@@ -15,6 +15,6 @@ export class Workout{
         this.date_end = new Date();
     }
     toJSON(){
-        return {"start":this.date_start, "end":this.date_end, "coordintaes":this.coordinates} 
+        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates} 
     }
 }
