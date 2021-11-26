@@ -33,21 +33,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   function onRegionChange(region) {
     setRegion(region);
   }
-
-  // function drawInk() {
-  //   return colourSpaces.map(space => (
-  //     // currently rendering every colour space as a polygon
-  //     // in future, will condense colour spaces by merging them
-  //     // doabke after seeing backedn data type for tile colour
-  //     // (will also need to add "holes" prop eventually )
-  //     <Polygon
-  //       key={'space' + space.id}
-  //       fillColor={USER_INK_COLOUR}
-  //       coordinates={space.coordinates}
-  //     />
-  //   ));
-  // }
-
+  
   function drawInk(){
     return colourSpaces.map(space => 
       <Polygon

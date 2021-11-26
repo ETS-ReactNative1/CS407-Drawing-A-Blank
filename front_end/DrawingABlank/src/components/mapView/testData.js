@@ -70,7 +70,22 @@ export function getInitialStateAnimated() {
           strokeWidth:1,
           name: 'Example area from API',
           id: 1,
+        },
+        /* Original data from the API which is broken.
+        {
+          coordinates:[
+            {latitude:52.2875453592547, longitude:-1.533905726176639}, 
+            {latitude:52.28998386541584, longitude:-1.5276491631345825}, 
+            {latitude:52.28681474277165, longitude:-1.533297664996668},
+            {latitude:52.28921708138118, longitude: -1.5269975738955839}, 
+          ],
+          strokeColor:"#000",
+          fillColor:"rgba(43, 145, 222, 0.54)",
+          strokeWidth:1,
+          name: 'Example area from API',
+          id: 1,
         }
+        */
     ],
   };
 }
