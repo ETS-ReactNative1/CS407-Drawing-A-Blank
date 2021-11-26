@@ -48,6 +48,18 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //   ));
   // }
 
+  function drawInk(){
+    return colourSpaces.map(space => 
+      <Polygon
+            coordinates={space.coordinates}
+            strokeColor={space.strokeColor}
+            fillColor={space.fillColor}
+            strokeWidth={space.strokeWidth}
+            key={'Space'+space.id}
+        />
+    );
+  }
+
   function drawMarkers() {
     return markers.map((marker, index) => (
       <Marker
@@ -108,6 +120,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         mapType={'standard'}>
         {drawMarkers()}
         {/*{drawInk()}*/}
+        {drawInk()}
       </Animated>
 
       <MapControls
