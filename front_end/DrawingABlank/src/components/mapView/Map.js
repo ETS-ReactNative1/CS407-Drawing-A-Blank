@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {View} from 'react-native';
 import MapView, {
   AnimatedRegion,
@@ -25,28 +25,30 @@ function Map() {
   const [markers, setMarkers] = useState(getInitialState().markers);
   const [colourSpaces, setColourSpaces] = useState(
     getInitialState().colourSpaces,
-  ); //getInitialState().colourSpaces)
+  );
+  const isMapTracking = useRef(true); // flag: detaches map from listening to user location
+  const userLocation = useRef(region);
   const bottomSheetRef = useRef(null);
 
   function onRegionChange(region) {
     setRegion(region);
   }
 
-  function drawInk() {
+  function drawPolygons() {
     return colourSpaces.map(space => (
       // currently rendering every colour space as a polygon
       // in future, will condense colour spaces by merging them
       // doabke after seeing backedn data type for tile colour
-      // (will also need to add "holes" prop eventually )
+
       <Polygon
-        key={'space' + space.id}
-        fillColor={USER_INK_COLOUR}
+        key={space.id}
+        fillColor={space.colour}
         coordinates={space.coordinates}
       />
     ));
   }
 
-  function drawMarkers() {
+  function DrawMarkers() {
     return markers.map((marker, index) => (
       <Marker
         key={index}
@@ -62,15 +64,25 @@ function Map() {
     // Get User permission for location tracking, and initialize map to listen
     // if user permission not given, map will default to initial state - could change to anything e.g. dont render map at all nd show hser dialog
     // (logic could be moved to "withPermissions" hoc)1
-    setupGeolocation(({latitude, longitude}) => {
-      const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
-      setRegion({
-        //...region, //take previous zoom level
-        ...zoomLevel, //take zoom level from constant
-        latitude,
-        longitude,
-      });
-    });
+    setupGeolocation(
+      ({latitude, longitude}) => {
+        userLocation.current = {latitude, longitude};
+        if (isMapTracking.current) {
+          const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
+          setRegion({
+            //...region, //take previous zoom level
+            ...zoomLevel, //take zoom level from constant
+            latitude,
+            longitude,
+          });
+        } else {
+          setRegion({
+            ...region,
+          }); // do nothing i.e dont snap the map to user location e.g whilst panning and walking, not resetting regiok when looking at event
+        }
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
   }, []);
 
   return (
@@ -80,8 +92,8 @@ function Map() {
         style={styles.map}
         region={region}
         mapType={'standard'}>
-        {drawMarkers()}
-        {drawInk()}
+        <DrawMarkers />
+        {/* {drawPolygons()} */}
       </Animated>
       <MapControls
         toggleGhostMode={() => {
@@ -103,38 +115,45 @@ function Map() {
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }
         // will probably need to redo how this works too at the same time
-        calculateDistanceToUser={dest => {
-          return getDistance(
-            {longitude: region.longitude, latitude: region.latitude},
-            dest,
-          );
-        }}
+        // Hopefully now will at least be smart about recomputing distance - only done now on userLocation change
+        calculateDistanceToUser={useCallback(
+          dest => {
+            return getDistance(
+              {
+                longitude: userLocation.current.longitude,
+                latitude: userLocation.current.latitude,
+              },
+              dest,
+            );
+          },
+          [userLocation],
+        )}
       />
     </View>
   );
 }
 
-const setupGeolocation = async _setRegion => {
+const setupGeolocation = async (handler, config) => {
   if ((await requestLocationPermission()).grantedStatus) {
     // Init Map to users current location
-    Geolocation.getCurrentPosition(({coords}) => _setRegion(coords));
+    Geolocation.getCurrentPosition(({coords}) => handler(coords));
 
     // Listen for user movement, update map accordingly
     const watchId = Geolocation.watchPosition(
       ({coords}) => {
-        _setRegion(coords);
+        handler(coords);
       },
       e => {
         console.log(e);
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      config,
     );
 
     return () => {
       Geolocation.clearWatch(watchId);
     };
   } else {
-    console.log('User Permission for Location DENIED');
+    console.log('User Permission for GeoLocation DENIED');
   }
 };
 
