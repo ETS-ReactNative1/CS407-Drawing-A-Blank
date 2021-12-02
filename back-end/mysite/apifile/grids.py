@@ -70,7 +70,7 @@ def latlong_to_grid(latlong):
     """
 
     Function input: A tuple containing converted latitude and longitude (both floats): Requires a couple of decimal
-    places for accuracy Function output: Grid reference of BNG as a string returns 2 letters + 10 digits.
+    places for accuracy Function output: Grid reference of BNG as a easting northing tuple.
     """
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
