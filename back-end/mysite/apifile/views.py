@@ -158,8 +158,8 @@ def record_workout(self, request):
 
     for entry in coords:
         latlong = (entry["latitude"], entry["longitude"])
-        point = grids.latlong_to_grid(latlong)
-        # WorkoutPoint.objects.create(workout=wid, time=entry[timstamp], easting=, northing=)
+        eastnorths = grids.latlong_to_grid(latlong)
+        WorkoutPoint.objects.create(workout=wid, time=entry[timstamp], easting=eastnorths[0], northing=eastnorths[1])
     
 
 
