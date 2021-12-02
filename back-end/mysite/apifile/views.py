@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
-from .models import Event, EventBounds
+from .models import Event, EventBounds, Workout, WorkoutPoint
 import datetime
 
 
@@ -142,3 +142,27 @@ def current_events(_):
         ret_val[event.id] = values
 
     return JsonResponse(ret_val)
+
+def record_workout(self, request):
+    data = request.data
+    coords = data["coordinates"]
+    start = data["start"]
+    end = data["end"]
+    type = data["type"]
+    user_id = data["uid"]
+    dur = date(end) - date(start) #convert to seconds - look at what this is
+    cals = calc_calories(type, dur)
+
+    workout = Workout.objects.create(user=user_id, duration=dur, calories=cals, type=type)
+    wid = workout.id
+
+    for entry in coords:
+        latlong = (entry["latitude"], entry["longitude"])
+        point = grids.latlong_to_grid(latlong)
+        # WorkoutPoint.objects.create(workout=wid, time=entry[timstamp], easting=, northing=)
+    
+
+
+def calc_calories(type, dur):
+    return 0
+
