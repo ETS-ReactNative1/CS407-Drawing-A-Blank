@@ -29,12 +29,13 @@ function Map({setOverlayVisible, setOverlayContent}) {
   const [colourSpaces, setColourSpaces] = useState(
     getInitialState().colourSpaces,
   ); //getInitialState().colourSpaces)
+  const [events, setEvents] = useState([]);
   const bottomSheetRef = useRef(null);
 
   function onRegionChange(region) {
     setRegion(region);
   }
-  
+
   function drawInk(){
     return colourSpaces.map(space => 
       <Polygon
@@ -97,8 +98,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
         longitude,
       });
     });
-    //This will get the events through the api, then update the markers state.
-    getEvents().then(result => setMarkers(result));
+    //This will get the events through the API, then update the events state.
+    getEvents().then(result => setEvents(result));
   }, []);
 
   return (
