@@ -1,11 +1,6 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
+ * For the moment, until we implement navigation, I'd say just let App.js just act as a place to test your UIs.
  */
-
 import React, {useState} from 'react';
 import Map from './src/components/mapView/Map.js';
 import {StyleSheet, View} from 'react-native';
