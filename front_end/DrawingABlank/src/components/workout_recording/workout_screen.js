@@ -68,6 +68,16 @@ class WorkoutScreen extends Component{
                 "title":"Total Distance",
                 "value":recorder.getTotalDistance().toFixed(3)+'m',
                 "key":1
+            },
+            {
+                "title":"Started At",
+                "value":recorder.date_start.toLocaleString(),
+                "key":2,
+            },
+            {
+                "title":"Finished At",
+                "value":recorder.date_end.toLocaleString(),
+                "key":3,
             }
         ];
         console.log("Returning " + JSON.stringify(result));
@@ -116,6 +126,14 @@ class WorkoutScreen extends Component{
             />
         );
     }
+    renderExtraData(){
+        if(this.state.extra_data.length == 0)
+            return null;
+        
+        return (
+            <ExtraData data={this.state.extra_data}/>
+        )
+    }
     render(){
         return(
             <ScrollView style={{paddingBottom:20}}>
@@ -129,7 +147,7 @@ class WorkoutScreen extends Component{
                     <View style={{marginTop:50, width:"90%"}}>
                         { this.getSpeedVsTimeGraph() }
                         { this.getDistanceVsTimeGraph() }
-                        <ExtraData data={this.state.extra_data}/>
+                        { this.renderExtraData() }
                     </View>
                 </View>
             </ScrollView>
