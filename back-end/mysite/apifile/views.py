@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
 from .models import Event, EventBounds, Workout, WorkoutPoint
-from datetime import datetime
+import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 # for testing only
@@ -148,14 +148,16 @@ def record_workout(request):
     if request.method == 'POST':
         data = request.data
         coords = data["coordinates"]
-        start = data["start"][:-1] #removes 'Z' in timestamp
+        start = data["start"][:-1]  # removes 'Z' in timestamp
         end = data["end"][:-1]
         workout_type = data["type"]
         for u in User.objects.filter(id=1):
             user = u
             break
-        dur = datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f') #convert to seconds - look at what this is
-        
+        # convert to seconds - look at what this is
+        dur = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start, '%Y-%m-%dT'
+                                                                                                          '%H:%M:%S.%f')
+
         cals = calc_calories(type, dur)
 
         workout = Workout.objects.create(user=user, duration=dur.total_seconds(), calories=cals, type=workout_type)
@@ -164,15 +166,16 @@ def record_workout(request):
             latlong = (entry["latitude"], entry["longitude"])
             eastnorths = grids.latlong_to_grid(latlong)
             print(eastnorths)
-            WorkoutPoint.objects.create(workout=workout, time=entry["timestamp"], easting=eastnorths[0], northing=eastnorths[1])
+            WorkoutPoint.objects.create(workout=workout, time=entry["timestamp"], easting=eastnorths[0],
+                                        northing=eastnorths[1])
 
         return Response("workout added")
-    
+
 
 @csrf_exempt
 @api_view(["POST"])
 def create_user(request):
-    if request.method=="POST":
+    if request.method == "POST":
         data = request.data
         name = data["name"]
         email = data["email"]
