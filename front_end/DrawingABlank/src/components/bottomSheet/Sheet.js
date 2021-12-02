@@ -30,7 +30,7 @@ const Sheet = forwardRef(
               key={event.id}
               onEventClick={onEventClick}
               event={event}
-              distance={calculateDistanceToUser(event.latlng)}
+              distance={calculateDistanceToUser(event.marker)}
             />
           ))}
         </BottomSheetScrollView>

@@ -61,7 +61,9 @@ export const getEvents = () => {
             name: 'Area for event ' + key,
             id: key,
           },
-          marker: getMarkerPosition(curr_object.bounds)
+          marker: getMarkerPosition(curr_object.bounds),
+          date_start: curr_object.start,
+          date_end: curr_object.end
         };
         result.push(new_object);
       }

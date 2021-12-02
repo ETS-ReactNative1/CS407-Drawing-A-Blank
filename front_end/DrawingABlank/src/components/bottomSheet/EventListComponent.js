@@ -7,7 +7,7 @@ const EventListComponent = ({event, onEventClick, distance}) => {
     <>
       <TouchableOpacity
         key={event.id}
-        onPress={() => onEventClick(event.latlng)}>
+        onPress={() => onEventClick(event.marker)}>
         <View style={styles.eventListItemContainer}>
           <View style={styles.eventTextContainer}>
             <Text

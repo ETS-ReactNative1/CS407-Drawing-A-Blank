@@ -25,10 +25,10 @@ const USER_INK_COLOUR = 'blue';
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
-  const [markers, setMarkers] = useState([]);
-  const [colourSpaces, setColourSpaces] = useState(
-    getInitialState().colourSpaces,
-  ); //getInitialState().colourSpaces)
+  //const [markers, setMarkers] = useState([]);
+  //const [colourSpaces, setColourSpaces] = useState(
+  //  getInitialState().colourSpaces,
+  //); //getInitialState().colourSpaces)
   const [events, setEvents] = useState([]);
   const bottomSheetRef = useRef(null);
 
@@ -37,36 +37,44 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }
 
   function drawInk(){
-    return colourSpaces.map(space => 
+    return events.map(space => 
       <Polygon
-            coordinates={space.coordinates}
-            strokeColor={space.strokeColor}
-            fillColor={space.fillColor}
-            strokeWidth={space.strokeWidth}
-            key={'Space'+space.id}
+            coordinates={space.bounds.coordinates}
+            strokeColor={space.bounds.strokeColor}
+            fillColor={space.bounds.fillColor}
+            strokeWidth={space.bounds.strokeWidth}
+            key={'Space'+space.bounds.id}
         />
     );
   }
 
   function drawMarkers() {
-    return markers.map((marker, index) => (
+    return events.map(event => (
       <Marker
-        key={index}
-        coordinate={marker.latlng}
-        title={marker.title}
+        key={event.id}
+        coordinate={event.marker}
+        title={event.title}
         anchor={{x: 0, y: 1}}
-        description={marker.description}
-        draggable={marker.draggable}
+        description={event.description}
         image={{
           uri: 'http://clipart-library.com/data_images/165937.png',
         }}
-        onPress={() =>
-          onEventPress(
-            'Running event #' + index,
-            'X:XX',
-            'X',
-            marker.description,
-          )
+        onPress={() =>{
+            var current_date = new Date();
+            var event_date = Date.parse(event.date_end);
+            var time_left = event_date - current_date;
+            console.log(current_date);
+            console.log(event.date_end);
+            var hours = Math.floor(time_left/(1000*3600));
+            var minutes = Math.floor(time_left/(1000*60)) % 60;
+            var seconds = Math.floor(time_left/(1000)) % 60;
+            onEventPress(
+              'Running event #' + event.id,
+              hours + ':' + minutes + ':' + (seconds < 10 ? '0' + seconds : seconds),
+              'X',
+              event.description,
+            )
+          }
         }
       />
     ));
@@ -110,7 +118,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
         region={region}
         mapType={'standard'}>
         {drawMarkers()}
-        {/*{drawInk()}*/}
         {drawInk()}
       </Animated>
 
@@ -129,7 +136,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       <Sheet
         ref={bottomSheetRef}
         // should definitely be sorted - probably when I have "real" data from backend
-        localEvents={markers}
+        localEvents={events}
         onEventClick={eventRegion =>
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }
