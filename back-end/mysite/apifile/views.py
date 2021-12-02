@@ -114,9 +114,9 @@ def add_events(_):
     ev2 = Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=20),
                                end=datetime.datetime.now() + datetime.timedelta(days=20))
     EventBounds.objects.create(event=ev1, easting=431890, northing=265592)
-    EventBounds.objects.create(event=ev1, easting=432315, northing=265866)
     EventBounds.objects.create(event=ev1, easting=431932, northing=265511)
     EventBounds.objects.create(event=ev1, easting=432360, northing=265781)
+    EventBounds.objects.create(event=ev1, easting=432315, northing=265866)
     EventBounds.objects.create(event=ev2, easting=431258, northing=265593)
     EventBounds.objects.create(event=ev2, easting=430952, northing=265558)
     EventBounds.objects.create(event=ev2, easting=430986, northing=265463)
