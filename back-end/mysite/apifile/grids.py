@@ -27,8 +27,8 @@ the bng coordinates work)
 
 
 def distance(point_a, point_b):
-    a_east, a_north = bng.to_osgb36(point_a)
-    b_east, b_north = bng.to_osgb36(point_b)
+    a_east, a_north = point_a
+    b_east, b_north = point_b
     return math.sqrt((a_east - b_east) ** 2 + (a_north - b_north) ** 2)
 
 
@@ -75,9 +75,7 @@ def latlong_to_grid(latlong):
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
 
-    # Converts to grid, specified 10 figs for accuracy.
-    x, y = transformer.transform(latlong[0], latlong[1])
-    return bng.from_osgb36((x, y), figs=10)
+    return transformer.transform(latlong[0], latlong[1])
 
 
 def bounds_of_grid(location, dist=1):
@@ -159,8 +157,6 @@ def all_grids_with_path(point_a, point_b, radius):
     """
     All grids in the path given the old and current easting and northings including the radius around the path to colour in.
     """
-    point_a = bng.to_osgb36(point_a)
-    point_b = bng.to_osgb36(point_b)
     grids_path = grids_in_path(point_a, point_b)
 
     # lots of overlapping circles so use set to remove duplicates (seems fine for efficiency for now).
@@ -184,11 +180,8 @@ def super_sample(coords, zoom_level=1):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    blGrid = latlong_to_grid(bottomLeft)
-    trGrid = latlong_to_grid(topRight)
-
-    lower_east, lower_north = bng.to_osgb36(blGrid)
-    upper_east, upper_north = bng.to_osgb36(trGrid)
+    lower_east, lower_north = latlong_to_grid(bottomLeft)
+    upper_east, upper_north = latlong_to_grid(topRight)
 
     # get the differences
     east_diff = abs(upper_east - lower_east)
@@ -196,8 +189,8 @@ def super_sample(coords, zoom_level=1):
     print(east_diff, north_diff)
 
     # ensure both E and N are both divisible by zoom_level
-    padding_E = (east_diff) % zoom_level
-    padding_N = (north_diff) % zoom_level
+    padding_E = east_diff % zoom_level
+    padding_N = north_diff % zoom_level
     tiles_E = Grid.objects.filter(northing__range=(lower_north, upper_north + padding_N),
                                   easting__range=(lower_east, upper_east + padding_E))
 
@@ -258,11 +251,9 @@ def super_sample_alt(coords, zoom_level=1):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    blGrid = latlong_to_grid(bottomLeft)
-    trGrid = latlong_to_grid(topRight)
+    lower = latlong_to_grid(bottomLeft)
+    upper = latlong_to_grid(topRight)
 
-    lower = bng.to_osgb36(blGrid)
-    upper = bng.to_osgb36(trGrid)
     lower_east = round(lower[0])
     lower_north = round(lower[1])
     upper_east = round(upper[0])
@@ -312,11 +303,8 @@ def grids_visible(coords):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    blGrid = latlong_to_grid(bottomLeft)
-    trGrid = latlong_to_grid(topRight)
-
-    lower_east, lower_north = bng.to_osgb36(blGrid)
-    upper_east, upper_north = bng.to_osgb36(trGrid)
+    lower_east, lower_north = latlong_to_grid(bottomLeft)
+    upper_east, upper_north = latlong_to_grid(topRight)
 
     allCoords = []
 
@@ -341,11 +329,9 @@ def grids_visible_alt(coords):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    blGrid = latlong_to_grid(bottomLeft)
-    trGrid = latlong_to_grid(topRight)
+    lower = latlong_to_grid(bottomLeft)
+    upper = latlong_to_grid(topRight)
 
-    lower = bng.to_osgb36(blGrid)
-    upper = bng.to_osgb36(trGrid)
     lower_east = round(lower[0])
     lower_north = round(lower[1])
     upper_east = round(upper[0])

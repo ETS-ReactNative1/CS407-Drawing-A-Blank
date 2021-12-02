@@ -137,26 +137,25 @@ def current_events(_):
 
     return JsonResponse(ret_val)
 
+
 def record_workout(self, request):
     data = request.data
     coords = data["coordinates"]
     start = data["start"]
     end = data["end"]
-    type = data["type"]
+    workout_type = data["type"]
     user_id = data["uid"]
-    dur = date(end) - date(start) #convert to seconds - look at what this is
-    cals = calc_calories(type, dur)
+    dur = date(end) - date(start)  # convert to seconds - look at what this is
+    cals = calc_calories(workout_type, dur)
 
-    workout = Workout.objects.create(user=user_id, duration=dur, calories=cals, type=type)
+    workout = Workout.objects.create(user=user_id, duration=dur, calories=cals, type=workout_type)
     wid = workout.id
 
     for entry in coords:
         latlong = (entry["latitude"], entry["longitude"])
-        eastnorths = grids.latlong_to_grid(latlong)
-        WorkoutPoint.objects.create(workout=wid, time=entry[timstamp], easting=eastnorths[0], northing=eastnorths[1])
-    
+        easting, northing = grids.latlong_to_grid(latlong)
+        WorkoutPoint.objects.create(workout=wid, time=entry["timestamp"], easting=easting, northing=northing)
 
 
-def calc_calories(type, dur):
+def calc_calories(workout_type, dur):
     return 0
-
