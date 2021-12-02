@@ -47,6 +47,10 @@ class WorkoutScreen extends Component{
         for(var c=0;c<recorder.coordinates.length;c++){
             result+="("+recorder.coordinates[c].latitude+","+recorder.coordinates[c].longitude+") at " + recorder.coordinates[c].timestamp+"\n";
         }
+        result += "\nAverage speed:"+recorder.getAverageSpeed()+"m/s\n";
+        result += "\Total distance:"+recorder.getTotalDistance()+"m\n";
+        result += "Speed vs Time JSON:" + JSON.stringify(recorder.getSpeedvsTime()) + "\n";
+        result += "Distance vs Time JSON:" + JSON.stringify(recorder.getDistanceVsTime()) + "\n";
         return result;
     }
     updateButton(){
