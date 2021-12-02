@@ -19,7 +19,7 @@ export const request = (req_method,req_endpoint,req_queries,req_body) => {
         full_URL += req_queries;
     }
     return fetch(full_URL,{
-        method=req_method,
+        method:req_method,
         headers:{
             'Accept':'application/json',
             'Content-Type':'application/json'
