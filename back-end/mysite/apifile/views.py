@@ -151,8 +151,8 @@ def record_workout(request):
         start = data["start"][:-1] #removes 'Z' in timestamp
         end = data["end"][:-1]
         workout_type = data["type"]
-        for user in User.objects.filter(id=1):
-            user = user
+        for u in User.objects.filter(id=1):
+            user = u
             break
         dur = datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.strptime(start, '%Y-%m-%dT%H:%M:%S.%f') #convert to seconds - look at what this is
         
