@@ -76,6 +76,18 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
+# LOCAL CONNECTION
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
+    }
+}
+
+
+""" 
+# DCS CONNECTION
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -85,6 +97,7 @@ DATABASES = {
         'HOST': 'mysql.dcs.warwick.ac.uk',
     }
 }
+"""
 
 
 # Password validation

@@ -40,8 +40,6 @@ class PlayerLocation(viewsets.ViewSet):
 
 
 class PlayerPath(viewsets.ViewSet):
-    
-
     """
     {
     "current_coords": [52.286849 , -1.5329895],
@@ -51,15 +49,14 @@ class PlayerPath(viewsets.ViewSet):
     }
     """
 
-
     def create(self, request):
         playerInfo = request.data
         current_coords = playerInfo["current_coords"]
         old_coords = playerInfo["old_coords"]
         colour = playerInfo["colour"]
         time_elapsed = playerInfo["time_elapsed"]
-        
-        current_grid= grids.latlong_to_grid(current_coords)
+
+        current_grid = grids.latlong_to_grid(current_coords)
         old_grid = grids.latlong_to_grid(old_coords)
         speed = grids.calculate_speed(current_grid, old_grid, time_elapsed)
         radius = grids.calculate_radius(speed)  # calculate radius depending on speed
@@ -108,13 +105,10 @@ class LatlongsOfGrid(viewsets.ViewSet):
 
 # test view to add events to db
 def add_events(_):
-    Event.objects.create(start=datetime.datetime.now(),
-                         end=datetime.datetime.now() + datetime.timedelta(days=10))
-    Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=4),
-                         end=datetime.datetime.now() + datetime.timedelta(days=4))
-    evs = Event.objects.all()
-    ev1 = evs[0]
-    ev2 = evs[1]
+    ev1 = Event.objects.create(start=datetime.datetime.now(),
+                               end=datetime.datetime.now() + datetime.timedelta(days=50))
+    ev2 = Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=20),
+                               end=datetime.datetime.now() + datetime.timedelta(days=20))
     EventBounds.objects.create(event=ev1, easting=431890, northing=265592)
     EventBounds.objects.create(event=ev1, easting=432315, northing=265866)
     EventBounds.objects.create(event=ev1, easting=431932, northing=265511)
