@@ -1,3 +1,5 @@
+import { submit_workout } from '../../api/api_workout';
+
 const haversine = require('haversine');
 
 export class Workout{
@@ -17,9 +19,11 @@ export class Workout{
     }
     stopWorkout(){
         this.date_end = new Date();
+        console.log(JSON.stringify(this.toJSON()));
+        submit_workout(this.toJSON());
     }
     toJSON(){
-        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk", "uid":"0"};
+        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk", "uid":0};
     }
     /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.
