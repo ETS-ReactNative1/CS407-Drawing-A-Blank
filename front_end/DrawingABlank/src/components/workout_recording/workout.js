@@ -1,6 +1,7 @@
 const haversine = require('haversine');
 
 export class Workout{
+    //In the future, this constructor needs to accept a user id or JWT from secret storage.
     constructor(){
         this.date_start = new Date();
         this.date_end = new Date();
@@ -18,7 +19,7 @@ export class Workout{
         this.date_end = new Date();
     }
     toJSON(){
-        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates};
+        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk", "uid":"0"};
     }
     /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.

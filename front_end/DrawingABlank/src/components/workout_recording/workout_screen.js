@@ -1,9 +1,11 @@
 import React, {Component, useState} from 'react';
 import { Button, StyleSheet, Text, ToastAndroid, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
 import { Workout } from './workout';
 import { styles } from './workout_style';
+import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
+import ExtraData from '../profile/personal_stats/extra_data.js';
 
 const recorder = new Workout();
 
@@ -12,7 +14,9 @@ class WorkoutScreen extends Component{
     state = {
         recording : false,
         button_text: "Start workout",
-        detail_text: "No workout data",
+        extra_data: [],
+        speed_time: [],
+        distance_time: [],
         debug_text: "",
     };
     updateDebugText(coords){
@@ -53,6 +57,22 @@ class WorkoutScreen extends Component{
         result += "Distance vs Time JSON:" + JSON.stringify(recorder.getDistanceVsTime()) + "\n";
         return result;
     }
+    getExtraData(){
+        var result = [
+            {
+                "title":"Average Speed",
+                "value":recorder.getAverageSpeed().toFixed(3)+'m/s',
+                "key":0
+            },
+            {
+                "title":"Total Distance",
+                "value":recorder.getTotalDistance().toFixed(3)+'m',
+                "key":1
+            }
+        ];
+        console.log("Returning " + JSON.stringify(result));
+        return result;
+    }
     updateButton(){
         if(!this.state.recording){
             recorder.startWorkout();
@@ -66,24 +86,38 @@ class WorkoutScreen extends Component{
             this.setState({
                 recording : false,
                 button_text : "Start workout",
-                detail_text : this.getDetailText()
-            })
-            console.log(recorder.toJSON());
+                extra_data: this.getExtraData(),
+                speed_time: recorder.getSpeedvsTime(),
+                distance_time: recorder.getDistanceVsTime()
+            });
         }
+    }
+    getSpeedVsTimeGraph(){
+        if(this.state.speed_time.length == 0)
+            return null;
+        return (
+            <WorkoutLineGraph 
+                graphTitle="Speed (m/s) vs. Time (s)"
+                yData={this.state.speed_time.map(value => value.speed)}
+                xFunction={(value, index) => this.state.speed_time[index].time.toFixed(1)}
+                height={250}
+            />
+        );
     }
     render(){
         return(
-            <View style={{alignItems:"center",marginTop:100}}>
-                <TouchableOpacity style={styles.workout_button}>
-                    <Text style={styles.workout_button_text} onPress={() => this.updateButton()}>{this.state.button_text}</Text>
-                </TouchableOpacity>
-                <View style={{marginTop:100}}>
-                    <Text>
-                        Debug text: {this.state.debug_text}
-                    </Text>
-                    <Text>
-                        {this.state.detail_text}
-                    </Text>
+            <View>
+                <View>
+                    <Text>Debug Text: {this.state.debug_text}</Text>
+                </View>
+                <View style={{alignItems:"center",marginTop:20}}>
+                    <TouchableOpacity style={styles.workout_button}>
+                        <Text style={styles.workout_button_text} onPress={() => this.updateButton()}>{this.state.button_text}</Text>
+                    </TouchableOpacity>
+                    <View style={{marginTop:100, width:"90%"}}>
+                        { this.getSpeedVsTimeGraph() }
+                        <ExtraData data={this.state.extra_data}/>
+                    </View>
                 </View>
             </View>
         )
