@@ -104,9 +104,21 @@ class WorkoutScreen extends Component{
             />
         );
     }
+    getDistanceVsTimeGraph(){
+        if(this.state.distance_time.length == 0)
+            return null;
+        return (
+            <WorkoutLineGraph 
+                graphTitle="Distance (m) vs. Time (s)"
+                yData={this.state.distance_time.map(value => value.distance)}
+                xFunction={(value, index) => this.state.distance_time[index].time.toFixed(1)}
+                height={250}
+            />
+        );
+    }
     render(){
         return(
-            <View>
+            <ScrollView style={{paddingBottom:20}}>
                 <View>
                     <Text>Debug Text: {this.state.debug_text}</Text>
                 </View>
@@ -114,12 +126,13 @@ class WorkoutScreen extends Component{
                     <TouchableOpacity style={styles.workout_button}>
                         <Text style={styles.workout_button_text} onPress={() => this.updateButton()}>{this.state.button_text}</Text>
                     </TouchableOpacity>
-                    <View style={{marginTop:100, width:"90%"}}>
+                    <View style={{marginTop:50, width:"90%"}}>
                         { this.getSpeedVsTimeGraph() }
+                        { this.getDistanceVsTimeGraph() }
                         <ExtraData data={this.state.extra_data}/>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         )
     }
 }
