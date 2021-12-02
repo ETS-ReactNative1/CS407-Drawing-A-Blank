@@ -68,14 +68,14 @@ def grid_to_latlong(grid):
 
 def latlong_to_grid(latlong):
     """
-
     Function input: A tuple containing converted latitude and longitude (both floats): Requires a couple of decimal
     places for accuracy Function output: Grid reference of BNG as a easting northing tuple.
     """
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
+    grid = transformer.transform(latlong[0], latlong[1])
 
-    return transformer.transform(latlong[0], latlong[1])
+    return round(grid[0]), round(grid[1])
 
 
 def bounds_of_grid(location, dist=1):
@@ -251,13 +251,8 @@ def super_sample_alt(coords, zoom_level=1):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    lower = latlong_to_grid(bottomLeft)
-    upper = latlong_to_grid(topRight)
-
-    lower_east = round(lower[0])
-    lower_north = round(lower[1])
-    upper_east = round(upper[0])
-    upper_north = round(upper[1])
+    lower_east, lower_north = latlong_to_grid(bottomLeft)
+    upper_east, upper_north = latlong_to_grid(topRight)
 
     # get the differences
     east_diff = abs(upper_east - lower_east)
@@ -329,13 +324,8 @@ def grids_visible_alt(coords):
     bottomLeft = coords[0]
     topRight = coords[2]
 
-    lower = latlong_to_grid(bottomLeft)
-    upper = latlong_to_grid(topRight)
-
-    lower_east = round(lower[0])
-    lower_north = round(lower[1])
-    upper_east = round(upper[0])
-    upper_north = round(upper[1])
+    lower_east, lower_north = latlong_to_grid(bottomLeft)
+    upper_east, upper_north = latlong_to_grid(topRight)
 
     bounds = np.zeros(shape=(upper_east - lower_east + 2, upper_north - lower_north + 2, 2))
     colours = np.zeros(shape=(upper_east - lower_east + 1, upper_north - lower_north + 1), dtype="S6")
