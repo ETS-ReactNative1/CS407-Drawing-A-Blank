@@ -9,7 +9,8 @@ export class Workout{
         this.date_start = new Date();
     }
     addCoordinate(latitude,longitude){
-        this.coordinates.push({"latitude":latitude,"longitude":longitude});
+        var time = new Date();
+        this.coordinates.push({"latitude":latitude,"longitude":longitude, "timestamp":time});
     }
     stopWorkout(){
         this.date_end = new Date();
