@@ -1,8 +1,11 @@
+import operator
+from functools import reduce
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
-from .models import Event, EventBounds, Workout, WorkoutPoint
+from .models import Event, EventBounds, Workout, WorkoutPoint, Grid
 import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
@@ -43,15 +46,15 @@ class PlayerLocation(viewsets.ViewSet):
         return Response(allGrids)
 
 
-class PlayerPath(viewsets.ViewSet):
-    """
+"""class PlayerPath(viewsets.ViewSet):
+    
     {
     "current_coords": [52.286849 , -1.5329895],
     "old_coords": [52.285951 , -1.5329989],
     "colour":  "red",
     "time_elapsed": 18
     }
-    """
+    
 
     def create(self, request):
         playerInfo = request.data
@@ -64,13 +67,12 @@ class PlayerPath(viewsets.ViewSet):
         old_grid = grids.latlong_to_grid(old_coords)
         speed = grids.calculate_speed(current_grid, old_grid, time_elapsed)
         radius = grids.calculate_radius(speed)  # calculate radius depending on speed
-        print(radius)
 
         allGrids = grids.all_grids_with_path(old_grid, current_grid, radius)
 
         # update colour database.
 
-        return Response(allGrids)
+        return Response(allGrids)"""
 
 
 class LatlongsOfGrid(viewsets.ViewSet):
@@ -147,13 +149,13 @@ def current_events(_):
 def record_workout(request):
     if request.method == 'POST':
         data = request.data
-        coords = data["coordinates"]
+        waypoints = data["coordinates"]
         start = data["start"][:-1]  # removes 'Z' in timestamp
         end = data["end"][:-1]
         workout_type = data["type"]
-        for u in User.objects.filter(id=1):
-            user = u
-            break
+        uid = data["uid"]
+        user = User.objects.get(id=uid)
+
         # convert to seconds - look at what this is
         dur = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start, '%Y-%m-%dT'
                                                                                                           '%H:%M:%S.%f')
@@ -162,12 +164,32 @@ def record_workout(request):
 
         workout = Workout.objects.create(user=user, duration=dur.total_seconds(), calories=cals, type=workout_type)
 
-        for entry in coords:
+        for entry in waypoints:
             latlong = (entry["latitude"], entry["longitude"])
-            eastnorths = grids.latlong_to_grid(latlong)
-            print(eastnorths)
-            WorkoutPoint.objects.create(workout=workout, time=entry["timestamp"], easting=eastnorths[0],
-                                        northing=eastnorths[1])
+            easting, northing = grids.latlong_to_grid(latlong)
+            timestamp = datetime.datetime.strptime(entry["timestamp"][:-1], '%Y-%m-%dT%H:%M:%S.%f')
+            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing)
+
+        bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
+        team = workout.player.team
+        for i in range(1, len(bounds)):
+            speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
+                                          (bounds[i - 1].easting, bounds[i - 1].northing),
+                                          (bounds[i].time - bounds[i - 1].time).total_seconds())
+            # calculate radius depending on speed
+            radius = grids.calculate_radius(speed)
+            allGrids = grids.all_grids_with_path((bounds[i].easting, bounds[i].northing),
+                                                 (bounds[i - 1].easting, bounds[i - 1].northing), radius)
+            tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
+            checkedTiles = []
+            for tile in tiles:
+                checkedTiles.append((tile.easting, tile.northing))
+                if tile.check_tile_override(bounds[i].time):
+                    tile.team = team
+                    tile.time = bounds[i].time
+                    tile.save()
+            for tile in allGrids - checkedTiles:
+                Grid.objects.create(easting=tile.easting, northing=tile.northing, team=team, time=bounds[i].time)
 
         return Response("workout added")
 
