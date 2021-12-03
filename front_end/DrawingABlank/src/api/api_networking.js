@@ -1,9 +1,9 @@
 //IMPORTANT: YOU NEED TO CHANGE THIS TO YOUR LOCAL IP ADDRESS WHEN RUNNING THE BACKEND LOCALLY.
 //TEMPORARY WORKAROUND UNTIL WE CAN GET CONTINUOUS DEPLOYMENT ON A SERVER (pls dcs gib server)
 const API_HOSTNAME = 'drawab.dcs.warwick.ac.uk';
-const API_PORT_NUMBER = '80';
+const API_PORT_NUMBER = '443';
 const API_SUFFIX = '/'; //Example only
-const API_URL = 'http://' + API_HOSTNAME + ':' + API_PORT_NUMBER + API_SUFFIX;
+const API_URL = 'https://' + API_HOSTNAME + ':' + API_PORT_NUMBER + API_SUFFIX;
 
 /**
  * Sends a request to the API at a specified endpoint and returns an async handler. This has not been tested yet, just writing this so that it is here.

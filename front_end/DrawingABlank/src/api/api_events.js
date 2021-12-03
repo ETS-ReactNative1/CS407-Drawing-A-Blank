@@ -1,7 +1,5 @@
 import {request} from './api_networking.js';
 
-const OSPoint = require('ospoint');
-
 /**
  * 
  * @param {JSON Object} bounds | The bounds of the event which will be used to calculate a centre 
