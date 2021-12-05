@@ -19,7 +19,8 @@ import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
 import ExampleMarkers from '../events/resources/ExampleMarkers';
 import { Workout } from '../workout_recording/workout';
-import WorkoutPostStats from '../workout_recording/workout_post_stats';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationRouteContext } from '@react-navigation/core';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.005, longitudeDelta: 0.005};
@@ -32,7 +33,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //const [colourSpaces, setColourSpaces] = useState(
   //  getInitialState().colourSpaces,
   //); //getInitialState().colourSpaces)
-
+  const navigation = useNavigation();
   
   const workout_button_start = "Start Workout";
   const workout_button_stop = "Stop Workout";
@@ -103,6 +104,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
     setOverlayVisible(true);
   }
 
+  function changeToStats(){
+    navigation.navigate('post_workout_stats',{recorder:recorder});
+  }
+
   useEffect(() => {
     // Get User permission for location tracking, and initialize map to listen
     // if user permission not given, map will default to initial state - could change to anything e.g. dont render map at all nd show hser dialog
@@ -151,7 +156,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
             recorder.stopWorkout();
             set_workout_active(false);
             set_workout_button_text(workout_button_start);
-            this.props.navigation.navigate(()=>{<WorkoutPostStats recorder={recorder}/>})
+            changeToStats();
           }
         }}
         workoutText={workout_button_text}

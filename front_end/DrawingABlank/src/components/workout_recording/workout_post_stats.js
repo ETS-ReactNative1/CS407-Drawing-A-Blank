@@ -8,7 +8,7 @@ import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import ExtraData from '../profile/personal_stats/extra_data.js';
 
 class WorkoutPostStats extends Component{
-    recorder = this.props.recorder;
+    recorder = this.props.route.params.recorder;
     state = {
         recording : false,
         button_text: "Start workout",
@@ -18,6 +18,9 @@ class WorkoutPostStats extends Component{
         debug_text: "",
     };
     componentDidMount(){
+    }
+    switchBackToMap(){
+        this.props.navigation.navigate('map_view_complete');
     }
     getExtraData(){
         var result = [
@@ -94,8 +97,8 @@ class WorkoutPostStats extends Component{
     }
     render(){
         return(
-            <ScrollView style={{paddingBottom:20}}>
-                <View style={{alignItems:"center",marginTop:20}}>
+            <ScrollView style={{paddingBottom:40}}>
+                <View style={{alignItems:"center",marginTop:20, paddingBottom:10}}>
                     <Text style={styles.workout_button_text}>Post-Workout Summary</Text>
                     <Text style={{fontSize:16}}>Workout completed! Good job, your workout has been saved to Fresgo's servers. Here are your post-workout statistics.</Text>
                     <View style={{marginTop:20, width:"90%"}}>
@@ -103,6 +106,9 @@ class WorkoutPostStats extends Component{
                         { this.getDistanceVsTimeGraph() }
                         { this.renderExtraData() }
                     </View>
+                    <TouchableOpacity style={styles.workout_button}>
+                        <Text style={styles.workout_button_text} onPress={() => this.switchBackToMap()}>Continue</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         )
