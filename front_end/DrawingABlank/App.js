@@ -10,23 +10,15 @@ import {styles} from './src/components/mapView/style';
 import EventDetails from './src/components/events/EventDetails';
 import ExampleOverlay from './src/components/events/ExampleOverlay';
 import Overlay from './src/containers/Overlay';
+import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
+import { Workout } from './src/components/workout_recording/workout.js';
 
 export default function App() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   // use setOverlayContent to change the content of the overlay
   const [overlayContent, setOverlayContent] = useState();
-
+  const recorder = new Workout();
   return (
-    <View style={styles.mapContainer}>
-      <Map
-        setOverlayVisible={setOverlayVisible}
-        setOverlayContent={setOverlayContent}
-      />
-      <Overlay
-        visible={overlayVisible}
-        setVisible={setOverlayVisible}
-        children={overlayContent}
-      />
-    </View>
+    <WorkoutPostStats recorder={recorder}/>
   );
 }
