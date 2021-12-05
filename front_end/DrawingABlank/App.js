@@ -1,17 +1,6 @@
 /**
  * For the moment, until we implement navigation, I'd say just let App.js just act as a place to test your UIs.
  */
-<<<<<<< HEAD
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import WorkoutScreen from './src/components/workout_recording/workout_screen';
-
-export default function App() {
-  return(
-    <WorkoutScreen/>
-=======
 import React, {useState} from 'react';
 import Map from './src/components/mapView/Map.js';
 import {StyleSheet, View} from 'react-native';
@@ -39,6 +28,5 @@ export default function App() {
         children={overlayContent}
       />
     </View>
->>>>>>> frontend_api_events
   );
 }
