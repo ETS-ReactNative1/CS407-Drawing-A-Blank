@@ -14,7 +14,7 @@ class Team(models.Model):
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
-    time = models.DateTimeField(default=timezone.now())
+    time = models.DateTimeField()
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
 
