@@ -19,6 +19,7 @@ import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
 import ExampleMarkers from '../events/resources/ExampleMarkers';
 import { Workout } from '../workout_recording/workout';
+import WorkoutPostStats from '../workout_recording/workout_post_stats';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.005, longitudeDelta: 0.005};
@@ -150,6 +151,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
             recorder.stopWorkout();
             set_workout_active(false);
             set_workout_button_text(workout_button_start);
+            this.props.navigation.navigate(()=>{<WorkoutPostStats recorder={recorder}/>})
           }
         }}
         workoutText={workout_button_text}
