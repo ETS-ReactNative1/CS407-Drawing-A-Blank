@@ -23,8 +23,6 @@ class GridTestCase(TestCase):
 
     def test_grid_windowing(self):
         out = grids.grids_visible([[52.285296, -1.549612], [0, 0], [52.289372, -1.530621], [0, 0]])
-        for row in out:
-            print(str(row))
         self.assertEqual(len(out), 7)
 
     def test_complex_grid_windowing(self):
