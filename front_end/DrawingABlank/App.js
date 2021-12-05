@@ -5,20 +5,19 @@ import React, {useState} from 'react';
 import Map from './src/components/mapView/Map.js';
 import {StyleSheet, View} from 'react-native';
 
-import OverlayDemo from './src/containers/OverlayDemo';
-import {styles} from './src/components/mapView/style';
-import EventDetails from './src/components/events/EventDetails';
-import ExampleOverlay from './src/components/events/ExampleOverlay';
-import Overlay from './src/containers/Overlay';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
-import { Workout } from './src/components/workout_recording/workout.js';
+import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [overlayVisible, setOverlayVisible] = useState(false);
-  // use setOverlayContent to change the content of the overlay
-  const [overlayContent, setOverlayContent] = useState();
-  const recorder = new Workout();
   return (
-    <WorkoutPostStats recorder={recorder}/>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="map_view_complete" screenOptions={{headerShown:false}}>
+        <Stack.Screen name="map_view_complete" component={MapViewCompleteComponent}/>
+        <Stack.Screen name="post_workout_stats" component={WorkoutPostStats}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
