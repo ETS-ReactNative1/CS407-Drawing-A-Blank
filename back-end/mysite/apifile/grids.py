@@ -100,9 +100,7 @@ def bounds_of_grid(location, dist=1):
         new_eastings = easting + grids[i][0]
         new_northings = northing + grids[i][1]
 
-        # convert to 2 letter + 10 digit form to convert to latlong
-        new_grid = bng.from_osgb36((new_eastings, new_northings), figs=10)
-        coordinates.append(grid_to_latlong(new_grid))
+        coordinates.append(grid_to_latlong((new_eastings, new_northings)))
 
     return coordinates
 

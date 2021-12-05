@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
-from .models import Event, EventBounds, Workout, WorkoutPoint, Grid
+from .models import Event, EventBounds, Workout, WorkoutPoint, Grid, Player, Team
 import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
@@ -154,7 +154,7 @@ def record_workout(request):
         end = data["end"][:-1]
         workout_type = data["type"]
         uid = data["uid"]
-        user = User.objects.get(id=uid)
+        player = Player.objects.get(user__id=uid)
 
         # convert to seconds - look at what this is
         dur = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start, '%Y-%m-%dT'
@@ -162,7 +162,7 @@ def record_workout(request):
 
         cals = calc_calories(type, dur)
 
-        workout = Workout.objects.create(user=user, duration=dur.total_seconds(), calories=cals, type=workout_type)
+        workout = Workout.objects.create(player=player, duration=dur.total_seconds(), calories=cals, type=workout_type)
 
         for entry in waypoints:
             latlong = (entry["latitude"], entry["longitude"])
@@ -202,7 +202,12 @@ def create_user(request):
         name = data["name"]
         email = data["email"]
         pswd = data["pass"]
-        User.objects.create_user(name, email, pswd)
+        user = User.objects.create_user(name, email, pswd)
+        if len(Team.objects.all()) == 0:
+            team = Team.objects.create(name="team1", colour="FF0000")
+        else:
+            team = Team.objects.get(name="team1")
+        Player.objects.create(user=user, team=team)
 
         return Response("user added")
 
