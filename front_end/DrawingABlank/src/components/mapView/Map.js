@@ -18,7 +18,9 @@ import {getEvents} from '../../api/api_events';
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
 import ExampleMarkers from '../events/resources/ExampleMarkers';
+import { Workout } from '../workout_recording/workout';
 
+const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.005, longitudeDelta: 0.005};
 const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
 const USER_INK_COLOUR = 'blue';
@@ -29,9 +31,16 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //const [colourSpaces, setColourSpaces] = useState(
   //  getInitialState().colourSpaces,
   //); //getInitialState().colourSpaces)
+
+  
+  const workout_button_start = "Start Workout";
+  const workout_button_stop = "Stop Workout";
+
+  const [workout_button_text, set_workout_button_text] = useState(workout_button_start);
+  const [workout_active, set_workout_active] = useState(false);
+
   const [events, setEvents] = useState([]);
   const bottomSheetRef = useRef(null);
-
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -130,8 +139,20 @@ function Map({setOverlayVisible, setOverlayContent}) {
           bottomSheetRef.current.expand();
         }}
         startWorkout={() => {
-          console.log('Starting Workout...');
+          if(!workout_active){
+            console.log('Starting Workout...');
+            recorder.startWorkout();
+            Geolocation.getCurrentPosition(({coords}) => recorder.addCoordinate(coords.latitude,coords.longitude));
+            set_workout_active(true);
+            set_workout_button_text(workout_button_stop);
+          }else{
+            console.log('Stopping Workout...');
+            recorder.stopWorkout();
+            set_workout_active(false);
+            set_workout_button_text(workout_button_start);
+          }
         }}
+        workoutText={workout_button_text}
       />
       <Sheet
         ref={bottomSheetRef}
@@ -161,6 +182,9 @@ const setupGeolocation = async _setRegion => {
     const watchId = Geolocation.watchPosition(
       ({coords}) => {
         _setRegion(coords);
+        if(recorder.recording){
+          recorder.addCoordinate(coords.latitude,coords.longitude);
+        }
       },
       e => {
         console.log(e);
