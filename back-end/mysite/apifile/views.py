@@ -241,6 +241,21 @@ def grid_window(request):
 
 @csrf_exempt
 @api_view(["POST"])
+def super_window(request):
+    if request.method == "POST":
+        data = request.data
+        bl = data['bottom_left']
+        br = data['bottom_right']
+        tr = data['top_right']
+        tl = data['top_left']
+        zoom = data['zoom']
+
+        allGrids = grids.super_sample_alt([bl, br, tr, tl], zoom_level=zoom)
+        return Response(allGrids)
+
+
+@csrf_exempt
+@api_view(["POST"])
 def populate_convert(request):
     if request.method == "POST":
         coords = request.data
