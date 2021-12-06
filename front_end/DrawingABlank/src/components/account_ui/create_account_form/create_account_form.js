@@ -61,7 +61,7 @@ class CreateAccountScreen extends Component{
         return(
             <View style={styles.mainContainer}>
                 <View style={styles.titleBox}>
-                    <Text style={styles.title}>Drawing A Blank</Text>
+                    <Text style={styles.title}>Fresgo!</Text>
                 </View>
                 <View style={styles.description}>
                     <Text style={styles.title}>Create an account</Text>

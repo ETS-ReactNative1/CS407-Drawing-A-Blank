@@ -25,6 +25,7 @@ import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationRouteContext} from '@react-navigation/core';
 import setupGeolocation from './geoLocation';
+import { getGrids } from '../../api/api_grids';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
@@ -194,8 +195,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
     );
 
     getEvents().then(result => setEvents(result));
-   
-  }, []);
+    }, []);
 
   return (
     <View style={styles.mapContainer}>
