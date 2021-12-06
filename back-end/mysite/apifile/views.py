@@ -180,10 +180,13 @@ def record_workout(request):
             radius = grids.calculate_radius(speed)
             allGrids = grids.all_grids_with_path((bounds[i].easting, bounds[i].northing),
                                                  (bounds[i - 1].easting, bounds[i - 1].northing), radius)
-            tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
-            checkedTiles = []
+            if len(allGrids) > 0:
+                tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
+            else:
+                tiles = []
+            checkedTiles = set()
             for tile in tiles:
-                checkedTiles.append((tile.easting, tile.northing))
+                checkedTiles.add((tile.easting, tile.northing))
                 if tile.check_tile_override(bounds[i].time):
                     tile.team = team
                     tile.time = bounds[i].time
