@@ -9,8 +9,8 @@ from django.utils import timezone
 class CoordsConvert(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
-    latitude = models.IntegerField()
-    longitude = models.IntegerField()
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     class Meta:
         unique_together = (("easting", "northing"), ("latitude", "longitude"),)
