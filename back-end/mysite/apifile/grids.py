@@ -275,14 +275,14 @@ def super_sample_alt(coords, zoom_level=1):
                                 GROUP BY north, east
                                 HAVING east >= ''' + str(lower_east) + '''/''' + str(zoom_level) +
                              ''' AND east <= ''' + str(upper_east) + '''/''' + str(zoom_level) +
-                             ''' AND north >= ''' + str(lower_north)  + '''/''' + str(zoom_level) +
+                             ''' AND north >= ''' + str(lower_north) + '''/''' + str(zoom_level) +
                              ''' AND north <= ''' + '''/''' + str(zoom_level))
 
     all_coords = []
     for tile in tiles:
-        all_coords.append({"colour": tile.colour,
-                           "bounds": bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level),
-                                                    dist=zoom_level)})
+        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), dist=zoom_level)
+        if bounds:
+            all_coords.append({"colour": tile.colour, "bounds": bounds})
     return all_coords
 
 
