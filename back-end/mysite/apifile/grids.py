@@ -261,22 +261,22 @@ def super_sample_alt(coords, zoom_level=1):
     upper_north = upper_north + north_diff % zoom_level
 
     tiles = Grid.objects.raw('''SELECT
-                                    id,
-                                    (northing / ''' + str(zoom_level) + ''') as north,
-                                    (easting / ''' + str(zoom_level) + ''') as east,
-                                    (SELECT colour
-                                    FROM apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id
-                                    WHERE north = (northing / ''' + str(zoom_level) + ''') AND east = (easting / ''' +
+                                        id,
+                                        (northing / ''' + str(zoom_level) + ''') as north,
+                                        (easting / ''' + str(zoom_level) + ''') as east,
+                                        (SELECT colour
+                                        FROM apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id
+                                        WHERE north = (northing / ''' + str(
+        zoom_level) + ''') AND east = (easting / ''' +
                              str(zoom_level) + ''')
-                                    GROUP BY colour
-                                    ORDER BY COUNT(*) DESC
-                                    LIMIT 1) as colour
-                                FROM apifile_grid 
-                                GROUP BY north, east
-                                HAVING east >= ''' + str(lower_east) + '''/''' + str(zoom_level) +
-                             ''' AND east <= ''' + str(upper_east) + '''/''' + str(zoom_level) +
-                             ''' AND north >= ''' + str(lower_north) + '''/''' + str(zoom_level) +
-                             ''' AND north <= ''' + str(upper_north) + '''/''' + str(zoom_level))
+                                        GROUP BY colour
+                                        ORDER BY COUNT(*) DESC
+                                        LIMIT 1) as colour
+                                    FROM apifile_grid 
+                                    WHERE easting >= ''' + str(lower_east) + ''' AND easting <= ''' + str(upper_east)
+                             + ''' AND northing >= ''' + str(lower_north) + ''' AND northing <= '''
+                             + str(upper_north) + '''
+                                    GROUP BY north, east''')
 
     all_coords = []
     for tile in tiles:
