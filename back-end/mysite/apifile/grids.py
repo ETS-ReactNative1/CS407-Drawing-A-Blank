@@ -94,12 +94,12 @@ def bounds_of_grid(location, dist=1):
     tiles = CoordsConvert.objects.filter(Q(easting=easting, northing=northing) |
                                          Q(easting=easting + dist, northing=northing) |
                                          Q(easting=easting, northing=northing + dist) |
-                                         Q(easting=easting + dist, northing=northing + dist)).order_by(easting,
-                                                                                                       northing)
+                                         Q(easting=easting + dist, northing=northing + dist)).order_by("easting",
+                                                                                                       "northing")
     if len(tiles) != 4:
         return []
-    return [(tiles[0].easting, tiles[0].northing), (tiles[1].easting, tiles[1].northing),
-            (tiles[3].easting, tiles[3].northing), (tiles[2].easting, tiles[2].northing)]
+    return [(tiles[0].latitude, tiles[0].longitude), (tiles[1].latitude, tiles[1].longitude),
+            (tiles[3].latitude, tiles[3].longitude), (tiles[2].latitude, tiles[2].longitude)]
 
 
 def points_in_circle_np(radius, x0=0, y0=0):
