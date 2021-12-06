@@ -2,8 +2,9 @@ import math
 import bng
 import numpy as np
 from bresenham import bresenham
+from django.db.models import Q
 from pyproj import Transformer
-from .models import Grid
+from .models import Grid, CoordsConvert
 from PIL import ImageColor
 
 """
@@ -87,22 +88,18 @@ def bounds_of_grid(location, dist=1):
     converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
 
-    if type(location) == str:
-        easting, northing = bng.to_osgb36(location)
-    else:
-        easting, northing = location
-
-    coordinates = []
+    easting, northing = location
 
     # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids coordinates.
-    grids = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
-    for i in range(len(grids)):
-        new_eastings = easting + grids[i][0]
-        new_northings = northing + grids[i][1]
-
-        coordinates.append(grid_to_latlong((new_eastings, new_northings)))
-
-    return coordinates
+    tiles = CoordsConvert.objects.filter(Q(easting=easting, northing=northing) |
+                                         Q(easting=easting + dist, northing=northing) |
+                                         Q(easting=easting, northing=northing + dist) |
+                                         Q(easting=easting + dist, northing=northing + dist)).order_by(easting,
+                                                                                                       northing)
+    if len(tiles) != 4:
+        return []
+    return [(tiles[0].easting, tiles[0].northing), (tiles[1].easting, tiles[1].northing),
+            (tiles[3].easting, tiles[3].northing), (tiles[2].easting, tiles[2].northing)]
 
 
 def points_in_circle_np(radius, x0=0, y0=0):
@@ -218,10 +215,10 @@ def super_sample(coords, zoom_level=1):
                                                                                index[1] // zoom_level])]
 
             # check if bottom left of large grid.
-            if (index[0] % zoom_level == 0 and index[1] % zoom_level == 0):
+            if index[0] % zoom_level == 0 and index[1] % zoom_level == 0:
                 # uses zoom level to get larger bounds.
-                coords[index[0] // zoom_level][index[1] // zoom_level] = bounds_of_grid(
-                    bng.from_osgb36((tile.easting, tile.northing), figs=10), zoom_level)
+                coords[index[0] // zoom_level][index[1] // zoom_level] = bounds_of_grid((tile.easting, tile.northing),
+                                                                                        zoom_level)
 
     coords = coords.flatten()
     colours = colours.flatten()

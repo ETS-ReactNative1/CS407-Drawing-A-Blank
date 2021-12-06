@@ -6,6 +6,16 @@ from django.utils import timezone
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
 
+class CoordsConvert(models.Model):
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
+    latitude = models.IntegerField()
+    longitude = models.IntegerField()
+
+    class Meta:
+        unique_together = (("easting", "northing"), ("latitude", "longitude"),)
+
+
 class Team(models.Model):
     name = models.CharField(max_length=10, unique=True)
     colour = models.CharField(max_length=6)  # hex colour
