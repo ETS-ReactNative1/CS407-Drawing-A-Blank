@@ -192,7 +192,7 @@ def record_workout(request):
                     tile.time = bounds[i].time
                     tile.save()
             for tile in allGrids - checkedTiles:
-                Grid.objects.create(easting=tile.easting, northing=tile.northing, team=team, time=bounds[i].time)
+                Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
 
         return Response("workout added")
 
