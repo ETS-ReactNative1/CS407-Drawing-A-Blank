@@ -262,17 +262,16 @@ def super_sample_alt(coords, zoom_level=1):
 
     tiles = Grid.objects.raw('''SELECT
                                     id,
-                                    (O.northing / ''' + str(zoom_level) + ''') as north,
-                                    (O.easting / ''' + str(zoom_level) + ''') as east,
+                                    (northing / ''' + str(zoom_level) + ''') as north,
+                                    (easting / ''' + str(zoom_level) + ''') as east,
                                     (SELECT colour
-                                    FROM (apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id) I
-                                    WHERE (O.northing / ''' + str(zoom_level) + ''') = (I.northing / ''' +
-                             str(zoom_level) + ''') AND (O.easting / ''' + str(zoom_level) + ''') = (I.easting / ''' +
+                                    FROM apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id
+                                    WHERE north = (northing / ''' + str(zoom_level) + ''') AND east = (easting / ''' +
                              str(zoom_level) + ''')
                                     GROUP BY colour
                                     ORDER BY COUNT(*) DESC
                                     LIMIT 1) as colour
-                                FROM apifile_grid O
+                                FROM apifile_grid 
                                 WHERE easting >= ''' + str(lower_east) + ''' AND easting <= ''' + str(upper_east)
                              + ''' AND northing >= ''' + str(lower_north) + ''' AND northing <= '''
                              + str(upper_north) + '''
