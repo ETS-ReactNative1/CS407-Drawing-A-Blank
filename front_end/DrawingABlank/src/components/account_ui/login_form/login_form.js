@@ -35,8 +35,10 @@ class LoginScreen extends Component{
         if(!verification[0]){
             //Doing an alert for now, will change to UI later.
             alert(verification[1]);
+            return;
         }
         //Continue with the login process...
+        this.props.navigation.navigate('map_view_complete');
     }
 
     changeToRegister = () =>{

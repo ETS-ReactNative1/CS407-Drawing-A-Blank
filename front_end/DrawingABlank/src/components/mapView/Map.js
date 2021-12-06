@@ -188,7 +188,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       {
         enableHighAccuracy: true,
         timeout: 200, // max time for location request duration
-        maximumAge: 0, // max age before it will refresh cache
+        maximumAge: 1000, // max age before it will refresh cache
         distanceFilter: 5, // min moved distance before next data point
       },
     );
