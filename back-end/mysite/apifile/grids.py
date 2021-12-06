@@ -98,8 +98,10 @@ def bounds_of_grid(location, dist=1):
                                                                                                        "northing")
     if len(tiles) != 4:
         return []
-    return [(tiles[0].latitude, tiles[0].longitude), (tiles[1].latitude, tiles[1].longitude),
-            (tiles[3].latitude, tiles[3].longitude), (tiles[2].latitude, tiles[2].longitude)]
+    return [{"latitude": tiles[0].latitude, "longitude": tiles[0].longitude},
+            {"latitude": tiles[1].latitude, "longitude": tiles[1].longitude},
+            {"latitude": tiles[3].latitude, "longitude": tiles[3].longitude},
+            {"latitude": tiles[2].latitude, "longitude": tiles[2].longitude}]
 
 
 def points_in_circle_np(radius, x0=0, y0=0):
