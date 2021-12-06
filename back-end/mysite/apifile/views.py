@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
-from .models import Event, EventBounds, Workout, WorkoutPoint, Grid, Player, Team
+from .models import Event, EventBounds, Workout, WorkoutPoint, Grid, Player, Team, CoordsConvert
 import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
@@ -193,6 +193,12 @@ def record_workout(request):
                     tile.save()
             for tile in allGrids - checkedTiles:
                 Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
+                for index in [[0, 0], [0, 1], [1, 0], [1, 1]]:
+                    if not (CoordsConvert.objects.filter(easting=tile[0] + index[0],
+                                                         northing=tile[1] + index[1]).exists()):
+                        latitude, longitude = grids.grid_to_latlong((tile[0] + index[0], tile[1] + index[1]))
+                        CoordsConvert.objects.create(easting=tile[0] + index[0], northing=tile[1] + index[1],
+                                                     longitude=longitude, latitude=latitude)
 
         return Response("workout added")
 
@@ -231,3 +237,25 @@ def grid_window(request):
 
         allGrids = grids.grids_visible([bl, br, tr, tl])
         return Response(allGrids)
+
+
+@csrf_exempt
+@api_view(["POST"])
+def populate_convert(request):
+    if request.method == "POST":
+        coords = request.data
+        lower = coords['bottom_left']
+        upper = coords['top_right']
+
+        lower_easting, lower_northing = grids.latlong_to_grid(lower)
+        upper_easting, upper_northing = grids.latlong_to_grid(upper)
+
+        for easting in range(lower_easting, upper_easting + 1):
+            for northing in range(lower_northing, upper_northing + 1):
+                if not(CoordsConvert.objects.filter(easting=easting, northing=northing).exists()):
+                    latitude, longitude = grids.grid_to_latlong((easting, northing))
+                    CoordsConvert.objects.create(easting=easting, northing=northing,
+                                                 longitude=longitude, latitude=latitude)
+
+        return Response("populated coordsconvert table")
+    return Response("expected post")
