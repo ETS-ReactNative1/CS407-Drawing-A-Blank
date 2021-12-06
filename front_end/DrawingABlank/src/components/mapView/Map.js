@@ -15,10 +15,16 @@ import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 
 import {getInitialStateAnimated as getInitialState} from './testData';
-import setupGeolocation, {getCurrentPosition} from './geoLocation';
+import {getEvents} from '../../api/api_events';
 
 import {styles} from './style.js';
+import EventDetails from '../events/EventDetails';
+import ExampleMarkers from '../events/resources/ExampleMarkers';
+import {Workout} from '../workout_recording/workout';
+import {useNavigation} from '@react-navigation/native';
+import {NavigationRouteContext} from '@react-navigation/core';
 
+const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
 const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
 const USER_DRAW_DIAMETER = 1; // metres
@@ -26,17 +32,26 @@ const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
-  const [markers, setMarkers] = useState(getInitialState().markers);
+  //const [markers, setMarkers] = useState([]);
+  //const [colourSpaces, setColourSpaces] = useState(
+  //  getInitialState().colourSpaces,
+  //); //getInitialState().colourSpaces)
+  const navigation = useNavigation();
+
+  const workout_button_start = 'Start Workout';
+  const workout_button_stop = 'Stop Workout';
+
+  const [workout_button_text, set_workout_button_text] =
+    useState(workout_button_start);
+  const [workout_active, set_workout_active] = useState(false);
   const [userPath, setUserPath] = useState([]);
-  const [colourSpaces, setColourSpaces] = useState(
-    getInitialState().colourSpaces,
-  );
-  // need "map in use" ref to disable snapping to user loc when panning
   const userPathRef = useRef(userPath);
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
   const userLocation = useRef(region);
 
+  const [events, setEvents] = useState([]);
+  const bottomSheetRef = useRef(null);
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -82,26 +97,55 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }
 
   function DrawMarkers() {
-    return markers.map((marker, index) => (
+    return events.map(event => (
       <Marker
-        key={index}
-        coordinate={marker.latlng}
-        title={marker.title}
-        description={marker.description}
-        draggable={marker.draggable}
+        key={event.id}
+        coordinate={event.marker}
+        title={event.title}
+        anchor={{x: 0, y: 1}}
+        description={event.description}
         image={{
           uri: 'http://clipart-library.com/data_images/165937.png',
         }}
-        onPress={() =>
+        onPress={() => {
+          var current_date = new Date();
+          var event_date = Date.parse(event.date_end);
+          var time_left = event_date - current_date;
+          console.log(current_date);
+          console.log(event.date_end);
+          var hours = Math.floor(time_left / (1000 * 3600));
+          var minutes = Math.floor(time_left / (1000 * 60)) % 60;
+          var seconds = Math.floor(time_left / 1000) % 60;
           onEventPress(
-            'Running event #' + index,
-            'X:XX',
+            'Running event #' + event.id,
+            hours +
+              ':' +
+              minutes +
+              ':' +
+              (seconds < 10 ? '0' + seconds : seconds),
             'X',
-            marker.description,
-          )
-        }
+            event.description,
+          );
+        }}
       />
     ));
+  }
+
+  function onEventPress(type, time, radius, desc) {
+    // eventType, timeRemaining, radius, desc
+    setOverlayContent(
+      <EventDetails
+        eventType={type}
+        timeRemaining={time}
+        radius={radius}
+        desc={desc}
+      />,
+    );
+    setOverlayVisible(true);
+  }
+
+  function changeToStats() {
+    navigation.navigate('post_workout_stats', {recorder: recorder});
   }
 
   useEffect(() => {
@@ -147,6 +191,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
         maximumAge: 0, // max age before it will refresh cache
         distanceFilter: 5, // min moved distance before next data point
       },
+
+      getEvents().then(result => setEvents(result)),
     );
   }, []);
 
@@ -171,13 +217,28 @@ function Map({setOverlayVisible, setOverlayContent}) {
           bottomSheetRef.current.expand();
         }}
         startWorkout={() => {
-          console.log('Starting Workout...');
+          if (!workout_active) {
+            console.log('Starting Workout...');
+            recorder.startWorkout();
+            Geolocation.getCurrentPosition(({coords}) =>
+              recorder.addCoordinate(coords.latitude, coords.longitude),
+            );
+            set_workout_active(true);
+            set_workout_button_text(workout_button_stop);
+          } else {
+            console.log('Stopping Workout...');
+            recorder.stopWorkout();
+            set_workout_active(false);
+            set_workout_button_text(workout_button_start);
+            changeToStats();
+          }
         }}
+        workoutText={workout_button_text}
       />
       <Sheet
         ref={bottomSheetRef}
         // should definitely be sorted - probably when I have "real" data from backend
-        localEvents={markers}
+        localEvents={events}
         onEventClick={eventRegion =>
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }

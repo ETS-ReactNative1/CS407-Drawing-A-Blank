@@ -8,6 +8,7 @@ export default function MapControls({
   toggleGhostMode,
   startWorkout,
   toggleShowEventsList,
+  workoutText
 }) {
   return (
     <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
@@ -17,7 +18,7 @@ export default function MapControls({
           style={styles.button}
           onPress={toggleGhostMode}></Button>
         <Button
-          title={'Start Workout'}
+          title={workoutText}
           style={styles.button}
           onPress={startWorkout}></Button>
         <Button
