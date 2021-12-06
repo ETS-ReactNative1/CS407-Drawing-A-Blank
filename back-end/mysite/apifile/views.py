@@ -230,4 +230,4 @@ def grid_window(request):
         tl = coords['top_left']
 
         allGrids = grids.grids_visible([bl, br, tr, tl])
-        return JsonResponse(allGrids)
+        return Response(allGrids)
