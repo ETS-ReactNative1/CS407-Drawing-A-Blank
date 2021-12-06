@@ -220,7 +220,7 @@ def calc_calories(workout_type, dur):
 @api_view(["POST"])
 def grid_window(request):
     if request.method == "POST":
-        coords = request.data[0]
+        coords = request.data
         bl = coords['bottom_left']
         br = coords['bottom_right']
         tr = coords['top_right']
