@@ -214,3 +214,14 @@ def create_user(request):
 
 def calc_calories(workout_type, dur):
     return 0
+
+
+def grid_window(request):
+    coords = request.data[0]
+    bl = coords['bottom_left']
+    br = coords['bottom_right']
+    tr = coords['top_right']
+    tl = coords['top_left']
+
+    allGrids = grids.grids_visible([bl, br, tr, tl])
+    return JsonResponse(allGrids)

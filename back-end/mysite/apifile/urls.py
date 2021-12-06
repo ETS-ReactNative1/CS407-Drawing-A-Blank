@@ -19,4 +19,5 @@ urlpatterns = [
     path('add-events/', views.add_events),
     path('record-workout/', views.record_workout),
     path('create-user/', views.create_user),
+    path('grid-window/', views.grid_window),
 ]
