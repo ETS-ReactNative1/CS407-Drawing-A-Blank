@@ -17,12 +17,14 @@ import Sheet from '../bottomSheet/Sheet';
 import {getInitialStateAnimated as getInitialState} from './testData';
 import {getEvents} from '../../api/api_events';
 
+import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
 import ExampleMarkers from '../events/resources/ExampleMarkers';
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationRouteContext} from '@react-navigation/core';
+import setupGeolocation from './geoLocation';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
@@ -51,7 +53,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   const userLocation = useRef(region);
 
   const [events, setEvents] = useState([]);
-  const bottomSheetRef = useRef(null);
+
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -71,23 +73,24 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }
 
   function DrawPolygons() {
-    return colourSpaces.map((space, i) => {
+    return events.map((space, i) => {
+      console.log('space', space);
       if (!space.radius) {
         return (
           <Polygon
-            coordinates={space.coordinates}
-            strokeColor={space.strokeColor}
-            fillColor={space.fillColor}
-            strokeWidth={space.strokeWidth}
+            coordinates={space.bounds.coordinates}
+            strokeColor={space.bounds.strokeColor}
+            fillColor={space.bounds.fillColor}
+            strokeWidth={space.bounds.strokeWidth}
             key={i}
           />
         );
       } else {
         return (
           <Circle
-            center={space.center}
-            radius={space.radius}
-            fillColor={space.fillColor}
+            center={space.bounds.center}
+            radius={space.bounds.radius}
+            fillColor={space.bounds.fillColor}
             strokeWidth={0}
             key={i}
           />
@@ -149,10 +152,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }
 
   useEffect(() => {
-    console.log('userPath', userPath);
-  }, [userPath]);
-
-  useEffect(() => {
     // Get User permission for location tracking, and initialize map to listen
     // if user permission not given, map will default to initial state - could change to anything e.g. dont render map at all nd show hser dialog
     // (logic could be moved to "withPermissions" hoc)1
@@ -191,9 +190,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
         maximumAge: 0, // max age before it will refresh cache
         distanceFilter: 5, // min moved distance before next data point
       },
-
-      getEvents().then(result => setEvents(result)),
     );
+
+    getEvents().then(result => setEvents(result));
+    if (workout_active) recorder.addCoordinate(...userLocation);
   }, []);
 
   return (
@@ -205,7 +205,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         mapType={'standard'}>
         <DrawMarkers />
         <DrawPolygons />
-        <DrawUserPath />
+        {workout_active ? <DrawUserPath /> : false}
       </Animated>
 
       <MapControls
@@ -220,9 +220,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
           if (!workout_active) {
             console.log('Starting Workout...');
             recorder.startWorkout();
-            Geolocation.getCurrentPosition(({coords}) =>
-              recorder.addCoordinate(coords.latitude, coords.longitude),
-            );
+            // Geolocation.getCurrentPosition(({coords}) =>
+            //   recorder.addCoordinate(coords.latitude, coords.longitude),
+            // );
             set_workout_active(true);
             set_workout_button_text(workout_button_stop);
           } else {
@@ -247,9 +247,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
           dest => {
             const latitude = userLocation.current.latitude;
             const longitude = userLocation.current.longitude;
-            console.log(latitude instanceof Number);
-            let b = 123.1421424;
-            console.log(typeof b);
+
             return getDistance(
               {
                 longitude,
