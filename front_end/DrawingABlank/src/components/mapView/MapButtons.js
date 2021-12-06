@@ -10,7 +10,7 @@ export default function MapControls({
   toggleShowEventsList,
 }) {
   return (
-    <AbsoluteComponent style={{bottom: 70}}>
+    <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
       <View style={styles.buttonContainer}>
         <Button
           title={'Ghost Mode'}
@@ -24,6 +24,8 @@ export default function MapControls({
           title={'See Events'}
           style={styles.button}
           onPress={toggleShowEventsList}></Button>
+
+        {/* Want a re-centre button, show path as data points button  */}
       </View>
     </AbsoluteComponent>
   );

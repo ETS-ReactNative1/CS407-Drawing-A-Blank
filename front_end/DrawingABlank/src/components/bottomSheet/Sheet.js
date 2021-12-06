@@ -67,5 +67,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     top: 0,
     backgroundColor: 'white',
+    paddingBottom: 55,
   },
 });
