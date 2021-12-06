@@ -276,7 +276,7 @@ def super_sample_alt(coords, zoom_level=1):
                                 HAVING east >= ''' + str(lower_east) + '''/''' + str(zoom_level) +
                              ''' AND east <= ''' + str(upper_east) + '''/''' + str(zoom_level) +
                              ''' AND north >= ''' + str(lower_north) + '''/''' + str(zoom_level) +
-                             ''' AND north <= ''' + '''/''' + str(zoom_level))
+                             ''' AND north <= ''' + str(upper_north) + '''/''' + str(zoom_level))
 
     all_coords = []
     for tile in tiles:
