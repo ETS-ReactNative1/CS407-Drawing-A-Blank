@@ -18,8 +18,10 @@ export class Workout{
         }
     }
     addCoordinate(latitude,longitude){
-        var time = new Date();
-        this.coordinates.push({"latitude":latitude,"longitude":longitude, "timestamp":time});
+        if(this.recording){
+            var time = new Date();
+            this.coordinates.push({"latitude":latitude,"longitude":longitude, "timestamp":time});
+        }
     }
     stopWorkout(){
         if(this.recording){
@@ -30,7 +32,7 @@ export class Workout{
         }
     }
     toJSON(){
-        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk", "uid":0};
+        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk", "uid":"cheese"};
     }
     /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.

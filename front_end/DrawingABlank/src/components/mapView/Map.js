@@ -161,9 +161,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
         const {latitude, longitude} = userLocation;
         const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
         const oldUserPath = userPathRef.current;
-
+        
+        recorder.addCoordinate(latitude,longitude);
+        
         userLocation.current = {latitude, longitude};
-
         //draw new user movement polygon - map their travelled path
         userPathRef.current = [
           ...oldUserPath,
@@ -193,7 +194,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
     );
 
     getEvents().then(result => setEvents(result));
-    if (workout_active) recorder.addCoordinate(...userLocation);
+   
   }, []);
 
   return (
@@ -202,7 +203,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         region={region}
-        mapType={'standard'}>
+        mapType={'standard'}
+        showsUserLocation={true}>
         <DrawMarkers />
         <DrawPolygons />
         {workout_active ? <DrawUserPath /> : false}
