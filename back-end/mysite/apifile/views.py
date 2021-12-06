@@ -216,6 +216,7 @@ def calc_calories(workout_type, dur):
     return 0
 
 
+@csrf_exempt
 def grid_window(request):
     coords = request.data[0]
     bl = coords['bottom_left']
