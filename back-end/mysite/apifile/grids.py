@@ -258,29 +258,30 @@ def super_sample_alt(coords, zoom_level=1):
     upper_east = upper_east + east_diff % zoom_level
     upper_north = upper_north + north_diff % zoom_level
 
-    tiles = Grid.objects.raw('''SELECT 
+    tiles = Grid.objects.raw('''SELECT
                                     id,
                                     east,
-                                    north, 
+                                    north,
                                     colour 
-                                FROM  
-                                    (SELECT
+                                FROM 
+                                    (
+                                    SELECT  
                                         apifile_grid.id,
                                         (easting DIV ''' + str(zoom_level) + ''') AS east,
                                         (northing DIV ''' + str(zoom_level) + ''') AS north,
                                         colour,
-                                    COUNT(*) as num  
+                                        COUNT(*) as num  
                                     FROM 
                                         apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id  
                                     WHERE  
                                         easting >= ''' + str(lower_east) + ''' 
-                                        AND easting <= ''' + str(upper_east) + ''' 
+                                        AND easting <= ''' + str(upper_east) + '''
                                         AND northing >= ''' + str(lower_north) + ''' 
                                         AND northing <= ''' + str(upper_north) + '''  
-                                    GROUP BY east, north
-                                    ORDER BY east, north) RES
-                                GROUP BY east, north
-                                HAVING MAX(num);''')
+                                    GROUP BY east, north, colour
+                                    ORDER BY east, north, num DESC
+                                    ) RES
+                                GROUP BY east, north ORDER BY east, north;''')
 
     all_coords = []
     for tile in tiles:
