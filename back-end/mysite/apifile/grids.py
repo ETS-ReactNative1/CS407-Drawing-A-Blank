@@ -97,7 +97,20 @@ def bounds_of_grid(location, dist=1):
                                          Q(easting=easting + dist, northing=northing + dist)).order_by("easting",
                                                                                                        "northing")
     if len(tiles) != 4:
-        return []
+        coordinates = []
+
+        # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids
+        # coordinates.
+        grids = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
+        for i in range(len(grids)):
+            new_easting = easting + grids[i][0]
+            new_northing = northing + grids[i][1]
+
+            # convert to latlong
+            latitude, longitude = grid_to_latlong((new_easting, new_northing))
+            coordinates.append({"latitude": latitude, "longitude": longitude})
+
+        return coordinates
     return [{"latitude": tiles[0].latitude, "longitude": tiles[0].longitude},
             {"latitude": tiles[1].latitude, "longitude": tiles[1].longitude},
             {"latitude": tiles[3].latitude, "longitude": tiles[3].longitude},
