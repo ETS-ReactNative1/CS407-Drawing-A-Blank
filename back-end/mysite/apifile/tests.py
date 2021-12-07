@@ -38,7 +38,7 @@ class GridTestCase(TestCase):
         self.assertEqual(numpy.count_nonzero(out["bounds"]), 12)
 
     def test_super_sample_windowing(self):
-        out = grids.super_sample_alt([[52.285296, -1.549612], [0, 0], [52.289372, -1.530621], [0, 0]], 2)
+        out = grids.super_sample([[52.285296, -1.549612], [0, 0], [52.289372, -1.530621], [0, 0]], 2)
         for row in out:
             print(str(row))
         self.assertEqual(len(out), 6)

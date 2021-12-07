@@ -183,82 +183,15 @@ def all_grids_with_path(point_a, point_b, radius):
 
 def super_sample(coords, zoom_level=1):
     """
-    uses all tiles visible and ensures that not too many grids are sent back to the user.
-    zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
-    zoom_level=2 means 2x2m grids.
-    
-    also considers the colours and finds the average colour for that larger grid.
-    """
-
-    bottomLeft = coords[0]
-    topRight = coords[2]
-
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
-
-    # get the differences
-    east_diff = abs(upper_east - lower_east)
-    north_diff = abs(upper_north - lower_north)
-
-    # ensure both E and N are both divisible by zoom_level
-    padding_E = east_diff % zoom_level
-    padding_N = north_diff % zoom_level
-    tiles_E = Grid.objects.filter(northing__range=(lower_north, upper_north + padding_N),
-                                  easting__range=(lower_east, upper_east + padding_E))
-
-    # create 2d arrays that are smaller dimensions due to larger grids.
-    east_size = (east_diff + padding_E) // zoom_level
-    north_size = (north_diff + padding_N) // zoom_level
-    coords = np.zeros(shape=(east_size, north_size), dtype=object)
-    colours = np.zeros(shape=(east_size, north_size), dtype=object)
-
-    # rgb values to get avg.
-    for i in range(len(colours)):
-        for j in range(len(colours[i])):
-            colours[i][j] = (0, 0, 0)
-
-    # group grids into NxN blocks based on zoom level.
-    for tile in tiles_E:
-        index = ((tile.easting - lower_east), (tile.northing - lower_north))
-
-        # gets the bottom left per NxN grid. and also not the top row as that is divisible by zoom_level due to padding.
-        if (index[0] < east_diff and index[1] < north_diff):
-
-            # do element wise addition in 3 tuple (rgb) for avg per grid.
-            colours[index[0] // zoom_level][index[1] // zoom_level] = [sum(x) for x in
-                                                                       zip(ImageColor.getcolor("#" + tile.team.colour,
-                                                                                               "RGB"),
-                                                                           colours[index[0] // zoom_level][
-                                                                               index[1] // zoom_level])]
-
-            # check if bottom left of large grid.
-            if index[0] % zoom_level == 0 and index[1] % zoom_level == 0:
-                # uses zoom level to get larger bounds.
-                coords[index[0] // zoom_level][index[1] // zoom_level] = bounds_of_grid((tile.easting, tile.northing),
-                                                                                        zoom_level)
-
-    coords = coords.flatten()
-    colours = colours.flatten()
-    allCoords = []
-    for i in range(coords.size):
-        # blend colour: largest value will always be FF(255) and then everything will be scaled relative to that.
-        avg_colour = tuple(ti // (zoom_level * zoom_level) for ti in colours[i])
-        avg_colour = tuple(ti / (max(avg_colour)) for ti in avg_colour)
-        avg_colour = tuple(int(ti * 255) for ti in avg_colour)
-
-        # https://www.codespeedy.com/convert-rgb-to-hex-color-code-in-python/
-        allCoords.append({"colour": '%02x%02x%02x' % avg_colour, "bounds": coords[i]})
-    return allCoords
-
-
-def super_sample_alt(coords, zoom_level=1):
-    """
         uses all tiles visible and ensures that not too many grids are sent back to the user.
         zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
         zoom_level=2 means 2x2m grids.
 
         also considers the colours and finds the average colour for that larger grid.
-        """
+    """
+
+    if zoom_level == 1:
+        return grids_visible(coords)
 
     bottomLeft = coords[0]
     topRight = coords[2]
