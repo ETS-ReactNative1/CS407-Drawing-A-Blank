@@ -54,7 +54,7 @@ export const getEvents = () => {
             coordinates:getBoundsAsJSON(curr_object.bounds),
             //Change these details if added by back-end
             strokeColor:"#000",
-            fillColor:"rgba(43, 145, 222, 0.54)",
+            fillColor:"rgba(43, 145, 222, 0.2)",
             strokeWidth:1,
             name: 'Area for event ' + key,
             id: key,

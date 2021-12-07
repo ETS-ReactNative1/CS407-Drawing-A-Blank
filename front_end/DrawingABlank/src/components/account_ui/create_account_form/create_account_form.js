@@ -88,11 +88,6 @@ class CreateAccountScreen extends Component{
                         secureTextEntry={true}
                         textContentType="password"
                         onChangeText={this.handleConfirmPassword}/>
-                        <TextInput style={styles.credentialsInput}
-                        placeholder="Team Name"
-                        placeholderTextColor="black"
-                        ref="username"
-                        onChangeText={this.handleTeamName}/>
                     </View>
                     <TouchableOpacity style={buttons.loginFormButton}>
                         <Text style={buttons.buttonText} onPress={this.processLogin}>Register</Text>

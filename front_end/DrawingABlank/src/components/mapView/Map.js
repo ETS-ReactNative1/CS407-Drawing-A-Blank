@@ -33,7 +33,7 @@ const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
 const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
-const DEBUG_ZOOM_LEVEL = 0.0025;
+const DEBUG_ZOOM_LEVEL = 0.01;
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
@@ -97,7 +97,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   function DrawPolygons() {
     return events.map((space, i) => {
-      console.log('space', space);
       if (!space.radius) {
         return (
           <Polygon
@@ -149,7 +148,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
               minutes +
               ':' +
               (seconds < 10 ? '0' + seconds : seconds),
-            'X',
             event.description,
           );
         }}
@@ -172,6 +170,14 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   function changeToStats() {
     navigation.navigate('post_workout_stats', {recorder: recorder});
+  }
+
+  function collectGrids() {
+    Geolocation.getCurrentPosition(({coords}) => {
+      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
+      [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
+      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
+    });
   }
 
   useEffect(() => {
@@ -217,14 +223,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
     );
 
     getEvents().then(result => setEvents(result));
-    Geolocation.getCurrentPosition(({coords}) => {
-      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
-      [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
-      //getGrids([52.2858383,-1.5465666999999998], 
-      //  [52.2878383,-1.5445667])
-      //.then(result => setGrids(result));
-    });
+    collectGrids();
     }, []);
 
   return (
@@ -235,9 +234,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
         region={region}
         mapType={'standard'}
         showsUserLocation={true}>
+        <DrawGrids />
         <DrawMarkers />
         <DrawPolygons />
-        <DrawGrids />
         {workout_active ? <DrawUserPath /> : false}
       </Animated>
 
@@ -253,9 +252,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
           if (!workout_active) {
             console.log('Starting Workout...');
             recorder.startWorkout();
-            // Geolocation.getCurrentPosition(({coords}) =>
-            //   recorder.addCoordinate(coords.latitude, coords.longitude),
-            // );
+            Geolocation.getCurrentPosition(({coords}) =>
+               recorder.addCoordinate(coords.latitude, coords.longitude),
+            );
             set_workout_active(true);
             set_workout_button_text(workout_button_stop);
           } else {
@@ -267,6 +266,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
           }
         }}
         workoutText={workout_button_text}
+        drawGridsFunction={collectGrids}
       />
       <Sheet
         ref={bottomSheetRef}
@@ -276,21 +276,12 @@ function Map({setOverlayVisible, setOverlayContent}) {
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }
         // will probably need to redo how this works too at the same time
-        calculateDistanceToUser={useCallback(
-          dest => {
-            const latitude = userLocation.current.latitude;
-            const longitude = userLocation.current.longitude;
-
-            return getDistance(
-              {
-                longitude,
-                latitude,
-              },
-              dest,
-            );
-          },
-          [userLocation],
-        )}
+        calculateDistanceToUser={
+          useCallback((dest) => {
+            //To fix
+            return 0;
+          })
+        }
       />
     </View>
   );
