@@ -183,7 +183,6 @@ def super_sample(coords, zoom_level=1):
     # get the differences
     east_diff = abs(upper_east - lower_east)
     north_diff = abs(upper_north - lower_north)
-    print(east_diff, north_diff)
 
     # ensure both E and N are both divisible by zoom_level
     padding_E = east_diff % zoom_level
@@ -254,7 +253,6 @@ def super_sample_alt(coords, zoom_level=1):
     # get the differences
     east_diff = abs(upper_east - lower_east)
     north_diff = abs(upper_north - lower_north)
-    print(east_diff, north_diff)
 
     # ensure both E and N are both divisible by zoom_level
     upper_east = upper_east + east_diff % zoom_level
