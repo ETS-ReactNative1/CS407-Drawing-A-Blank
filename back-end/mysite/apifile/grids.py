@@ -259,11 +259,13 @@ def super_sample_alt(coords, zoom_level=1):
     upper_north = upper_north + north_diff % zoom_level
 
     tiles = Grid.objects.raw('''SELECT 
+                                    id,
                                     east,
                                     north, 
                                     colour 
                                 FROM  
                                     (SELECT
+                                        apifile_grid.id,
                                         (easting DIV ''' + str(zoom_level) + ''') AS east,
                                         (northing DIV ''' + str(zoom_level) + ''') AS north,
                                         colour,
