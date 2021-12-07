@@ -108,6 +108,9 @@ def bounds_of_grid(location, dist=1):
 
             # convert to latlong
             latitude, longitude = grid_to_latlong((new_easting, new_northing))
+            if not (CoordsConvert.objects.filter(easting=new_easting, northing=new_northing).exists()):
+                CoordsConvert.objects.create(easting=new_easting, northing=new_northing,
+                                             longitude=longitude, latitude=latitude)
             coordinates.append({"latitude": latitude, "longitude": longitude})
 
         return coordinates
