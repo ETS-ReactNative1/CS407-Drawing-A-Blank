@@ -193,12 +193,6 @@ def record_workout(request):
                     tile.save()
             for tile in allGrids - checkedTiles:
                 Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
-                for index in [[0, 0], [0, 1], [1, 0], [1, 1]]:
-                    if not (CoordsConvert.objects.filter(easting=tile[0] + index[0],
-                                                         northing=tile[1] + index[1]).exists()):
-                        latitude, longitude = grids.grid_to_latlong((tile[0] + index[0], tile[1] + index[1]))
-                        CoordsConvert.objects.create(easting=tile[0] + index[0], northing=tile[1] + index[1],
-                                                     longitude=longitude, latitude=latitude)
 
         return Response("workout added")
 
