@@ -260,23 +260,27 @@ def super_sample_alt(coords, zoom_level=1):
     upper_east = upper_east + east_diff % zoom_level
     upper_north = upper_north + north_diff % zoom_level
 
-    tiles = Grid.objects.raw('''SELECT
-                                        id,
-                                        (northing DIV ''' + str(zoom_level) + ''') as north,
-                                        (easting DIV ''' + str(zoom_level) + ''') as east,
-                                        (SELECT colour
-                                        FROM apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id
-                                        WHERE north = (northing DIV ''' + str(zoom_level) +
-                             ''') AND east = (easting DIV ''' +
-                             str(zoom_level) + ''')
-                                        GROUP BY colour
-                                        ORDER BY COUNT(*) DESC
-                                        LIMIT 1) as colour
-                                    FROM apifile_grid 
-                                    WHERE easting >= ''' + str(lower_east) + ''' AND easting <= ''' + str(upper_east)
-                             + ''' AND northing >= ''' + str(lower_north) + ''' AND northing <= '''
-                             + str(upper_north) + '''
-                                    GROUP BY north, east''')
+    tiles = Grid.objects.raw('''SELECT 
+                                    east,
+                                    north, 
+                                    colour 
+                                FROM  
+                                    (SELECT
+                                        (easting DIV ''' + str(zoom_level) + ''') AS east,
+                                        (northing DIV ''' + str(zoom_level) + ''') AS north,
+                                        colour,
+                                    COUNT(*) as num  
+                                    FROM 
+                                        apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id  
+                                    WHERE  
+                                        easting >= ''' + str(lower_east) + ''' 
+                                        AND easting <= ''' + str(upper_east) + ''' 
+                                        AND northing >= ''' + str(lower_north) + ''' 
+                                        AND northing <= ''' + str(upper_north) + '''  
+                                    GROUP BY east, north
+                                    ORDER BY east, north) RES
+                                GROUP BY east, north
+                                HAVING MAX(num);''')
 
     all_coords = []
     for tile in tiles:
