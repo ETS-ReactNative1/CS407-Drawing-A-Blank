@@ -33,6 +33,8 @@ const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
 const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
+const DEBUG_ZOOM_LEVEL = 0.0025;
+
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
   //const [markers, setMarkers] = useState([]);
@@ -55,6 +57,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   const [events, setEvents] = useState([]);
 
+  const [grids, setGrids] = useState([]);
+
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -71,6 +75,24 @@ function Map({setOverlayVisible, setOverlayContent}) {
         strokeColor={USER_INK_COLOUR}
       />
     );
+  }
+
+  function DrawGrids(){
+    return grids.map((grid, i)=>{
+      if(grid.bounds.length > 0){
+        return(
+          <Polygon
+            coordinates={grid.bounds}
+            strokeColor={"#000000"}
+            fillColor={"#"+grid.colour}
+            strokeWidth={1}
+            key={i}
+          >
+
+          </Polygon>
+        );
+      }
+    });
   }
 
   function DrawPolygons() {
@@ -195,6 +217,14 @@ function Map({setOverlayVisible, setOverlayContent}) {
     );
 
     getEvents().then(result => setEvents(result));
+    Geolocation.getCurrentPosition(({coords}) => {
+      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
+      [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
+      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
+      //getGrids([52.2858383,-1.5465666999999998], 
+      //  [52.2878383,-1.5445667])
+      //.then(result => setGrids(result));
+    });
     }, []);
 
   return (
@@ -207,6 +237,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         showsUserLocation={true}>
         <DrawMarkers />
         <DrawPolygons />
+        <DrawGrids />
         {workout_active ? <DrawUserPath /> : false}
       </Animated>
 

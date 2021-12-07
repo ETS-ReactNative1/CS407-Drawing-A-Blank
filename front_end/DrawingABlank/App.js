@@ -16,7 +16,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="account"
+        initialRouteName="map_view_complete"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="account" component={AccountAuthUI}/>
         <Stack.Screen
