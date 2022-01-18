@@ -7,7 +7,7 @@ class ExtraData extends Component{
         return(
             <View style={styles.extraData}>
                 {this.props.data.map(dataInfo => (
-                    <View style={styles.singleData}>
+                    <View style={styles.singleData} key={dataInfo.key}>
                         <View style={styles.singleDataTitle}>
                             <Text style={styles.singleDataText}>{dataInfo.title}</Text>
                         </View>

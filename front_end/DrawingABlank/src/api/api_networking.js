@@ -1,8 +1,8 @@
 //These are just sample constants for now, update once we have back-end running.
-const API_HOSTNAME = 'localhost';
-const API_PORT_NUMBER = '80';
-const API_SUFFIX = '/api'; //Example only
-const API_URL = 'http://'+API_HOSTNAME+':'+API_PORT_NUMBER+API_SUFFIX;
+const API_HOSTNAME = 'drawab.dcs.warwick.ac.uk';
+const API_PORT_NUMBER = '443';
+const API_SUFFIX = '/'; //Example only
+const API_URL = 'https://'+API_HOSTNAME+':'+API_PORT_NUMBER+API_SUFFIX;
 
 /**
  * Sends a request to the API at a specified endpoint and returns an async handler. This has not been tested yet, just writing this so that it is here.
@@ -19,7 +19,7 @@ export const request = (req_method,req_endpoint,req_queries,req_body) => {
         full_URL += req_queries;
     }
     return fetch(full_URL,{
-        method=req_method,
+        method:req_method,
         headers:{
             'Accept':'application/json',
             'Content-Type':'application/json'

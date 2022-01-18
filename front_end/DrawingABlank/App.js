@@ -5,16 +5,10 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import AccountAuthUI from './src/components/account_ui/account_ui.js';
-import LoginScreen from './src/components/account_ui/login_form/login_form.js';
-import PersonalWorkoutStats from './src/components/profile/personal_stats/personal_workout_stats.js';
+import WorkoutScreen from './src/components/workout_recording/workout_screen';
 
 export default function App() {
   return(
-    //<CreateAccountScreen></CreateAccountScreen>
-    //<NavigationContainer>
-    //  <AccountAuthUI></AccountAuthUI>
-    //</NavigationContainer>
-    <PersonalWorkoutStats></PersonalWorkoutStats>
+    <WorkoutScreen/>
   );
 }
