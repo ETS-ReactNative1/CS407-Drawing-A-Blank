@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
@@ -9,12 +10,27 @@ class Team(models.Model):
     name = models.CharField(max_length=10, unique=True)
     colour = models.CharField(max_length=6)  # hex colour
 
+    def get_colour():
+        retval = Team.objects.filter(id=1)[0].colour
+
+        return retval
+
 
 class Grid(models.Model):
-    location = models.CharField(max_length=12, primary_key=True)  # bng ref
-    time = models.DateTimeField()
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
+    time = models.DateTimeField(default=timezone.now())
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (("easting", "northing"),)
+
+    def check_tile_override(self, date_time):
+        if self.time < date_time:
+            return True
+        else:
+            return False
 
 
 class Item(models.Model):
@@ -29,10 +45,25 @@ class Event(models.Model):
     end = models.DateTimeField()
     users = models.ManyToManyField(User, through='EventPerformance')
 
+    @staticmethod
+    def get_current_events():
+        today = timezone.now()
+        curr_events = Event.objects.filter(start__lte=today, end__gte=today)
+
+        return curr_events
+
+    def get_bounds(self):
+        bounds = EventBounds.objects.filter(event_id=self.id).order_by('id')
+        bounds_list = []
+        for bound in bounds:
+            bounds_list.append((bound.easting, bound.northing))
+        return bounds_list
+
 
 class EventBounds(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    bound = models.CharField(max_length=12)  # bng ref
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
 
 
 # alter the base django user table with extra fields
@@ -52,11 +83,11 @@ class Workout(models.Model):
 class WorkoutPoint(models.Model):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
     time = models.DateTimeField()
-    location = models.CharField(max_length=12)  # bng ref
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
 
 
 class EventPerformance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     contribution = models.PositiveIntegerField()  # work out what we want to track when we develop events further
-

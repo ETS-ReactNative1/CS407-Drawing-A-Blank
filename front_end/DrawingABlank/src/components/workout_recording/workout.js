@@ -8,19 +8,26 @@ export class Workout{
         this.date_start = new Date();
         this.date_end = new Date();
         this.coordinates = [];
+        this.recording = false;
     }
     startWorkout(){
-        this.coordinates = [];
-        this.date_start = new Date();
+        if(!this.recording){
+            this.coordinates = [];
+            this.date_start = new Date();
+            this.recording = true;
+        }
     }
     addCoordinate(latitude,longitude){
         var time = new Date();
         this.coordinates.push({"latitude":latitude,"longitude":longitude, "timestamp":time});
     }
     stopWorkout(){
-        this.date_end = new Date();
-        console.log(JSON.stringify(this.toJSON()));
-        submit_workout(this.toJSON());
+        if(this.recording){
+            this.date_end = new Date();
+            console.log(JSON.stringify(this.toJSON()));
+            submit_workout(this.toJSON());
+            this.recording = false;
+        }
     }
     toJSON(){
         return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk", "uid":0};
