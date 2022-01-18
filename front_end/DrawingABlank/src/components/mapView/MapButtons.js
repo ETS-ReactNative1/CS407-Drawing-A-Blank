@@ -8,10 +8,11 @@ export default function MapControls({
   toggleGhostMode,
   startWorkout,
   toggleShowEventsList,
-  workoutText
+  workoutText,
+  drawGridsFunction
 }) {
   return (
-    <AbsoluteComponent style={{bottom: 70}}>
+    <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
       <View style={styles.buttonContainer}>
         <Button
           title={'Ghost Mode'}
@@ -25,6 +26,13 @@ export default function MapControls({
           title={'See Events'}
           style={styles.button}
           onPress={toggleShowEventsList}></Button>
+        {/* Want a re-centre button, show path as data points button  */}
+      </View>
+      <View style={{top:20, alignItems:"center"}}>
+      <Button
+          title={'Refresh'}
+          style={styles.button}
+          onPress={drawGridsFunction}></Button>
       </View>
     </AbsoluteComponent>
   );

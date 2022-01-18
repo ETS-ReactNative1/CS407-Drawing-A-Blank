@@ -8,7 +8,7 @@ export async function requestLocationPermission() {
     ]);
 
     return {
-      grantedStatus:
+      granted:
         Object.values(await granted).filter(
           permission => permission !== PermissionsAndroid.RESULTS.GRANTED,
         ).length === 0,

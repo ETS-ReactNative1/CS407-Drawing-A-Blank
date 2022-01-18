@@ -35,8 +35,10 @@ class LoginScreen extends Component{
         if(!verification[0]){
             //Doing an alert for now, will change to UI later.
             alert(verification[1]);
+            return;
         }
         //Continue with the login process...
+        this.props.navigation.navigate('map_view_complete');
     }
 
     changeToRegister = () =>{
@@ -48,7 +50,7 @@ class LoginScreen extends Component{
         return(
             <View style={styles.mainContainer}>
                 <View style={styles.titleBox}>
-                    <Text style={styles.title}>Drawing A Blank</Text>
+                    <Text style={styles.title}>Fresgo!</Text>
                 </View>
                 <View style={styles.description}>
                     <Text style={styles.title}>Login</Text>

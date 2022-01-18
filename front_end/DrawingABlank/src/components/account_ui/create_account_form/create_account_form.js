@@ -61,7 +61,7 @@ class CreateAccountScreen extends Component{
         return(
             <View style={styles.mainContainer}>
                 <View style={styles.titleBox}>
-                    <Text style={styles.title}>Drawing A Blank</Text>
+                    <Text style={styles.title}>Fresgo!</Text>
                 </View>
                 <View style={styles.description}>
                     <Text style={styles.title}>Create an account</Text>
@@ -88,11 +88,6 @@ class CreateAccountScreen extends Component{
                         secureTextEntry={true}
                         textContentType="password"
                         onChangeText={this.handleConfirmPassword}/>
-                        <TextInput style={styles.credentialsInput}
-                        placeholder="Team Name"
-                        placeholderTextColor="black"
-                        ref="username"
-                        onChangeText={this.handleTeamName}/>
                     </View>
                     <TouchableOpacity style={buttons.loginFormButton}>
                         <Text style={buttons.buttonText} onPress={this.processLogin}>Register</Text>

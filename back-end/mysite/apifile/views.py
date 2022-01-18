@@ -1,9 +1,16 @@
+import operator
+from functools import reduce
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
-from .models import Event, EventBounds
+from .models import Event, EventBounds, Workout, WorkoutPoint, Grid, Player, Team, CoordsConvert
 import datetime
+from rest_framework.decorators import api_view
+from django.contrib.auth.models import User
+# for testing only
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -37,6 +44,35 @@ class PlayerLocation(viewsets.ViewSet):
         # update colour database.
 
         return Response(allGrids)
+
+
+"""class PlayerPath(viewsets.ViewSet):
+    
+    {
+    "current_coords": [52.286849 , -1.5329895],
+    "old_coords": [52.285951 , -1.5329989],
+    "colour":  "red",
+    "time_elapsed": 18
+    }
+    
+
+    def create(self, request):
+        playerInfo = request.data
+        current_coords = playerInfo["current_coords"]
+        old_coords = playerInfo["old_coords"]
+        colour = playerInfo["colour"]
+        time_elapsed = playerInfo["time_elapsed"]
+
+        current_grid = grids.latlong_to_grid(current_coords)
+        old_grid = grids.latlong_to_grid(old_coords)
+        speed = grids.calculate_speed(current_grid, old_grid, time_elapsed)
+        radius = grids.calculate_radius(speed)  # calculate radius depending on speed
+
+        allGrids = grids.all_grids_with_path(old_grid, current_grid, radius)
+
+        # update colour database.
+
+        return Response(allGrids)"""
 
 
 class LatlongsOfGrid(viewsets.ViewSet):
@@ -75,17 +111,14 @@ class LatlongsOfGrid(viewsets.ViewSet):
 
 # test view to add events to db
 def add_events(_):
-    Event.objects.create(start=datetime.datetime.now(),
-                         end=datetime.datetime.now() + datetime.timedelta(days=10))
-    Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=4),
-                         end=datetime.datetime.now() + datetime.timedelta(days=4))
-    evs = Event.objects.all()
-    ev1 = evs[0]
-    ev2 = evs[1]
+    ev1 = Event.objects.create(start=datetime.datetime.now(),
+                               end=datetime.datetime.now() + datetime.timedelta(days=50))
+    ev2 = Event.objects.create(start=datetime.datetime.now() - datetime.timedelta(days=20),
+                               end=datetime.datetime.now() + datetime.timedelta(days=20))
     EventBounds.objects.create(event=ev1, easting=431890, northing=265592)
-    EventBounds.objects.create(event=ev1, easting=432315, northing=265866)
     EventBounds.objects.create(event=ev1, easting=431932, northing=265511)
     EventBounds.objects.create(event=ev1, easting=432360, northing=265781)
+    EventBounds.objects.create(event=ev1, easting=432315, northing=265866)
     EventBounds.objects.create(event=ev2, easting=431258, northing=265593)
     EventBounds.objects.create(event=ev2, easting=430952, northing=265558)
     EventBounds.objects.create(event=ev2, easting=430986, northing=265463)
@@ -109,3 +142,135 @@ def current_events(_):
         ret_val[event.id] = values
 
     return JsonResponse(ret_val)
+
+
+@csrf_exempt
+@api_view(["POST"])
+def record_workout(request):
+    if request.method == 'POST':
+        data = request.data
+        waypoints = data["coordinates"]
+        start = data["start"][:-1]  # removes 'Z' in timestamp
+        end = data["end"][:-1]
+        workout_type = data["type"]
+        username = data["uid"]
+        player = Player.objects.get(user__username=username)
+
+        # convert to seconds - look at what this is
+        dur = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start, '%Y-%m-%dT'
+                                                                                                          '%H:%M:%S.%f')
+
+        cals = calc_calories(type, dur)
+
+        workout = Workout.objects.create(player=player, duration=dur.total_seconds(), calories=cals, type=workout_type)
+
+        for entry in waypoints:
+            latlong = (entry["latitude"], entry["longitude"])
+            easting, northing = grids.latlong_to_grid(latlong)
+            timestamp = datetime.datetime.strptime(entry["timestamp"][:-1], '%Y-%m-%dT%H:%M:%S.%f')
+            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing)
+
+        bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
+        team = workout.player.team
+        for i in range(1, len(bounds)):
+            speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
+                                          (bounds[i - 1].easting, bounds[i - 1].northing),
+                                          (bounds[i].time - bounds[i - 1].time).total_seconds())
+            # calculate radius depending on speed
+            radius = grids.calculate_radius(speed)
+            allGrids = grids.all_grids_with_path((bounds[i].easting, bounds[i].northing),
+                                                 (bounds[i - 1].easting, bounds[i - 1].northing), radius)
+            if len(allGrids) > 0:
+                tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
+            else:
+                tiles = []
+            checkedTiles = set()
+            for tile in tiles:
+                checkedTiles.add((tile.easting, tile.northing))
+                if tile.check_tile_override(bounds[i].time):
+                    tile.team = team
+                    tile.time = bounds[i].time
+                    tile.save()
+            for tile in allGrids - checkedTiles:
+                Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
+                for index in [[0, 0], [0, 1], [1, 0], [1, 1]]:
+                    if not (CoordsConvert.objects.filter(easting=tile[0] + index[0],
+                                                         northing=tile[1] + index[1]).exists()):
+                        latitude, longitude = grids.grid_to_latlong((tile[0] + index[0], tile[1] + index[1]))
+                        CoordsConvert.objects.create(easting=tile[0] + index[0], northing=tile[1] + index[1],
+                                                     longitude=longitude, latitude=latitude)
+
+        return Response("workout added")
+
+
+@csrf_exempt
+@api_view(["POST"])
+def create_user(request):
+    if request.method == "POST":
+        data = request.data
+        name = data["name"]
+        email = data["email"]
+        pswd = data["pass"]
+        user = User.objects.create_user(name, email, pswd)
+        if len(Team.objects.all()) == 0:
+            team = Team.objects.create(name="team1", colour="FF0000")
+        else:
+            team = Team.objects.get(name="team1")
+        Player.objects.create(user=user, team=team)
+
+        return Response("user added")
+
+
+def calc_calories(workout_type, dur):
+    return 0
+
+
+@csrf_exempt
+@api_view(["POST"])
+def grid_window(request):
+    if request.method == "POST":
+        coords = request.data
+        bl = coords['bottom_left']
+        br = coords['bottom_right']
+        tr = coords['top_right']
+        tl = coords['top_left']
+
+        allGrids = grids.grids_visible([bl, br, tr, tl])
+        return Response(allGrids)
+
+
+@csrf_exempt
+@api_view(["POST"])
+def super_window(request):
+    if request.method == "POST":
+        data = request.data
+        bl = data['bottom_left']
+        br = data['bottom_right']
+        tr = data['top_right']
+        tl = data['top_left']
+        zoom = data['zoom']
+
+        allGrids = grids.super_sample_alt([bl, br, tr, tl], zoom_level=zoom)
+        return Response(allGrids)
+
+
+@csrf_exempt
+@api_view(["POST"])
+def populate_convert(request):
+    if request.method == "POST":
+        coords = request.data
+        lower = coords['bottom_left']
+        upper = coords['top_right']
+
+        lower_easting, lower_northing = grids.latlong_to_grid(lower)
+        upper_easting, upper_northing = grids.latlong_to_grid(upper)
+
+        for easting in range(lower_easting, upper_easting + 1):
+            for northing in range(lower_northing, upper_northing + 1):
+                if not(CoordsConvert.objects.filter(easting=easting, northing=northing).exists()):
+                    latitude, longitude = grids.grid_to_latlong((easting, northing))
+                    CoordsConvert.objects.create(easting=easting, northing=northing,
+                                                 longitude=longitude, latitude=latitude)
+
+        return Response("populated coordsconvert table")
+    return Response("expected post")
