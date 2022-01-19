@@ -208,17 +208,26 @@ def record_workout(request):
 def create_user(request):
     if request.method == "POST":
         data = request.data
-        name = data["name"]
+        username = data["username"]
         email = data["email"]
-        pswd = data["pass"]
-        user = User.objects.create_user(name, email, pswd)
-        if len(Team.objects.all()) == 0:
-            team = Team.objects.create(name="team1", colour="FF0000")
-        else:
-            team = Team.objects.get(name="team1")
+        password = data["password"]
+        team = data["team"]
+
+        if team != 'terra' or team != 'windy' or team != 'ocean':
+            return Response("Invalid team selected")
+        if User.objects.filter(email=email).exists():
+            return Response("User with that email already exists")
+        elif User.objects.filter(username=username).exists():
+            return Response("User with that username already exists")
+
+        user = User.objects.create_user(username, email, password)
+
+        default_team_colours = {'terra': 'FF8C91', 'windy': '82FF8A', 'ocean': '47C4FF'}
+        team = Team.objects.get_or_create(name=team, defaults={'colour': default_team_colours[team]})
+
         Player.objects.create(user=user, team=team)
 
-        return Response("user added")
+        return Response("User added")
 
 
 def calc_calories(workout_type, dur):
