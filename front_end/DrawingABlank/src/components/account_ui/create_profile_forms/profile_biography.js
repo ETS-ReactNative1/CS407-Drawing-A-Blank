@@ -17,12 +17,13 @@ class ProfileBiography extends Component{
         weight:"",
         bio:"",
         open:false,
-        avatar:""
+        avatar:"",
+        teamselection:this.props.route.params.teamSelection
     }
     genders = [{label:'Male',value:'M'},{label:'Female',value:'F'},{label:'Non-binary',value:'NB'},{label:'Prefer not to disclose',value:'X'}]
 
     nextScreen = () =>{
-        this.props.navigation.navigate('ProfileAvatar',{"basic_details":this.state});
+        this.props.navigation.navigate('ProfileAvatar',this.state);
     }
 
     setOpen = (open) =>{
@@ -41,6 +42,7 @@ class ProfileBiography extends Component{
             //Prevents going back
             return true;
         });
+        console.log(this.props.route.params);
     }
     constructor(props){
         super(props);

@@ -33,6 +33,15 @@ class ProfileAvatar extends Component{
             //Prevents going back
             return true;
         });
+        console.log(this.props.route.params);
+    }
+    getAvatarSource = (team) =>{
+        if(team==="terra")
+            return require('../../../assets/img/terra.png');
+        if(team==="ocean")
+            return require('../../../assets/img/ocean.png');
+        if(team==="windy")
+            return require('../../../assets/img/windy.png');
     }
     render(){
         return(
@@ -48,7 +57,7 @@ class ProfileAvatar extends Component{
                 </View>
                 <Image
                     style={styles.avatar}
-                    source={{uri:this.state.avatar}}
+                    source={this.getAvatarSource(this.props.route.params.teamselection)}
                 />
                 <View style={styles.continue_button}>
                     <Button title="Choose Avatar" color="#6db0f6" onPress={this.openImages}/>
