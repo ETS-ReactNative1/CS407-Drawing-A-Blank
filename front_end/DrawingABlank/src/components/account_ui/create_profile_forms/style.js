@@ -57,6 +57,20 @@ const styles = StyleSheet.create({
     character_counter:{//Kind of want this in the centre but fix later
         paddingTop:20
     },
+    avatar:{
+        width:256,
+        height:256,
+        borderWidth:2,
+        borderColor:"grey"
+    },
+    welcome_text:{
+        fontSize:24
+    },
+    welcome_view:{
+        paddingTop:"30%",
+        width:"90%",
+        paddingBottom:"40%"
+    }
 });
 
 export {styles};

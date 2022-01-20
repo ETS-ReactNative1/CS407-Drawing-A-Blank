@@ -16,12 +16,13 @@ class ProfileBiography extends Component{
         height:"",
         weight:"",
         bio:"",
-        open:false
+        open:false,
+        avatar:""
     }
     genders = [{label:'Male',value:'M'},{label:'Female',value:'F'},{label:'Non-binary',value:'NB'},{label:'Prefer not to disclose',value:'X'}]
 
     nextScreen = () =>{
-        this.props.navigation.navigate('avatar',this.state);
+        this.props.navigation.navigate('ProfileAvatar',{"basic_details":this.state});
     }
 
     setOpen = (open) =>{
@@ -92,7 +93,7 @@ class ProfileBiography extends Component{
                 </View>
                 <View style={styles.character_counter}>
                     <Text style={styles.chartext} ref="charcounter">
-                        {this.counter}/400 characters used. 
+                        {this.counter ? this.counter : 0}/400 characters used. 
                     </Text>
                 </View>
                 <View style={styles.continue_button}>
