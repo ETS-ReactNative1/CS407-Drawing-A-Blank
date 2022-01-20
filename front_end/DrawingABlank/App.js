@@ -17,7 +17,6 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -28,11 +27,8 @@ export default function App() {
           component={MapViewCompleteComponent}
         />
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
+        <Stack.Screen name="profile_navigator" component={ProfileCreationNavigator}/>
       </Stack.Navigator>
-    </NavigationContainer>
-    */
-   <NavigationContainer>
-      <ProfileCreationNavigator/>
     </NavigationContainer>
   );
 }

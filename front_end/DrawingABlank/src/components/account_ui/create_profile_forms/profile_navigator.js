@@ -13,7 +13,7 @@ class ProfileCreationNavigator extends Component{
     render(){
         return (
             //I have doubts whether this is the best way to do navigation at the moment, anyone else know if there are better methods?
-            <Stack.Navigator initialRouteName="ProfileTeam" screenOptions={{headerShown:false}}>
+            <Stack.Navigator initialRouteName="ProfileWelcome" screenOptions={{headerShown:false}}>
                 <Stack.Screen name="ProfileWelcome" component={ProfileWelcome} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileBiography" component={ProfileBiography} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileAvatar" component={ProfileAvatar} options={{headerLeft:()=>null}}/>

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {useState} from "react";
-import {StyleSheet, Text, View, Button, TextInput,Alert} from "react-native";
+import {StyleSheet, Text, View, Button, TextInput,Alert,BackHandler} from "react-native";
 import DatePicker from "react-native-date-picker";
 import { readDirectoryAsync } from "expo-file-system";
 import {withNavigation} from "react-navigation";

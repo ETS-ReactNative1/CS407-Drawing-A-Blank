@@ -7,7 +7,6 @@ class CreateAccountScreen extends Component{
         email:"",
         password:"",
         password_confirm:"",
-        team_name:""
     }
 
     handleEmail = (text) => {
@@ -22,10 +21,6 @@ class CreateAccountScreen extends Component{
         this.state.password_confirm = text;
     }
 
-    handleTeamName = (text) => {
-        this.state.team_name = text;
-    }
-
     detailsComplete = () =>{
         //Accepts unicode: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
         const rex_email = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -38,9 +33,6 @@ class CreateAccountScreen extends Component{
         if(this.state.password != this.state.password_confirm){
             return [false, "Your passwords do not match, please try again."];
         }
-        if(this.state.team_name == ""){
-            return [false, "Please enter a team name."];
-        }
         return [true, ""];
     }
 
@@ -49,8 +41,10 @@ class CreateAccountScreen extends Component{
         if(!verification[0]){
             //Doing an alert for now, will change to UI later.
             alert(verification[1]);
+        }else{
+            //Continue with the login process...
+            this.props.navigation.navigate('profile_navigator');
         }
-        //Continue with the login process...
     }
     
     changeToLogin = () =>{

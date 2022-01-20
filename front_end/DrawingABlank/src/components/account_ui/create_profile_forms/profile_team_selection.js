@@ -14,7 +14,7 @@ class ProfileTeamSelection extends Component{
         });
     }
     moveToDetails = () =>{
-        this.props.navigation.navigate("ProfileBiography");
+        this.props.navigation.navigate("ProfileBiography",this.state);
     }
     updateSelection = (choice) =>{
         if(choice===this.state.teamSelection)
@@ -94,7 +94,7 @@ class ProfileTeamSelection extends Component{
                     </TouchableOpacity>
                 </View>
                 <View style={styles.continue_button}>
-                    <Button title="Continue" color="#6db0f6" onPress={this.MoveToDetails}/>
+                    <Button title="Continue" color="#6db0f6" onPress={this.moveToDetails}/>
                 </View>
             </View>
         );
