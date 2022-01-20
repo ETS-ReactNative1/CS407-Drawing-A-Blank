@@ -6,6 +6,7 @@ import { readDirectoryAsync } from "expo-file-system";
 import {withNavigation} from "react-navigation";
 import { styles } from "./style";
 import DropDownPicker from "react-native-dropdown-picker";
+import { ScrollView } from "react-native-gesture-handler";
 
 class ProfileBiography extends Component{
     state={
@@ -19,15 +20,32 @@ class ProfileBiography extends Component{
     }
     genders = [{label:'Male',value:'M'},{label:'Female',value:'F'},{label:'Non-binary',value:'NB'},{label:'Prefer not to disclose',value:'X'}]
 
+    nextScreen = () =>{
+        this.props.navigation.navigate('avatar',this.state);
+    }
+
+    setOpen = (open) =>{
+        this.setState({
+          open:open
+        });
+    }
+
+    setValue = (callback) =>{
+        this.setState(state => ({
+            gender:callback(state.value)
+        }));
+    }
+
     constructor(props){
         super(props);
     }
 
     render(){
         return(
+            <ScrollView>
             <View style={styles.main}>
                 <View style={styles.welcome_title}>
-                    <Text style={styles.title_text}>Biography</Text>
+                    <Text style={styles.title_text}>Basic Details</Text>
                 </View>
                 <View style={styles.body_explanation}>
                     <Text style={styles.body_text}>"So, tell me a bit about yourself."</Text>
@@ -49,8 +67,8 @@ class ProfileBiography extends Component{
                         value={this.state.gender}
                         placeholder="Gender"
                         open={this.state.open}
-                        setOpen={(b) => this.setState({open : b})}
-                        setValue={(val)=>{this.setState({gender:val})}}
+                        setOpen={this.setOpen}
+                        setValue={this.setValue}
                         style={styles.form_input}
                         dropDownContainerStyle={styles.form_input}
                     />
@@ -61,7 +79,27 @@ class ProfileBiography extends Component{
                 <View style={styles.form_inputs}>
                     <TextInput style={styles.form_input} keyboardType="number-pad" placeholder="Weight (kg)" ref="weight" value={this.state.weight} onChangeText={(text)=>this.setState({weight:text})}/>
                 </View>
+                <View style={styles.form_inputs}>
+                    <TextInput style={styles.form_input}
+                            placeholder="Bio (Optional)"
+                            ref="bioinput"
+                            multiline
+                            numberOfLines={5}
+                            maxLength={400}
+                            textAlignVertical="top"
+                            onChangeText={(text)=>{this.counter=text.length;this.setState({bio:text})}}
+                    />
+                </View>
+                <View style={styles.character_counter}>
+                    <Text style={styles.chartext} ref="charcounter">
+                        {this.counter}/400 characters used. 
+                    </Text>
+                </View>
+                <View style={styles.continue_button}>
+                    <Button title="Continue" color="#6db0f6" onPress={this.nextScreen}/>
+                </View>
             </View>
+            </ScrollView>
         );
     }
 }

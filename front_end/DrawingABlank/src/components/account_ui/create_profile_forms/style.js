@@ -52,8 +52,11 @@ const styles = StyleSheet.create({
     },
     continue_button:{
         paddingTop:20,
-        width:"90%"
-    }
+        width:"90%",
+    },
+    character_counter:{//Kind of want this in the centre but fix later
+        paddingTop:20
+    },
 });
 
 export {styles};
