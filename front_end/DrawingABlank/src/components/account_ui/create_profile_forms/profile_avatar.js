@@ -53,7 +53,7 @@ class ProfileAvatar extends Component{
                     <Text style={styles.body_text}>"A picture paints a thousand words, or squares I suppose."</Text>
                 </View>
                 <View style={{width:"90%", paddingBottom:20}}>
-                    <Text style={styles.form_input_title}>Select an avatar to go with your profile. If you do not pick a profile picture, we will give you a cute mascot for your team instead.</Text>
+                    <Text style={styles.form_input_title}>Select an avatar to go with your profile. If you do not pick a profile picture, the mascot from your team will take its place.</Text>
                 </View>
                 <Image
                     style={styles.avatar}
