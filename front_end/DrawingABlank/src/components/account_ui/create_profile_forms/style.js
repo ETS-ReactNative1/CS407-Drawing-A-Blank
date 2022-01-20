@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     body_text:{
         fontSize:20,
         color:"#a3a3a3",
-        paddingBottom:"10%",
+        paddingBottom:"5%",
     },
     create_profile:{
         width:"85%"
@@ -70,6 +70,58 @@ const styles = StyleSheet.create({
         paddingTop:"30%",
         width:"90%",
         paddingBottom:"40%"
+    },
+    mascot_terra:{
+        height:"100%",
+        backgroundColor:"#edf5f3",
+        borderWidth:1,
+        borderColor:"grey",
+        width:"100%",
+        height:"100%"
+    },
+    mascot_ocean:{
+        height:"100%",
+        backgroundColor:"#edf5f3",
+        borderWidth:1,
+        borderColor:"grey",
+        width:"100%",
+        height:"100%"
+    },
+    mascot_windy:{
+        height:"100%",
+        backgroundColor:"#edf5f3",
+        borderWidth:1,
+        borderColor:"grey",
+        width:"100%",
+        height:"100%"
+    },
+    mascots:{
+        width:"90%",
+        paddingBottom:10,
+        height:"15%",
+    },
+    mascot_information:{
+        width:"66%",
+        paddingLeft:10
+    },
+    mascot_image:{
+        alignItems:'flex-end',
+        paddingRight:10,
+        bottom:15,
+        flex:1,
+        right:0,
+        position:'absolute'
+    },
+    mascot_title_text:{
+        fontSize:22,
+        color:"black"
+    },
+    mascot_info_text:{
+        fontSize:14,
+        color:"black"
+    },
+    mascot_container:{
+        flex:2
     }
 });
 

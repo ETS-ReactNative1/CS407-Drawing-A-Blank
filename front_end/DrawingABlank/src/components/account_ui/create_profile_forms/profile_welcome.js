@@ -5,7 +5,7 @@ import { styles } from "./style.js";
 
 class ProfileWelcome extends Component{
     StartCreatingProfile = () =>{
-        this.props.navigation.navigate("ProfileBiography");
+        this.props.navigation.navigate("ProfileAvatar");
     }
     componentDidMount(){
         BackHandler.addEventListener('hardwareBackPress',function (){

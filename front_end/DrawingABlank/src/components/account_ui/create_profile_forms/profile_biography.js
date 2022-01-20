@@ -36,7 +36,12 @@ class ProfileBiography extends Component{
             gender:callback(state.value)
         }));
     }
-
+    componentDidMount(){
+        BackHandler.addEventListener('hardwareBackPress',function (){
+            //Prevents going back
+            return true;
+        });
+    }
     constructor(props){
         super(props);
     }
