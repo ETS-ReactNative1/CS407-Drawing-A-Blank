@@ -9,6 +9,7 @@ from .models import Event, EventBounds, Workout, WorkoutPoint, Grid, Player, Tea
 import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 # for testing only
 from django.views.decorators.csrf import csrf_exempt
 
@@ -232,12 +233,29 @@ def create_user(request):
 
 @csrf_exempt
 @api_view(["POST"])
+def authenticate_user(request):
+    if request.method == "POST":
+        data = request.data
+        username = data["username"]
+        password = data["password"]
+
+        if authenticate(username=username, password=password) is not None:
+            # TODO: return token instead of message
+            return Response("User authenticated")
+        else:
+            return Response("Could not authenticate user")
+
+
+@csrf_exempt
+@api_view(["POST"])
 def update_profile(request):
     if request.method == "POST":
         data = request.data
         # TODO: change getting username from request to get user from token
         #  lookup
         username = data["username"]
+        old_password = data["old_password"]
+        new_password = data["new_password"]
         first_name = data["first_name"]
         last_name = data["last_name"]
         age = data["age"]
@@ -245,23 +263,31 @@ def update_profile(request):
         height = data["height"]
         weight = data["weight"]
 
-        try:
-            user = User.objects.get(username=username)
+        user = authenticate(username=username, password=old_password)
+        if user is not None:
             player = Player.objects.get(user=user)
 
-            user.first_name = first_name
-            user.last_name = last_name
+            if new_password != "":
+                user.set_password(new_password)
+            if first_name != "":
+                user.first_name = first_name
+            if last_name != "":
+                user.last_name = last_name
             user.save()
 
-            player.age = age
-            player.gender = gender
-            player.height = height
-            player.weight = weight
+            if age != 0:
+                player.age = age
+            if gender != "":
+                player.gender = gender
+            if height != 0:
+                player.height = height
+            if weight != 0:
+                player.weight = weight
             player.save()
 
             return Response("User details updated")
-        except User.DoesNotExist:
-            return Response("Could not find user with given username")
+        else:
+            return Response("Could not find user with given username, or password is incorrect")
 
 
 def calc_calories(workout_type, dur):
