@@ -230,6 +230,40 @@ def create_user(request):
         return Response("User added")
 
 
+@csrf_exempt
+@api_view(["POST"])
+def update_profile(request):
+    if request.method == "POST":
+        data = request.data
+        # TODO: change getting username from request to get user from token
+        #  lookup
+        username = data["username"]
+        first_name = data["first_name"]
+        last_name = data["last_name"]
+        age = data["age"]
+        gender = data["gender"]
+        height = data["height"]
+        weight = data["weight"]
+
+        try:
+            user = User.objects.get(username=username)
+            player = Player.objects.get(user=user)
+
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
+
+            player.age = age
+            player.gender = gender
+            player.height = height
+            player.weight = weight
+            player.save()
+
+            return Response("User details updated")
+        except User.DoesNotExist:
+            return Response("Could not find user with given username")
+
+
 def calc_calories(workout_type, dur):
     return 0
 
