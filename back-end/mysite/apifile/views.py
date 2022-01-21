@@ -10,7 +10,8 @@ import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from rest_framework.permissions import IsAuthenticated  
+from rest_framework.permissions import IsAuthenticated 
+from rest_framework.authtoken.models import Token 
 # for testing only
 from django.views.decorators.csrf import csrf_exempt
 
@@ -233,13 +234,9 @@ def create_user(request):
 
         Player.objects.create(user=user, team=team)
 
-        return Response("User added")
+        token = [{"token": Token.objects.get_or_create(user=user)}]
 
-
-
-
-for user in User.objects.all():
-    Token.objects.get_or_create(user=user)
+        return Response(token)
 
 @csrf_exempt
 @api_view(["POST"])
