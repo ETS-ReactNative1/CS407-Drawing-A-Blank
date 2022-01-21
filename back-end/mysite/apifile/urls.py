@@ -3,6 +3,7 @@
 from django.urls import include, path
 from rest_framework import routers
 from . import views
+from rest_framework.authtoken import views # is this an issue having 2 views imports?
 
 router = routers.DefaultRouter()
 router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
@@ -22,4 +23,6 @@ urlpatterns = [
     path('grid-window/', views.grid_window),
     path('super-window/', views.super_window),
     path('populate-convert/', views.populate_convert),
+    # built in authentication view, returns json {'token': "sss"} when valid username + password posted to it
+    path('api-token-auth/', views.obtain_auth_token), 
 ]

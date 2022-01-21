@@ -10,8 +10,12 @@ import datetime
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated  
 # for testing only
 from django.views.decorators.csrf import csrf_exempt
+
+
+
 
 
 # Create your views here.
@@ -28,6 +32,7 @@ from django.views.decorators.csrf import csrf_exempt
 #     serializer_class = HeroSerializer
 
 class PlayerLocation(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,) # uncomment to make endpoints token only
 
     # Not a full implementation, mostly for testing.
     # Instead of responding with the grids, it should replace the entries in the database with your player's colour.
@@ -230,6 +235,11 @@ def create_user(request):
 
         return Response("User added")
 
+
+
+
+for user in User.objects.all():
+    Token.objects.get_or_create(user=user)
 
 @csrf_exempt
 @api_view(["POST"])
