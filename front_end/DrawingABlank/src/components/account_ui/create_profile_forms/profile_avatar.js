@@ -23,12 +23,15 @@ class ProfileAvatar extends Component{
             selectionLimit: 1
         }
         launchImageLibrary(options,result=>{
+            console.log("Got result:"+JSON.stringify(result));
             if(!result.didCancel && !result.errorCode){
-                this.setState({avatar:result.assets[0].uri});
+                console.log("ADDING")
+                this.setState({avatar:{'uri':result.assets[0].uri}});
             }
         })   
     }
     componentDidMount(){
+        this.setState({avatar:this.getAvatarSource(this.props.route.params.teamselection)});
         BackHandler.addEventListener('hardwareBackPress',function (){
             //Prevents going back
             return true;
@@ -65,7 +68,7 @@ class ProfileAvatar extends Component{
                 </View>
                 <Image
                     style={styles.avatar}
-                    source={this.getAvatarSource(this.props.route.params.teamselection)}
+                    source={this.state.avatar}
                 />
                 <View style={styles.continue_button}>
                     <Button title="Choose Avatar" color="#6db0f6" onPress={this.openImages}/>
