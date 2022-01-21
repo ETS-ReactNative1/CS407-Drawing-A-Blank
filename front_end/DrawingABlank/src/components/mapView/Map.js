@@ -25,22 +25,27 @@ import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationRouteContext} from '@react-navigation/core';
 import setupGeolocation from './geoLocation';
-import { getGrids } from '../../api/api_grids';
+import {getGrids} from '../../api/api_grids';
+import useLocalGrids from './useLocalGrids';
+import useGeoLocation from './useGeoLocation';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
 const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
+
+const MAP_ZOOMLEVEL_CLOSEST = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
+const MAP_ZOOMLEVEL_FURTHEST = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
+
 const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
-const DEBUG_ZOOM_LEVEL = 0.01;
+const DEBUG_ZOOM_LEVEL = {
+  latitudeDelta: 0.6039001489487674,
+  longitudeDelta: 0.5393288657069206,
+};
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
-  //const [markers, setMarkers] = useState([]);
-  //const [colourSpaces, setColourSpaces] = useState(
-  //  getInitialState().colourSpaces,
-  //); //getInitialState().colourSpaces)
   const navigation = useNavigation();
 
   const workout_button_start = 'Start Workout';
@@ -53,18 +58,11 @@ function Map({setOverlayVisible, setOverlayContent}) {
   const userPathRef = useRef(userPath);
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
-  const userLocation = useRef(region);
+
+  const [DrawGrids, setGridDrawScale] = useLocalGrids(DEBUG_ZOOM_LEVEL);
+  const userLocation = useGeoLocation();
 
   const [events, setEvents] = useState([]);
-
-  const [grids, setGrids] = useState([]);
-
-  function onRegionChange(region) {
-    setRegion(region);
-  }
-
-  // issue with user location sensitivity being too low
-  // moving between two close-by locations wont move map
 
   // draw user path onto map
   function DrawUserPath() {
@@ -75,24 +73,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
         strokeColor={USER_INK_COLOUR}
       />
     );
-  }
-
-  function DrawGrids(){
-    return grids.map((grid, i)=>{
-      if(grid.bounds.length > 0){
-        return(
-          <Polygon
-            coordinates={grid.bounds}
-            strokeColor={"#000000"}
-            fillColor={"#"+grid.colour}
-            strokeWidth={1}
-            key={i}
-          >
-
-          </Polygon>
-        );
-      }
-    });
   }
 
   function DrawPolygons() {
@@ -172,59 +152,81 @@ function Map({setOverlayVisible, setOverlayContent}) {
     navigation.navigate('post_workout_stats', {recorder: recorder});
   }
 
-  function collectGrids() {
-    Geolocation.getCurrentPosition(({coords}) => {
-      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
-      [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
-    });
-  }
+  useEffect(() => {
+    const {latitude, longitude} = userLocation;
+    const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
+    const oldUserPath = userPathRef.current;
+
+    recorder.addCoordinate(latitude, longitude);
+
+    //draw new user movement polygon - map their travelled path
+    userPathRef.current = [...oldUserPath, {latitude, longitude}];
+
+    setUserPath(userPathRef.current);
+    if (isMapTracking.current) {
+      setRegion({
+        //...region, //take previous zoom level
+        ...zoomLevel, //take zoom level from constant
+        latitude,
+        longitude,
+      });
+    } else {
+    }
+  }, [userLocation]);
 
   useEffect(() => {
-    // Get User permission for location tracking, and initialize map to listen
-    // if user permission not given, map will default to initial state - could change to anything e.g. dont render map at all nd show hser dialog
-    // (logic could be moved to "withPermissions" hoc)1
-    // console.log('cs1', colourSpacesRef.current, colourSpaces);
-    const watchId = setupGeolocation(
-      userLocation => {
-        const {latitude, longitude} = userLocation;
-        const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
-        const oldUserPath = userPathRef.current;
-        
-        recorder.addCoordinate(latitude,longitude);
-        
-        userLocation.current = {latitude, longitude};
-        //draw new user movement polygon - map their travelled path
-        userPathRef.current = [
-          ...oldUserPath,
-          {latitude, longitude},
-          // shows path as a series of discrete data points
-          //generateColourSpace(userLocation),
-          //generateColourSpace(userLocation, region), // for use when we want to implement working in low service locations - draw between last known locatoins
-        ];
-        setUserPath(userPathRef.current);
+    getEvents().then(result => setEvents(result || []));
+  }, []);
 
-        if (isMapTracking.current) {
-          setRegion({
-            //...region, //take previous zoom level
-            ...zoomLevel, //take zoom level from constant
-            latitude,
-            longitude,
-          });
-        } else {
-        } //do nothing - dont snap the map away from user pan
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 200, // max time for location request duration
-        maximumAge: 1000, // max age before it will refresh cache
-        distanceFilter: 5, // min moved distance before next data point
-      },
-    );
+  function handleRegionChange(newRegion) {
+    const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
 
-    getEvents().then(result => setEvents(result));
-    collectGrids();
-    }, []);
+    const zoom = convertZoomRepresentation({longitudeDelta, latitudeDelta});
+
+    function convertZoomRepresentation(RNM_Zoom) {
+      // #1 Converting map zoom level to backend zoom arg type
+      // #2 Managing the frequency of requests made for a new zoom level/tile size
+
+      const {longitudeDelta, latitudeDelta} = RNM_Zoom;
+
+      // backend debug = 0.01 for field of view
+      // 10 for tile
+      setGridDrawScale(RNM_Zoom);
+
+      // when zoomed out enough, want to merge tiles
+      // i.e. downsample
+
+      // have a few different LoDs (level of detail)
+      // either cache each LoD or just generate a new request
+      // unfeasible to do a new LoD for continuous scale
+      //    too many requests per second or too much memory usage
+      // For now, no cache the request not the response grid object
+      //    making a new request even if no changes to LoD
+      // still requires LoD setups tho - discretize the zoom
+
+      // deltas ratio is constant, (range due to different phone dimensions)
+      // take just one of the deltas as level of zoom
+
+      // are essentially picking most suitable tilesize
+      // based on screen size/ map size
+
+      // get tile size of that bucket
+      // "what tile size corresponsds to this lod level"
+      //zoomLoDs[zoomLoD] = tileSize;
+
+      // need map of zoom levels to zub sample
+      // i.e. scale subsampling (zoom arg) with region zoom/ pinch
+      // but want them to appear the same size on screen regardless of zoom level
+      //
+
+      // to be made continous
+      // will need to seperae from backend
+      // otherwise space or time becomes and issue (round trip time vs cahce memory)
+      // contiuos - get most detailed tile set
+      // work on that set on front end - compute better size from that -
+      //    would require merging/downsampling on the frontend
+    }
+  }
 
   return (
     <View style={styles.mapContainer}>
@@ -233,7 +235,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
         style={styles.map}
         region={region}
         mapType={'standard'}
-        showsUserLocation={true}>
+        showsUserLocation={true}
+        onRegionChange={r => handleRegionChange(r)}
+        minZoomLevel={5}
+        maxZoomLevel={10}>
         <DrawGrids />
         <DrawMarkers />
         <DrawPolygons />
@@ -253,7 +258,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
             console.log('Starting Workout...');
             recorder.startWorkout();
             Geolocation.getCurrentPosition(({coords}) =>
-               recorder.addCoordinate(coords.latitude, coords.longitude),
+              recorder.addCoordinate(coords.latitude, coords.longitude),
             );
             set_workout_active(true);
             set_workout_button_text(workout_button_stop);
@@ -266,67 +271,23 @@ function Map({setOverlayVisible, setOverlayContent}) {
           }
         }}
         workoutText={workout_button_text}
-        drawGridsFunction={collectGrids}
+        drawGridsFunction={() => {}}
+        // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}
       />
       <Sheet
         ref={bottomSheetRef}
-        // should definitely be sorted - probably when I have "real" data from backend
         localEvents={events}
         onEventClick={eventRegion =>
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }
         // will probably need to redo how this works too at the same time
-        calculateDistanceToUser={
-          useCallback((dest) => {
-            //To fix
-            return 0;
-          })
-        }
+        calculateDistanceToUser={useCallback(dest => {
+          //To fix
+          return 0;
+        })}
       />
     </View>
   );
-}
-
-// in case we want to draw the user path from polygons
-// can return polygons, representing the last two datapoints
-// or can return circles representing a single data point
-function generateColourSpace(to, from) {
-  const {longitude: toLong, latitude: toLat} = to;
-
-  // low service mode - draw between points (might end up being normal use depending on location polling rate and performance)
-  //  might accidentally be reimplementing backend feature
-  //  should be on frontend tho - dont want to send to server if in low data zone
-  // will keep until otherwise relevent
-  if (from) {
-    const {longitude: fromLong, latitude: fromLat} = from;
-
-    return {
-      // unfinished
-      coordinates: [
-        {latitude: 37.8025259, longitude: -122.4351431},
-        {latitude: 37.7896386, longitude: -122.421646},
-        {latitude: 37.7665248, longitude: -122.4161628},
-        {latitude: 37.7734153, longitude: -122.4577787},
-      ],
-      strokeColor: '#000',
-      fillColor: 'rgba(43, 145, 222, 0.54)',
-      strokeWidth: 1,
-      name: 'Example area',
-      id: 0,
-    };
-  }
-  // Only one param given - draw polygon spot, for now circle around the user location
-  // should result in a sequence of circles drawn over time - on each user location update = path
-  // still v sloppy, one "circle" per user blip - could combine multiple into a complex polygon easily
-  // just dont know if it will actually help performance - should: fewer objects
-  else
-    return {
-      center: to,
-      radius: USER_DRAW_DIAMETER / 2,
-      fillColor: USER_INK_COLOUR,
-      strokeWidth: 0,
-      id: Math.floor(Math.random() * 1000000),
-    };
 }
 
 export default Map;
