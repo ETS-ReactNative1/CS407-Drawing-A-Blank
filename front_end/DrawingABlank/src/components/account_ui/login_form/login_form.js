@@ -3,6 +3,10 @@ import React, {Component} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
+import * as Authentication from '../../../api/api_authentication.js';
+import * as SecureStorage from 'expo-secure-store';
+
+const TOKEN_KEY_NAME = 'fresgo_access_token';
 
 class LoginScreen extends Component{
     state = {
@@ -38,7 +42,17 @@ class LoginScreen extends Component{
             return;
         }
         //Continue with the login process...
-        this.props.navigation.navigate('map_view_complete');
+        //We have emails at the moment, maybe we should change this to username?
+        Authentication.authenticateUser(this.state.email,this.state.password).then(result => {
+            //Check what happens on 403 errors
+            var token = result.token;
+            SecureStorage.setItemAsync('fresgo_access_token',token).then(res => {
+                this.props.navigation.navigate('map_view_complete');
+            });
+        }).catch(err => {
+            //Put error message here later for specifics
+            alert("Failed to log in - Unable to connect to authentication service.");
+        });
     }
 
     changeToRegister = () =>{
