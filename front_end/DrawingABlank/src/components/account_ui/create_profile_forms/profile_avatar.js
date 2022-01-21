@@ -3,10 +3,11 @@ import {useState} from "react";
 import {Text, View, Button, Image, BackHandler} from "react-native";
 import { styles } from "./style";
 import { launchImageLibrary } from 'react-native-image-picker';
+import {updateProfile} from '../../../api/api_profile.js';
 
 class ProfileAvatar extends Component{
     state={
-        avatar:'https://static.wikia.nocookie.net/vocaloid/images/5/57/Miku_v4_bundle_art.png'
+        avatar:''
     }
 
     goToMap = () =>{
@@ -25,8 +26,7 @@ class ProfileAvatar extends Component{
             if(!result.didCancel && !result.errorCode){
                 this.setState({avatar:result.assets[0].uri});
             }
-        })
-        
+        })   
     }
     componentDidMount(){
         BackHandler.addEventListener('hardwareBackPress',function (){
@@ -42,6 +42,14 @@ class ProfileAvatar extends Component{
             return require('../../../assets/img/ocean.png');
         if(team==="windy")
             return require('../../../assets/img/windy.png');
+    }
+    createProfile = (username,profile_name,date_of_birth,gender,height,weight) => {
+        var first_name = profile_name.split(' ')[0];
+        var last_name = (profile_name.split(' ').length > 1) ? profile_name.splt(' ')[1] : "";
+        //Check what token is required here
+        updateProfile(username,'',age=date_of_birth,gender=gender,first_name=first_name,last_name=last_name,height=height,weight=weight).then(resp=>{
+            this.goToMap();
+        }).catch(err => alert(err));
     }
     render(){
         return(

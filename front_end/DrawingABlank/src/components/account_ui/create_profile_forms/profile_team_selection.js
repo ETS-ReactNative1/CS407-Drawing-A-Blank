@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {StyleSheet, Text, View, Button, TextInput,Alert, BackHandler, TouchableOpacity, Image} from "react-native";
 import { styles } from "./style.js";
+import { createUser } from '../../../api/api_authentication.js';
 
 class ProfileTeamSelection extends Component{
     state={
@@ -21,6 +22,13 @@ class ProfileTeamSelection extends Component{
             this.setState({teamSelection:""});
         else
             this.setState({teamSelection:choice});
+    }
+    createAccount = (username,password,email,team) =>{
+        createUser(username,email,password,team).then(res => {
+            this.moveToDetails();
+        }).catch(err => {
+            alert(err);
+        });
     }
 
     render(){

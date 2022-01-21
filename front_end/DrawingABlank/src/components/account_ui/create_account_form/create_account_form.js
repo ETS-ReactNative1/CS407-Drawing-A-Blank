@@ -43,7 +43,7 @@ class CreateAccountScreen extends Component{
             alert(verification[1]);
         }else{
             //Continue with the login process...
-            this.props.navigation.navigate('profile_navigator');
+            this.props.navigation.navigate('profile_navigator',this.state);
         }
     }
     
