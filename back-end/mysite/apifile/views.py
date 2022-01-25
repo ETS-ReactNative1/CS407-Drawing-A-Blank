@@ -205,7 +205,8 @@ def record_workout(request):
 
         return Response("workout added")
 
-class CreateUser(viewsets.ModelViewSet):
+
+class CreateUser(viewsets.ViewSet):
     # @csrf_exempt
     # @api_view(["POST"])
     def list(self, request):
