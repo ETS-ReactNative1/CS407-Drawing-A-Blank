@@ -233,7 +233,7 @@ def sub_sample(coords, zoom_level=1):
 
     all_coords = []
     for tile in tiles:
-        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), dist=zoom_level)
+        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), size=zoom_level)
         if bounds:
             all_coords.append({"colour": tile.colour, "bounds": bounds})
     return all_coords
