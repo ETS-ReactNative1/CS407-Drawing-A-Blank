@@ -76,8 +76,10 @@ def latlong_to_grid(latlong):
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
     grid = transformer.transform(latlong[0], latlong[1])
-    easting = (round(grid[0]) % GRID_SIZE) * GRID_SIZE
-    northing = (round(grid[1]) % GRID_SIZE) * GRID_SIZE
+    easting = round(grid[0])
+    easting = easting - (easting % GRID_SIZE)
+    northing = round(grid[1])
+    northing = northing - (northing % GRID_SIZE)
     return easting, northing
 
 
@@ -162,7 +164,7 @@ def grids_in_path(point_a, point_b):
 
     # Using the bresenham line algorithm implemented using a library.
     grids = list(bresenham(east_a, north_a, east_b, north_b))
-    grids = [(x % GRID_SIZE) * GRID_SIZE for x in grids]
+    grids = [x - (x % GRID_SIZE) for x in grids]
 
     # https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))

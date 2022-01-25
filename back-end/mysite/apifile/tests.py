@@ -8,10 +8,8 @@ from datetime import datetime
 # Create your tests here.
 class GridTestCase(TestCase):
     def setUp(self):
-        models.Team.objects.create(name="Test Team1", colour="FF0000")
-        models.Team.objects.create(name="Test Team2", colour="00FF00")
-        team = models.Team.objects.get(name="Test Team1")
-        team2 = models.Team.objects.get(name="Test Team2")
+        team = models.Team.objects.create(name="Test Team1", colour="FF0000")
+        team2 = models.Team.objects.create(name="Test Team2", colour="00FF00")
         models.Grid.objects.create(easting="431890", northing="265590", team=team, time=datetime.now())
         models.Grid.objects.create(easting="431890", northing="265595", team=team2, time=datetime.now())
         models.Grid.objects.create(easting="432315", northing="265865", team=team, time=datetime.now())
