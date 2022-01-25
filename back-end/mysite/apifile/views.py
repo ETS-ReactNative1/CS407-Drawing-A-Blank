@@ -308,7 +308,7 @@ class Grid(viewsets.ViewSet):
         zoom = data['zoom']
 
         allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
-        return Response(str(allGrids))
+        return Response(allGrids)
 
 
 @csrf_exempt

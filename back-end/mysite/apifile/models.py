@@ -64,6 +64,7 @@ class Event(models.Model):
     @staticmethod
     def get_current_events():
         today = timezone.now()
+        print(Event.objects.all())
         curr_events = Event.objects.filter(start__lte=today, end__gte=today)
 
         return curr_events
