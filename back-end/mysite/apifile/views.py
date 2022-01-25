@@ -12,9 +12,25 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated 
 from rest_framework.authtoken.models import Token 
-from django.views import View  # import the View parent class
 # for testing only
 from django.views.decorators.csrf import csrf_exempt
+
+
+
+
+
+# Create your views here.
+
+
+# example query on data
+
+# from .serializers import HeroSerializer
+# from .models import Hero
+
+
+# class HeroViewSet(viewsets.ModelViewSet):
+#     queryset = Hero.objects.all().order_by('name')
+#     serializer_class = HeroSerializer
 
 class PlayerLocation(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,) # uncomment to make endpoints token only
@@ -67,7 +83,6 @@ class PlayerLocation(viewsets.ViewSet):
 
 
 class LatlongsOfGrid(viewsets.ViewSet):
-    permission_classes = (IsAuthenticated,) # uncomment to make endpoints token only
 
     # GET request: parameter = a grid coordinate, responds with the 4 coordinates.
     # get 4 coordinates of a grid for testing:
@@ -100,6 +115,7 @@ class LatlongsOfGrid(viewsets.ViewSet):
         allGrids = grids.grids_visible([bl, br, tr, tl])
         return Response(allGrids)
 
+
 # test view to add events to db
 def add_events(_):
     ev1 = Event.objects.create(start=datetime.datetime.now(),
@@ -117,25 +133,22 @@ def add_events(_):
     return Response("events added")
 
 
-class CurrEvents(View):
-    permission_classes = (IsAuthenticated,)
+def current_events(_):
+    ret_val = dict()
+    events = Event.get_current_events()
+    for event in events:
+        bounds = event.get_bounds()
+        for i in range(0, len(bounds)):
+            bounds[i] = grids.grid_to_latlong(bounds[i])
+        values = {
+            'start': event.start,
+            'end': event.end,
+            'bounds': bounds
+        }
 
-    def get(self, _):
-        ret_val = dict()
-        events = Event.get_current_events()
-        for event in events:
-            bounds = event.get_bounds()
-            for i in range(0, len(bounds)):
-                bounds[i] = grids.grid_to_latlong(bounds[i])
-            values = {
-                'start': event.start,
-                'end': event.end,
-                'bounds': bounds
-            }
+        ret_val[event.id] = values
 
-            ret_val[event.id] = values
-
-        return JsonResponse(ret_val)
+    return JsonResponse(ret_val)
 
 
 @csrf_exempt
