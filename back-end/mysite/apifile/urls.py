@@ -9,6 +9,7 @@ router = routers.DefaultRouter()
 router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
 router.register("playerLocation", views.PlayerLocation, "playerLocation")
 router.register("events", views.Events, "events")
+router.register("grid", views.Grid, "grid")
 # example
 # router.register(r'heroes', views.HeroViewSet)
 
@@ -20,7 +21,6 @@ urlpatterns = [
     path('add-events/', views.add_events),
     path('record-workout/', views.record_workout),
     path('create-user/', views.create_user),
-    path('grid-window/', views.grid_window),
     # path('populate-convert/', views.populate_convert),
     # built in authentication view, returns json {'token': "sss"} when valid username + password posted to it
     path('api-token-auth/', views_auth_token.obtain_auth_token),

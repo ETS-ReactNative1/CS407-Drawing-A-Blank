@@ -297,19 +297,19 @@ def calc_calories(workout_type, dur):
     return 0
 
 
-@csrf_exempt
-@api_view(["POST"])
-def grid_window(request):
-    if request.method == "POST":
-        data = request.data
-        bl = data['bottom_left']
-        br = data['bottom_right']
-        tr = data['top_right']
-        tl = data['top_left']
-        zoom = data['zoom']
+class Grid(viewsets.ViewSet):
 
-        allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
-        return Response(allGrids)
+    def list(self, request):
+        if request.method == "POST":
+            data = request.data
+            bl = data['bottom_left']
+            br = data['bottom_right']
+            tr = data['top_right']
+            tl = data['top_left']
+            zoom = data['zoom']
+
+            allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
+            return Response(allGrids)
 
 
 @csrf_exempt
