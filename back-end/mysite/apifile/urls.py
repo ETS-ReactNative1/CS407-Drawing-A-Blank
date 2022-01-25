@@ -8,7 +8,7 @@ from rest_framework.authtoken import views as views_auth_token  # is this an iss
 router = routers.DefaultRouter()
 router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
 router.register("playerLocation", views.PlayerLocation, "playerLocation")
-router.register("events", views.Events, "events")
+router.register(r"events", views.Events, "events")
 router.register(r"grid", views.Grid, "grid")
 # example
 # router.register(r'heroes', views.HeroViewSet)
