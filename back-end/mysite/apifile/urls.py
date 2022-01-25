@@ -8,6 +8,7 @@ from rest_framework.authtoken import views as views_auth_token  # is this an iss
 router = routers.DefaultRouter()
 router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
 router.register("playerLocation", views.PlayerLocation, "playerLocation")
+router.register("events", views.Events, "events")
 # example
 # router.register(r'heroes', views.HeroViewSet)
 
@@ -16,7 +17,6 @@ router.register("playerLocation", views.PlayerLocation, "playerLocation")
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('current-events/', views.current_events),
     path('add-events/', views.add_events),
     path('record-workout/', views.record_workout),
     path('create-user/', views.create_user),
