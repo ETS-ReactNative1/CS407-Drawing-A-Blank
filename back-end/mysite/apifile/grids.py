@@ -25,7 +25,7 @@ the bng coordinates work)
 
 """
 
-GRID_SIZE = 5
+UNIT_TILE_SIZE = 5
 
 
 def distance(point_a, point_b):
@@ -77,9 +77,9 @@ def latlong_to_grid(latlong):
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
     grid = transformer.transform(latlong[0], latlong[1])
     easting = round(grid[0])
-    easting = easting - (easting % GRID_SIZE)
+    easting = easting - (easting % UNIT_TILE_SIZE)
     northing = round(grid[1])
-    northing = northing - (northing % GRID_SIZE)
+    northing = northing - (northing % UNIT_TILE_SIZE)
     return easting, northing
 
 
@@ -92,7 +92,7 @@ def bounds_of_grid(location, size=1):
     converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
 
-    dist = size * GRID_SIZE
+    dist = size * UNIT_TILE_SIZE
 
     easting, northing = location
 
@@ -164,7 +164,7 @@ def grids_in_path(point_a, point_b):
 
     # Using the bresenham line algorithm implemented using a library.
     grids = list(bresenham(east_a, north_a, east_b, north_b))
-    grids = [x - (x % GRID_SIZE) for x in grids]
+    grids = [x - (x % UNIT_TILE_SIZE) for x in grids]
 
     # https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
@@ -200,7 +200,7 @@ def sub_sample(coords, sub_dimension=1):
     if sub_dimension == 1:
         return grids_visible(coords)
 
-    zoom_level = sub_dimension * GRID_SIZE
+    zoom_level = sub_dimension * UNIT_TILE_SIZE
 
     bottomLeft = coords[0]
     topRight = coords[2]
