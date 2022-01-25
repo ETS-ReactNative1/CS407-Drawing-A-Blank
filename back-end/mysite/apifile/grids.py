@@ -106,14 +106,14 @@ def bounds_of_grid(location, size=1):
 
         # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids
         # coordinates.
-        grids = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
-        for i in range(len(grids)):
-            new_easting = easting + grids[i][0]
-            new_northing = northing + grids[i][1]
+        grid_diffs = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
+        for diff in grid_diffs:
+            new_easting = easting + diff[0]
+            new_northing = northing + diff[1]
 
             # convert to latlong
             latitude, longitude = grid_to_latlong((new_easting, new_northing))
-            if not (CoordsConvert.objects.filter(easting=new_easting, northing=new_northing).exists()):
+            if not CoordsConvert.objects.filter(easting=new_easting, northing=new_northing).exists():
                 CoordsConvert.objects.create(easting=new_easting, northing=new_northing,
                                              longitude=longitude, latitude=latitude)
             coordinates.append({"latitude": latitude, "longitude": longitude})
