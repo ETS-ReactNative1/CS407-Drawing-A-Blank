@@ -300,16 +300,15 @@ def calc_calories(workout_type, dur):
 class Grid(viewsets.ViewSet):
 
     def list(self, request):
-        if request.method == "POST":
-            data = request.data
-            bl = data['bottom_left']
-            br = data['bottom_right']
-            tr = data['top_right']
-            tl = data['top_left']
-            zoom = data['zoom']
+        data = request.data
+        bl = data['bottom_left']
+        br = data['bottom_right']
+        tr = data['top_right']
+        tl = data['top_left']
+        zoom = data['zoom']
 
-            allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
-            return Response(allGrids)
+        allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
+        return Response(allGrids)
 
 
 @csrf_exempt
