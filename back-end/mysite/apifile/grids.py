@@ -164,7 +164,7 @@ def grids_in_path(point_a, point_b):
 
     # Using the bresenham line algorithm implemented using a library.
     grids = list(bresenham(east_a, north_a, east_b, north_b))
-    grids = [x - (x % UNIT_TILE_SIZE) for x in grids]
+    grids = [(x[0] - (x[0] % UNIT_TILE_SIZE), x[1] - (x[1] % UNIT_TILE_SIZE)) for x in grids]
 
     # https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
