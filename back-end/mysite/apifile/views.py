@@ -135,7 +135,7 @@ def add_events(_):
 
 class Events(viewsets.ViewSet):
 
-    def list(self, request):
+    def list(self):
         ret_val = dict()
         events = Event.get_current_events()
         for event in events:
@@ -150,7 +150,7 @@ class Events(viewsets.ViewSet):
 
             ret_val[event.id] = values
 
-        return JsonResponse(ret_val)
+        return Response(ret_val)
 
 
 @csrf_exempt
