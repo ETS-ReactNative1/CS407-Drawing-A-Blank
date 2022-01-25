@@ -79,6 +79,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # LOCAL CONNECTION
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -98,7 +99,7 @@ DATABASES = {
         'HOST': 'mysql.dcs.warwick.ac.uk',
     }
 }
-"""
+
 
 
 # Password validation
