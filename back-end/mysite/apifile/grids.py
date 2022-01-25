@@ -146,9 +146,10 @@ def grids_in_radius(position, radius=4):
     # seems fine for now, could set the function's center at 0,0 and just
     # add the offset to the origin of the square.
     grids = points_in_circle_np(radius, x, y)
+    grids = [(x[0] - (x[0] % UNIT_TILE_SIZE), x[1] - (x[1] % UNIT_TILE_SIZE)) for x in grids]
 
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
-    return grids
+    return set(grids)
 
 
 def grids_in_path(point_a, point_b):
@@ -170,7 +171,7 @@ def grids_in_path(point_a, point_b):
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
 
     # convert to set to remove duplicate grids from modulo op
-    return list(set(grids))
+    return set(grids)
 
 
 def all_grids_with_path(point_a, point_b, radius):
