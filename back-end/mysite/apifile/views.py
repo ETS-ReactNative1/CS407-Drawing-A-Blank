@@ -299,7 +299,6 @@ def calc_calories(workout_type, dur):
 
 class Grid(viewsets.ViewSet):
 
-    @api_view(["POST"])
     def list(self, request):
         data = request.data
         bl = data['bottom_left']
