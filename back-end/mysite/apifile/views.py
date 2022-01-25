@@ -7,7 +7,7 @@ from . import grids
 from django.http import JsonResponse
 from .models import Event, EventBounds, Workout, WorkoutPoint, Grid, Player, Team, CoordsConvert
 import datetime
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated 
@@ -301,7 +301,8 @@ def calc_calories(workout_type, dur):
 
 class GridView(viewsets.ViewSet):
 
-    def create(self, request):
+    @action(methods=['post'], detail=True)
+    def query(self, request):
         data = request.data
         bl = data['bottom_left']
         br = data['bottom_right']
