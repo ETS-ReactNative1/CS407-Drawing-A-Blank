@@ -135,7 +135,7 @@ def add_events(_):
 
 class Events(viewsets.ViewSet):
 
-    def list(self):
+    def list(self, _):
         ret_val = dict()
         events = Event.get_current_events()
         for event in events:
