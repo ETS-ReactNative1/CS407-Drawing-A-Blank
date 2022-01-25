@@ -1,7 +1,7 @@
 import operator
 from functools import reduce
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, ModelViewSet
 from rest_framework.response import Response
 from . import grids
 from django.http import JsonResponse
@@ -205,7 +205,7 @@ def record_workout(request):
 
         return Response("workout added")
 
-class CreateUser(viewsets.ViewSet):
+class CreateUser(viewsets.ModelViewSet):
     # @csrf_exempt
     # @api_view(["POST"])
     def list(self, request):
