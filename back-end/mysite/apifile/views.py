@@ -300,6 +300,7 @@ class GridView(viewsets.ViewSet):
 
     def list(self, request):
         data = request.data
+        return Response(data)
         bl = data['bottom_left']
         br = data['bottom_right']
         tr = data['top_right']
