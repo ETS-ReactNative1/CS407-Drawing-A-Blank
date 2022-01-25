@@ -296,7 +296,7 @@ def calc_calories(workout_type, dur):
     return 0
 
 
-class Grid(viewsets.ViewSet):
+class GridView(viewsets.ViewSet):
 
     def list(self, request):
         data = request.data
