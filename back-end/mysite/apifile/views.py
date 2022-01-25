@@ -230,7 +230,7 @@ def grid_window(request):
         tl = data['top_left']
         zoom = data['zoom']
 
-        allGrids = grids.super_sample([bl, br, tr, tl], zoom_level=zoom)
+        allGrids = grids.sub_sample([bl, br, tr, tl], zoom_level=zoom)
         return Response(allGrids)
 
 
