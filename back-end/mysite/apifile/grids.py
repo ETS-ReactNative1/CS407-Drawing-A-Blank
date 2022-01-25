@@ -200,6 +200,8 @@ def sub_sample(coords, zoom_level=1):
     if zoom_level == 1:
         return grids_visible(coords)
 
+    zoom_level = zoom_level * GRID_SIZE
+
     bottomLeft = coords[0]
     topRight = coords[2]
 
