@@ -188,7 +188,7 @@ def all_grids_with_path(point_a, point_b, radius):
     return all_grids
 
 
-def sub_sample(coords, zoom_level=1):
+def sub_sample(coords, sub_dimension=1):
     """
         uses all tiles visible and ensures that not too many grids are sent back to the user.
         zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
@@ -197,10 +197,10 @@ def sub_sample(coords, zoom_level=1):
         also considers the colours and finds the average colour for that larger grid.
     """
 
-    if zoom_level == 1:
+    if sub_dimension == 1:
         return grids_visible(coords)
 
-    zoom_level = zoom_level * GRID_SIZE
+    zoom_level = sub_dimension * GRID_SIZE
 
     bottomLeft = coords[0]
     topRight = coords[2]
@@ -235,7 +235,7 @@ def sub_sample(coords, zoom_level=1):
 
     all_coords = []
     for tile in tiles:
-        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), size=zoom_level)
+        bounds = bounds_of_grid((tile.east * sub_dimension, tile.north * sub_dimension), size=sub_dimension)
         if bounds:
             all_coords.append({"colour": tile.colour, "bounds": bounds})
     return all_coords
