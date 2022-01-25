@@ -21,8 +21,7 @@ urlpatterns = [
     path('record-workout/', views.record_workout),
     path('create-user/', views.create_user),
     path('grid-window/', views.grid_window),
-    path('super-window/', views.super_window),
-    path('populate-convert/', views.populate_convert),
+    # path('populate-convert/', views.populate_convert),
     # built in authentication view, returns json {'token': "sss"} when valid username + password posted to it
-    path('api-token-auth/', views.obtain_auth_token), 
+    path('api-token-auth/', views.obtain_auth_token),
 ]
