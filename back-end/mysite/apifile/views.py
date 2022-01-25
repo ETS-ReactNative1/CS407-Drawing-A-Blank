@@ -11,13 +11,14 @@ from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated 
-from rest_framework.authtoken.models import Token 
+from rest_framework.authtoken.models import Token
 from django.views import View  # import the View parent class
 # for testing only
 from django.views.decorators.csrf import csrf_exempt
 
+
 class PlayerLocation(viewsets.ViewSet):
-    permission_classes = (IsAuthenticated,) # uncomment to make endpoints token only
+    permission_classes = (IsAuthenticated,)  # uncomment to make endpoints token only
 
     # Not a full implementation, mostly for testing.
     # Instead of responding with the grids, it should replace the entries in the database with your player's colour.
@@ -99,6 +100,7 @@ class LatlongsOfGrid(viewsets.ViewSet):
 
         allGrids = grids.grids_visible([bl, br, tr, tl])
         return Response(allGrids)
+
 
 # test view to add events to db
 def add_events(_):
@@ -219,6 +221,7 @@ def create_user(request):
 
         return Response(token)
 
+
 @csrf_exempt
 @api_view(["POST"])
 def authenticate_user(request):
@@ -310,7 +313,7 @@ def populate_convert(request):
 
         for easting in range(lower_easting, upper_easting + 1):
             for northing in range(lower_northing, upper_northing + 1):
-                if not(CoordsConvert.objects.filter(easting=easting, northing=northing).exists()):
+                if not (CoordsConvert.objects.filter(easting=easting, northing=northing).exists()):
                     latitude, longitude = grids.grid_to_latlong((easting, northing))
                     CoordsConvert.objects.create(easting=easting, northing=northing,
                                                  longitude=longitude, latitude=latitude)
