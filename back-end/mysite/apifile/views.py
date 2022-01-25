@@ -208,7 +208,7 @@ def record_workout(request):
 class CreateUser(viewsets.ViewSet):
     # @csrf_exempt
     # @api_view(["POST"])
-    def retrieve(self, request):
+    def create(self, request):
         data = request.data
         username = data["username"]
         email = data["email"]
