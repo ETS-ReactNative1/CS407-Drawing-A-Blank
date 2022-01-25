@@ -307,8 +307,6 @@ class Grid(viewsets.ViewSet):
         tl = data['top_left']
         zoom = data['zoom']
 
-        return Response(str(bl) + str(br) + str(tr) + str(tl) + str(zoom))
-
         allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
         return Response(allGrids)
 
