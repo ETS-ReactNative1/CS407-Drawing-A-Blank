@@ -10,6 +10,7 @@ router.register("gridsCoords", views.LatlongsOfGrid, "gridsCoords")
 router.register("playerLocation", views.PlayerLocation, "playerLocation")
 router.register(r"events", views.Events, "events")
 router.register(r"grid", views.Grid, "grid")
+router.register(r"create-user", views.CreateUser, "create-user")
 # example
 # router.register(r'heroes', views.HeroViewSet)
 
@@ -20,7 +21,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('add-events/', views.add_events),
     path('record-workout/', views.record_workout),
-    path('create-user/', views.create_user),
     # path('populate-convert/', views.populate_convert),
     # built in authentication view, returns json {'token': "sss"} when valid username + password posted to it
     path('api-token-auth/', views_auth_token.obtain_auth_token),
