@@ -299,7 +299,7 @@ def calc_calories(workout_type, dur):
 class GridView(viewsets.ViewSet):
 
     def list(self, request):
-        data = request.body
+        data = request.data
         return Response(data)
         bl = data['bottom_left']
         br = data['bottom_right']
