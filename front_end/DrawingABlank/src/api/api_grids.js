@@ -1,4 +1,4 @@
-import { request } from "./api_networking.js";
+import { request, getToken } from "./api_networking.js";
 
 export const getGrids = (bottom_left, top_right) => {
     body = {
@@ -7,7 +7,7 @@ export const getGrids = (bottom_left, top_right) => {
         "zoom":10
     };
     console.log("Sending grid window request with:"+JSON.stringify(body));
-    return request('POST','map/collect/','',JSON.stringify(body))
+    return getToken().then(token => request('POST','map/collect/','',JSON.stringify(body),token))
     .then(response => response.json())
-    .catch(err => console.log("ERROR:"+err));
+    .catch(err => console.log("ERROR IN GRIDS:"+err));
 }

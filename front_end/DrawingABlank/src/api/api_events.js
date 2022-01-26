@@ -1,4 +1,4 @@
-import {request} from './api_networking.js';
+import {request, getToken} from './api_networking.js';
 
 /**
  * 
@@ -36,7 +36,7 @@ function getBoundsAsJSON(bounds){
 }
 
 export const getEvents = () => {
-  return request('GET', 'events/', '', '')
+  return getToken().then(token => request('GET', 'events/', '', '',token))
     .then(response => response.json())
     .then(data => {
       console.log("Got:"+JSON.stringify(data));
@@ -68,5 +68,5 @@ export const getEvents = () => {
       console.log('Returning :' + JSON.stringify(result));
       return result;
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log("ERROR IN EVENTS:"+err));
 }

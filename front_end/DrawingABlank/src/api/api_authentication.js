@@ -22,6 +22,8 @@ export const authenticateUser = (username,password) => {
     return request('POST','api-token-auth/','',JSON.stringify(body))
     .then(response=>{
         if(response.status != 200){
+            console.log(response);
+            console.log(response.status);
             throw new Error('Incorrect credentials.');
         }
         return response.json();

@@ -26,7 +26,7 @@ export const request = (req_method,req_endpoint,req_queries,req_body, req_authen
         method:req_method,
         headers:{
             'Accept':'application/json',
-            'Authorization': req_authentication,
+            'Authorization': req_authentication!= "" ? "Token " + req_authentication : "",
             'Content-Type':'application/json'
         },
         body:req_body
@@ -38,5 +38,5 @@ export const getToken = () => {
 }
 
 export const setToken = (token) => {
-    SecureStorage.setItemAsync(TOKEN_KEY_NAME,token).then(res => {});
+    SecureStorage.setItemAsync(TOKEN_KEY_NAME,token);
 }
