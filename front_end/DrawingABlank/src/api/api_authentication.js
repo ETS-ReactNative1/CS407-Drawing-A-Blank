@@ -8,7 +8,7 @@ export const createUser = (username, email, password, team) => {
         "team":team
     };
     console.log("Sending create user request with " + JSON.stringify(body));
-    return request('POST','create-user/','',JSON.stringify(body))
+    return request('POST','user/','',JSON.stringify(body))
     .then(response=>response.json())
     .catch(err => {console.log("ERROR:"+err);err});
 }

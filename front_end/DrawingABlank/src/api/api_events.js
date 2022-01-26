@@ -36,7 +36,7 @@ function getBoundsAsJSON(bounds){
 }
 
 export const getEvents = () => {
-  return request('GET', 'current-events', '', '')
+  return request('GET', 'events/', '', '')
     .then(response => response.json())
     .then(data => {
       console.log("Got:"+JSON.stringify(data));

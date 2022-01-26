@@ -31,3 +31,11 @@ export const request = (req_method,req_endpoint,req_queries,req_body, req_authen
         body:req_body
     })
 }
+
+export const getToken = () => {
+    
+}
+
+export const setToken = () => {
+    
+}

@@ -24,5 +24,5 @@ export const updateProfile = (username,token,old_password="",new_password="",fir
         "weight":weight
     }
     //Check this URL later
-    return request('POST','profile-update/','',JSON.stringify(body),token);
+    return request('POST','user/change_details/','',JSON.stringify(body),token);
 }
