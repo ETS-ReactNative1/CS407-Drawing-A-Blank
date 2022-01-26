@@ -9,10 +9,12 @@ import datetime
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 
 
 class Events(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def list(self, _):
@@ -34,6 +36,7 @@ class Events(viewsets.ViewSet):
 
 
 class UserProfile(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -103,6 +106,7 @@ class UserProfile(viewsets.ViewSet):
 
 
 class GridView(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @action(methods=['post'], detail=False)
@@ -117,6 +121,7 @@ class GridView(viewsets.ViewSet):
 
 
 class WorkoutSubmission(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
