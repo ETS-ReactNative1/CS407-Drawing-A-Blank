@@ -83,8 +83,8 @@ class UserProfile(viewsets.ViewSet):
             user.last_name = data["last_name"]
         user.save()
 
-        if "age" in data:
-            player.age = int(data["age"])
+        if "date_of_birth" in data:
+            player.date_of_birth = datetime.datetime.strptime(data["date_of_birth"], "%d/%m/%Y").date()
         if "gender" in data:
             player.gender = data["gender"]
         if "height" in data:
