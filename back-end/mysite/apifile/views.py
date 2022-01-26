@@ -40,10 +40,10 @@ class UserProfile(viewsets.ViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            self.permission_classes = [AllowAny]
+            permission_classes = [AllowAny]
         else:
-            self.permission_classes = [IsAuthenticated]
-        return [permission() for permission in self.permission_classes]
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def create(self, request):
         data = request.data
