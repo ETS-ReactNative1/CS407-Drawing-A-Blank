@@ -51,7 +51,7 @@ class Player(models.Model):
     age = models.PositiveIntegerField(null=True)
     gender = models.CharField(max_length=16, blank=True)
     height = models.FloatField(null=True)
-    weight = models.FloatField(null=True)
+    #weight = models.FloatField(null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item)
 
