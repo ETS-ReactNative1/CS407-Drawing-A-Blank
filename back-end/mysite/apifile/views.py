@@ -67,7 +67,8 @@ class UserProfile(viewsets.ViewSet):
 
         return Response(token)
 
-    def update(self, request):
+    @action(methods=['post'], detail=False)
+    def change_details(self, request):
         data = request.data
         user = request.user
 
@@ -91,7 +92,7 @@ class UserProfile(viewsets.ViewSet):
 
         return Response("User details updated")
 
-    @action(methods=['put'], detail=False)
+    @action(methods=['post'], detail=False)
     def change_pass(self, request):
         data = request.data
         user = request.user
