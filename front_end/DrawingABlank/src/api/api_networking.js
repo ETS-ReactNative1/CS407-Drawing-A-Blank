@@ -5,6 +5,7 @@ const API_HOSTNAME = 'drawab.dcs.warwick.ac.uk';
 const API_PORT_NUMBER = '443';
 const API_SUFFIX = '/'; //Example only
 const API_URL = 'https://'+API_HOSTNAME+':'+API_PORT_NUMBER+API_SUFFIX;
+const TOKEN_KEY_NAME = 'fresgo_access_token';
 
 /**
  * Sends a request to the API at a specified endpoint and returns an async handler. This has not been tested yet, just writing this so that it is here.
@@ -33,9 +34,9 @@ export const request = (req_method,req_endpoint,req_queries,req_body, req_authen
 }
 
 export const getToken = () => {
-    
+    return SecureStorage.getItemAsync(TOKEN_KEY_NAME);
 }
 
-export const setToken = () => {
-    
+export const setToken = (token) => {
+    SecureStorage.setItemAsync(TOKEN_KEY_NAME,token).then(res => {});
 }

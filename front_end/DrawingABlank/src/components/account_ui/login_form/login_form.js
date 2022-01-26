@@ -4,9 +4,7 @@ import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
-import * as SecureStorage from 'expo-secure-store';
 
-const TOKEN_KEY_NAME = 'fresgo_access_token';
 
 class LoginScreen extends Component{
     state = {
@@ -23,11 +21,6 @@ class LoginScreen extends Component{
     }
 
     detailsComplete = () =>{
-        //Accepts unicode: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-        const rex_email = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-        if(!rex_email.test(this.state.email)){
-            return [false, "Please enter a valid email."];
-        }
         if(this.state.password == ""){
             return [false, "Please enter a password."];
         }
@@ -41,17 +34,11 @@ class LoginScreen extends Component{
             alert(verification[1]);
             return;
         }
-        //Continue with the login process...
-        //We have emails at the moment, maybe we should change this to username?
-        Authentication.authenticateUser(this.state.email,this.state.password).then(result => {
-            //Check what happens on 403 errors
-            var token = result.token;
-            SecureStorage.setItemAsync('fresgo_access_token',token).then(res => {
-                this.props.navigation.navigate('map_view_complete');
-            });
+        Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
+            this.props.navigation.navigate('map_view_complete');
         }).catch(err => {
-            //Put error message here later for specifics
-            alert("Failed to log in - Unable to connect to authentication service.");
+            console.log("ERROR LOGGING IN:"+err);
+            alert(err);
         });
     }
 
@@ -73,7 +60,7 @@ class LoginScreen extends Component{
                 <View style={styles.loginForm}>
                     <View style={styles.loginFormInputs}>
                         <TextInput style={styles.credentialsInput}
-                        placeholder="Email"
+                        placeholder="Username or Email"
                         placeholderTextColor="black"
                         ref="email"
                         onChangeText={this.handleEmail}/>

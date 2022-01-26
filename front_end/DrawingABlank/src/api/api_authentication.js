@@ -1,4 +1,4 @@
-import { request } from "./api_networking.js";
+import { request, setToken } from "./api_networking.js";
 
 export const createUser = (username, email, password, team) => {
     body = {
@@ -20,6 +20,10 @@ export const authenticateUser = (username,password) => {
     };
     console.log('Sending authentication request with ' + JSON.stringify(body));
     return request('POST','api-token-auth/','',JSON.stringify(body))
-    .then(response=>response.json())
-    .catch(err => {console.log("ERROR:"+err);err});
+    .then(response=>{
+        if(response.status != 200){
+            throw new Error('Incorrect credentials.');
+        }
+        return response.json();
+    }).then(res => setToken(res.token));
 }
