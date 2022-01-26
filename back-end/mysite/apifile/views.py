@@ -109,12 +109,10 @@ class GridView(viewsets.ViewSet):
     def collect(self, request):
         data = request.data
         bl = data['bottom_left']
-        br = data['bottom_right']
         tr = data['top_right']
-        tl = data['top_left']
         zoom = data['zoom']
 
-        allGrids = grids.sub_sample([bl, br, tr, tl], sub_dimension=zoom)
+        allGrids = grids.sub_sample((bl, tr), sub_dimension=zoom)
         return Response(allGrids)
 
 
