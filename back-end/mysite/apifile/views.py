@@ -304,7 +304,7 @@ def calc_calories(workout_type, dur):
 class GridView(viewsets.ViewSet):
 
     @action(methods=['post'], detail=False)
-    def query(self, request):
+    def collect(self, request):
         data = request.data
         bl = data['bottom_left']
         br = data['bottom_right']
