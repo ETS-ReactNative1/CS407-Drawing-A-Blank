@@ -70,7 +70,7 @@ class Event(models.Model):
         return curr_events
 
     def get_bounds(self):
-        bounds = EventBounds.objects.filter(event=self).order_by('id')
+        bounds = EventBounds.objects.filter(event_id=self.id).order_by('id')
         bounds_list = []
         for bound in bounds:
             bounds_list.append((bound.easting, bound.northing))
