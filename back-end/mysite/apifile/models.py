@@ -48,10 +48,10 @@ class Item(models.Model):
 # alter the base django user table with extra fields
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.PositiveIntegerField(null=True)
-    gender = models.CharField(max_length=16, blank=True)
-    height = models.FloatField(null=True)
-    weight = models.FloatField(null=True)
+    #age = models.PositiveIntegerField(null=True)
+    #gender = models.CharField(max_length=16, blank=True)
+    #height = models.FloatField(null=True)
+    #weight = models.FloatField(null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item)
 
