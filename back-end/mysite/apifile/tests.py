@@ -8,7 +8,7 @@ import datetime
 from django.db.models import Q
 from functools import reduce
 import operator
-"""
+
 # Create your tests here.
 class GridTestCase(TestCase):
     def setUp(self):
@@ -71,7 +71,7 @@ class SuperSampleTest(TestCase):
         # 8x8= 64 (1x1m) grids converted to a 2x2 grid with each grid being 4x4m
         out = grids.super_sample([[52.285951, -1.5329989], [0, 0], [52.286022, -1.5328809], [0, 0]], zoom_level=4)
         print(str(out))
-"""
+
 
 
 

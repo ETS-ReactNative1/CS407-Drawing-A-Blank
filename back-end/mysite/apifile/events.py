@@ -8,8 +8,10 @@ import numpy as np
 from django.db.models import Q
 from functools import reduce
 import operator
+
 #event clear
 def clear_event_grids(event):
+    "Input: event to clear grids in"
     grids = all_grids_in_event(event)
     models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in grids))).delete()
     
@@ -36,8 +38,9 @@ def all_grids_in_event(event):
 
 
 
-#event winner
-
+#event winner TODO
+def event_winner(event):
+    return None
 
 
 
