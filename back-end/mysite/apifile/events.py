@@ -1,15 +1,19 @@
 
 from .models import Event, EventBounds
-
+import models
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import mahotas
 import numpy as np
-
+from django.db.models import Q
+from functools import reduce
+import operator
 #event clear
 def clear_event_grids(event):
     grids = all_grids_in_event(event)
-
+    models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in grids))).delete()
+    
+    
 
 def all_grids_in_event(event):
 
@@ -43,8 +47,6 @@ def check_within_event(events, point):
     Output: If point is in an event then that event otherwise None.
 
     """
-
-
     point = Point(point)
     for event in events:
         bounds = event.get_bounds()

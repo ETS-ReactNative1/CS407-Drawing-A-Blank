@@ -5,7 +5,9 @@ from . import models
 from . import events
 from .models import Event, EventBounds
 import datetime
-
+from django.db.models import Q
+from functools import reduce
+import operator
 """
 # Create your tests here.
 class GridTestCase(TestCase):
@@ -69,8 +71,8 @@ class SuperSampleTest(TestCase):
         # 8x8= 64 (1x1m) grids converted to a 2x2 grid with each grid being 4x4m
         out = grids.super_sample([[52.285951, -1.5329989], [0, 0], [52.286022, -1.5328809], [0, 0]], zoom_level=4)
         print(str(out))
-
 """
+
 
 
 class eventBound(TestCase):
@@ -107,6 +109,15 @@ class eventBound(TestCase):
         EventBounds.objects.create(event=self.ev3 , easting=10, northing=12)
         self.events_list = [self.ev1,self.ev2,self.ev3]
 
+        models.Team.objects.create(name="Test Team1", colour="FF0000")
+        models.Team.objects.create(name="Test Team2", colour="00FF00")
+        team = models.Team.objects.get(name="Test Team1")
+        team2 = models.Team.objects.get(name="Test Team2")
+        models.Grid.objects.create(easting="15", northing="15", team=team,time=datetime.datetime.now())
+        models.Grid.objects.create(easting="16", northing="16", team=team2,time=datetime.datetime.now())
+        models.Grid.objects.create(easting="14", northing="14", team=team,time=datetime.datetime.now())
+        models.Grid.objects.create(easting="21", northing="21", team=team,time=datetime.datetime.now())
+
     def test_bounds(self):
         self.assertEqual(events.check_within_event(self.events_list,(110,150)),None)
         self.assertEqual(events.check_within_event(self.events_list,(150,150)),self.ev2)
@@ -114,4 +125,7 @@ class eventBound(TestCase):
         self.assertEqual(events.check_within_event(self.events_list,(600,600)),self.ev1)
 
         test = events.all_grids_in_event(self.events_list[2])
-        print(test)
+
+        a = models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in test)))
+        print(a)
+ 
