@@ -66,9 +66,9 @@ class UserProfile(viewsets.ViewSet):
 
         Player.objects.create(user=user, team=team)
 
-        token = [{"token": Token.objects.get_or_create(user=user)}]
+        token, _ = Token.objects.get_or_create(user=user)
 
-        return Response(token)
+        return Response({'token': token.key})
 
     @action(methods=['post'], detail=False)
     def change_details(self, request):
