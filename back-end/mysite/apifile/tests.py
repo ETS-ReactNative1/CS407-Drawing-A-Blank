@@ -2,8 +2,11 @@ import numpy
 from django.test import TestCase
 from . import grids
 from . import models
+from . import events
+from .models import Event, EventBounds
+import datetime
 
-
+"""
 # Create your tests here.
 class GridTestCase(TestCase):
     def setUp(self):
@@ -66,3 +69,49 @@ class SuperSampleTest(TestCase):
         # 8x8= 64 (1x1m) grids converted to a 2x2 grid with each grid being 4x4m
         out = grids.super_sample([[52.285951, -1.5329989], [0, 0], [52.286022, -1.5328809], [0, 0]], zoom_level=4)
         print(str(out))
+
+"""
+
+
+class eventBound(TestCase):
+    def setUp(self):
+        self.ev1 = Event.objects.create(start=datetime.datetime.now(),
+                                end=datetime.datetime.now() + datetime.timedelta(days=50))
+        EventBounds.objects.create(event=self.ev1, easting=400, northing=400)
+        EventBounds.objects.create(event=self.ev1, easting=800, northing=400)
+        EventBounds.objects.create(event=self.ev1, easting=800, northing=800)
+        EventBounds.objects.create(event=self.ev1, easting=400, northing=800)
+
+
+        #https://www.desmos.com/calculator/g2yl7eeczh 
+        self.ev2 = Event.objects.create(start=datetime.datetime.now(),
+                                end=datetime.datetime.now() + datetime.timedelta(days=50))
+        EventBounds.objects.create(event=self.ev2, easting=100, northing=100)
+        EventBounds.objects.create(event=self.ev2, easting=200, northing=100)
+        EventBounds.objects.create(event=self.ev2, easting=200, northing=200)
+        EventBounds.objects.create(event=self.ev2, easting=100, northing=200)
+        EventBounds.objects.create(event=self.ev2, easting=100, northing=175)
+        EventBounds.objects.create(event=self.ev2, easting=125, northing=175)
+        EventBounds.objects.create(event=self.ev2, easting=125, northing=125)
+        EventBounds.objects.create(event=self.ev2, easting=100, northing=125)
+
+        self.ev3 = Event.objects.create(start=datetime.datetime.now(),
+                                end=datetime.datetime.now() + datetime.timedelta(days=50))
+        EventBounds.objects.create(event=self.ev3 , easting=10, northing=10)
+        EventBounds.objects.create(event=self.ev3 , easting=20, northing=10)
+        EventBounds.objects.create(event=self.ev3 , easting=20, northing=20)
+        EventBounds.objects.create(event=self.ev3 , easting=10, northing=20)
+        EventBounds.objects.create(event=self.ev3 , easting=10, northing=17)
+        EventBounds.objects.create(event=self.ev3 , easting=12, northing=17)
+        EventBounds.objects.create(event=self.ev3 , easting=12, northing=12)
+        EventBounds.objects.create(event=self.ev3 , easting=10, northing=12)
+        self.events_list = [self.ev1,self.ev2,self.ev3]
+
+    def test_bounds(self):
+        self.assertEqual(events.check_within_event(self.events_list,(110,150)),None)
+        self.assertEqual(events.check_within_event(self.events_list,(150,150)),self.ev2)
+        self.assertEqual(events.check_within_event(self.events_list,(150,600)),None)
+        self.assertEqual(events.check_within_event(self.events_list,(600,600)),self.ev1)
+
+        test = events.all_grids_in_event(self.events_list[2])
+        print(test)
