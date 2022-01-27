@@ -10,7 +10,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
 import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
-import ProfileCreationNavigator from './src/components/account_ui/create_profile_forms/profile_navigator.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
@@ -27,7 +26,6 @@ export default function App() {
           component={MapViewCompleteComponent}
         />
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
-        <Stack.Screen name="profile_navigator" component={ProfileCreationNavigator}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

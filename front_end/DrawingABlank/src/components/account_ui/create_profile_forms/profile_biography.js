@@ -37,6 +37,23 @@ class ProfileBiography extends Component{
             gender:callback(state.value)
         }));
     }
+
+    detailsComplete = () =>{
+        if(this.state.name==""){
+            return [false, "Please enter your name."];
+        }
+        if(this.state.gender==""){
+            return [false, "Please enter your gender."];
+        }
+        if(this.state.height==""){
+            return [false, "Please enter your height."];
+        }
+        if(this.state.weight==""){
+            return [false, "Please enter your weight."];
+        }
+        return [true, ""];
+    }
+
     componentDidMount(){
         BackHandler.addEventListener('hardwareBackPress',function (){
             //Prevents going back
@@ -66,7 +83,7 @@ class ProfileBiography extends Component{
                         <Text>Date Of Birth</Text>
                     </View>
                     <View>
-                        <DatePicker date={this.state.dateofbirth} onDateChange={(date)=>this.setState({date:date})} mode="date" style={{height:50,width:350}}/>
+                        <DatePicker date={this.state.dateofbirth} onDateChange={(date)=>this.setState({dateofbirth:date})} mode="date" style={{height:50,width:350}}/>
                     </View>
                 </View>
                 <View style={styles.form_inputs}>

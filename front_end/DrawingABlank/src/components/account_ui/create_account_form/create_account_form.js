@@ -4,9 +4,14 @@ import {styles, buttons} from './style.js';
 
 class CreateAccountScreen extends Component{
     state = {
+        username:"",
         email:"",
         password:"",
         password_confirm:"",
+    }
+
+    handleUsername = (text) =>{
+        this.state.username = text;
     }
 
     handleEmail = (text) => {
@@ -43,7 +48,7 @@ class CreateAccountScreen extends Component{
             alert(verification[1]);
         }else{
             //Continue with the login process...
-            this.props.navigation.navigate('profile_navigator',this.state);
+            this.props.navigation.navigate('ProfileWelcome',this.state);
         }
     }
     
@@ -63,6 +68,12 @@ class CreateAccountScreen extends Component{
                 </View>
                 <View style={styles.loginForm}>
                     <View style={styles.loginFormInputs}>
+                        <TextInput style={styles.credentialsInput}
+                        placeholder="Username"
+                        placeholderTextColor="black"
+                        ref="username"
+                        onChangeText={this.handleUsername}
+                        />
                         <TextInput style={styles.credentialsInput}
                         placeholder="Email"
                         placeholderTextColor="black"

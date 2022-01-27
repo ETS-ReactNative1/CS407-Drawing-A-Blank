@@ -7,7 +7,14 @@ import {updateProfile} from '../../../api/api_profile.js';
 
 class ProfileAvatar extends Component{
     state={
-        avatar:''
+        name:this.props.route.params.name,
+        dateofbirth:this.props.route.params.dateofbirth,
+        gender:this.props.route.params.gender,
+        height:this.props.route.params.height,
+        weight:this.props.route.params.weight,
+        bio:this.props.route.params.bio,
+        avatar:"",
+        teamselection:this.props.route.params.teamSelection,
     }
 
     goToMap = () =>{
@@ -46,13 +53,20 @@ class ProfileAvatar extends Component{
         if(team==="windy")
             return require('../../../assets/img/windy.png');
     }
-    createProfile = (username,profile_name,date_of_birth,gender,height,weight) => {
+    createProfile = (profile_name,date_of_birth,gender,height,weight) => {
         var first_name = profile_name.split(' ')[0];
-        var last_name = (profile_name.split(' ').length > 1) ? profile_name.splt(' ')[1] : "";
+        var last_name = (profile_name.split(' ').length > 1) ? profile_name.split(' ')[1] : "";
+        //Code taken from: https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
+        var full_date_string = ('0' + date_of_birth.getDate()).slice(-2) + '/'
+        + ('0' + (date_of_birth.getMonth()+1)).slice(-2) + '/'
+        + date_of_birth.getFullYear();
         //Check what token is required here
-        updateProfile(username,'',age=date_of_birth,gender=gender,first_name=first_name,last_name=last_name,height=height,weight=weight).then(resp=>{
+        updateProfile(first_name,last_name,full_date_string,gender,height,weight).then(_=>{
             this.goToMap();
         }).catch(err => alert(err));
+    }
+    completeRegistration = () => {
+        this.createProfile(this.state.name, this.state.dateofbirth, this.state.gender, this.state.height, this.state.weight);
     }
     render(){
         return(
@@ -74,7 +88,7 @@ class ProfileAvatar extends Component{
                     <Button title="Choose Avatar" color="#6db0f6" onPress={this.openImages}/>
                 </View>
                 <View style={styles.continue_button}>
-                    <Button title="Create Profile" color="#6db0f6" onPress={this.goToMap}/>
+                    <Button title="Create Profile" color="#6db0f6" onPress={this.completeRegistration}/>
                 </View>
             </View>
         )

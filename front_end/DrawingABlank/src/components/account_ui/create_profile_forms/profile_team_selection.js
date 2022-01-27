@@ -6,6 +6,9 @@ import { createUser } from '../../../api/api_authentication.js';
 class ProfileTeamSelection extends Component{
     state={
         //terra, windy or ocean
+        username:this.props.route.params.username,
+        password:this.props.route.params.password,
+        email:this.props.route.params.email,
         teamSelection:""
     }
     componentDidMount(){
@@ -17,6 +20,14 @@ class ProfileTeamSelection extends Component{
     moveToDetails = () =>{
         this.props.navigation.navigate("ProfileBiography",this.state);
     }
+
+    detailsComplete = () =>{
+        if(this.state.teamSelection == ""){
+            return [false, "Please select a team."];
+        }
+        return [true, ""];
+    }
+
     updateSelection = (choice) =>{
         if(choice===this.state.teamSelection)
             this.setState({teamSelection:""});
@@ -24,13 +35,21 @@ class ProfileTeamSelection extends Component{
             this.setState({teamSelection:choice});
     }
     createAccount = (username,password,email,team) =>{
-        createUser(username,email,password,team).then(res => {
-            this.moveToDetails();
-        }).catch(err => {
-            alert(err);
-        });
+        var verification = this.detailsComplete();
+        if(verification[0]){
+            createUser(username,email,password,team).then(_ => {
+                this.moveToDetails();
+            }).catch(err => { //Handle this later when there are different status codes
+                alert(err);
+                this.props.navigation.navigate("login_screen");
+            });
+        }else{
+            alert(verification[1]);
+        }
     }
-
+    completeAccountCreation = () =>{
+        this.createAccount(this.state.username,this.state.password,this.state.email,this.state.teamSelection);
+    }
     render(){
         return(
             <View style={styles.main}>
@@ -102,7 +121,7 @@ class ProfileTeamSelection extends Component{
                     </TouchableOpacity>
                 </View>
                 <View style={styles.continue_button}>
-                    <Button title="Continue" color="#6db0f6" onPress={this.moveToDetails}/>
+                    <Button title="Continue" color="#6db0f6" onPress={this.completeAccountCreation}/>
                 </View>
             </View>
         );

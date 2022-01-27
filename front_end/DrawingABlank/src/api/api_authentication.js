@@ -1,3 +1,4 @@
+import { RecyclerViewBackedScrollViewBase } from "react-native";
 import { request, setToken } from "./api_networking.js";
 
 export const createUser = (username, email, password, team) => {
@@ -9,8 +10,8 @@ export const createUser = (username, email, password, team) => {
     };
     console.log("Sending create user request with " + JSON.stringify(body));
     return request('POST','user/','',JSON.stringify(body))
-    .then(response=>response.json())
-    .catch(err => {console.log("ERROR:"+err);err});
+    .then(response=>response.json()).then(res=>{console.log("GOT TOKEN RESPONSE:"+res);setToken(res.token)})
+    .catch(err => {console.log("ERROR CREATING USER:"+err);err});
 }
 
 export const authenticateUser = (username,password) => {

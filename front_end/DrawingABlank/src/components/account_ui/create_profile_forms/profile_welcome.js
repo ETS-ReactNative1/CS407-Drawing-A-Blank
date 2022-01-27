@@ -4,8 +4,13 @@ import { styles } from "./style.js";
 
 
 class ProfileWelcome extends Component{
+    state={
+        username:this.props.route.params.username,
+        password:this.props.route.params.password,
+        email:this.props.route.params.email
+    }
     StartCreatingProfile = () =>{
-        this.props.navigation.navigate("ProfileTeam");
+        this.props.navigation.navigate("ProfileTeam",this.state);
     }
     componentDidMount(){
         BackHandler.addEventListener('hardwareBackPress',function (){
