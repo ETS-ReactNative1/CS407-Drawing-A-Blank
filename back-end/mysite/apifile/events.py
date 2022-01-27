@@ -8,20 +8,8 @@ from django.db.models import Q,Count
 from functools import reduce
 import operator
 
-#event clear
-def clear_event_grids(event):
-    """
-    Input: event to clear grids in
-    Output: None, deletes grids within event.
-    """
-    bounds = all_grids_in_event(event)
-    Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in bounds))).delete()
-    return None
-    
-    
-
 def all_grids_in_event(event):
-
+    
     bounds = event.get_bounds()
     xs, ys = zip(*bounds)
     minx, maxx = min(xs), max(xs)
@@ -40,8 +28,18 @@ def all_grids_in_event(event):
     return [(x + minx-1, y + miny) for (x, y) in zip(*np.nonzero(grid))]
 
 
+def clear_event_grids(event):
+    """
+    Input: event to clear grids in
+    Output: None, deletes grids within event.
+    """
+    bounds = all_grids_in_event(event)
+    Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in bounds))).delete()
+    return None
+    
+    
 
-#event winner TODO
+
 def event_winner(event):
     """
     Input: Event object
