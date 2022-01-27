@@ -36,16 +36,12 @@ function getBoundsAsJSON(bounds){
   return result;
 }
 
-function convertToGeoLib(coordinate){
-  return {"latitude":coordinate[0],"longitude":coordinate[1]};
-}
 
 /*
   This is assuming that grids obtained and passed here cover the entire event area. This is also assuming that the grid size given
   accurately reflects the status of the event. (i.e. lowest possible grid size).
 */
 export const getEventScores = (grids, event_bounds) => {
-  console.log("EVENT BOUNDS OBTAINED:"+event_bounds.length);
   var filtered_grids = grids.filter((grid) => {
     var center_point = geolib.getCenter(grid["bounds"]);
     return geolib.isPointInPolygon(center_point, event_bounds);
