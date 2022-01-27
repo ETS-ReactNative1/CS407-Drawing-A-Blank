@@ -12,6 +12,8 @@ import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteCo
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
 const Stack = createStackNavigator();
 
+//Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
+
 export default function App() {
   return (
     <NavigationContainer>

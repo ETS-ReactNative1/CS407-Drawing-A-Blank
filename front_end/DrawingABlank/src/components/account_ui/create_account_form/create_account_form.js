@@ -4,10 +4,14 @@ import {styles, buttons} from './style.js';
 
 class CreateAccountScreen extends Component{
     state = {
+        username:"",
         email:"",
         password:"",
         password_confirm:"",
-        team_name:""
+    }
+
+    handleUsername = (text) =>{
+        this.state.username = text;
     }
 
     handleEmail = (text) => {
@@ -22,10 +26,6 @@ class CreateAccountScreen extends Component{
         this.state.password_confirm = text;
     }
 
-    handleTeamName = (text) => {
-        this.state.team_name = text;
-    }
-
     detailsComplete = () =>{
         //Accepts unicode: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
         const rex_email = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -38,9 +38,6 @@ class CreateAccountScreen extends Component{
         if(this.state.password != this.state.password_confirm){
             return [false, "Your passwords do not match, please try again."];
         }
-        if(this.state.team_name == ""){
-            return [false, "Please enter a team name."];
-        }
         return [true, ""];
     }
 
@@ -49,8 +46,10 @@ class CreateAccountScreen extends Component{
         if(!verification[0]){
             //Doing an alert for now, will change to UI later.
             alert(verification[1]);
+        }else{
+            //Continue with the login process...
+            this.props.navigation.navigate('ProfileWelcome',this.state);
         }
-        //Continue with the login process...
     }
     
     changeToLogin = () =>{
@@ -69,6 +68,12 @@ class CreateAccountScreen extends Component{
                 </View>
                 <View style={styles.loginForm}>
                     <View style={styles.loginFormInputs}>
+                        <TextInput style={styles.credentialsInput}
+                        placeholder="Username"
+                        placeholderTextColor="black"
+                        ref="username"
+                        onChangeText={this.handleUsername}
+                        />
                         <TextInput style={styles.credentialsInput}
                         placeholder="Email"
                         placeholderTextColor="black"
