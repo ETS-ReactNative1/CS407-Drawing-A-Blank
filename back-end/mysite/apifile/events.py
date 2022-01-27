@@ -1,19 +1,22 @@
 
-from .models import Event, EventBounds
-import models
+from .models import Event, EventBounds,Grid
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import mahotas
 import numpy as np
-from django.db.models import Q
+from django.db.models import Q,Count
 from functools import reduce
 import operator
 
 #event clear
 def clear_event_grids(event):
-    "Input: event to clear grids in"
-    grids = all_grids_in_event(event)
-    models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in grids))).delete()
+    """
+    Input: event to clear grids in
+    Output: None, deletes grids within event.
+    """
+    bounds = all_grids_in_event(event)
+    Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in bounds))).delete()
+    return None
     
     
 
@@ -40,7 +43,17 @@ def all_grids_in_event(event):
 
 #event winner TODO
 def event_winner(event):
-    return None
+    """
+    Input: Event object
+    Output: count the number of grids within event per team. ***Descending order*** 
+    """
+
+    bounds = all_grids_in_event(event)
+    grids = Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in bounds)))
+    counts = grids.values('team').annotate(total=Count('team')).order_by('-total')
+
+
+    return counts
 
 
 

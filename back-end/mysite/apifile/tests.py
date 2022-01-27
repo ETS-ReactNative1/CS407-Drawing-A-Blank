@@ -8,7 +8,7 @@ import datetime
 from django.db.models import Q
 from functools import reduce
 import operator
-
+"""
 # Create your tests here.
 class GridTestCase(TestCase):
     def setUp(self):
@@ -72,7 +72,7 @@ class SuperSampleTest(TestCase):
         out = grids.super_sample([[52.285951, -1.5329989], [0, 0], [52.286022, -1.5328809], [0, 0]], zoom_level=4)
         print(str(out))
 
-
+"""
 
 
 class eventBound(TestCase):
@@ -125,7 +125,8 @@ class eventBound(TestCase):
         self.assertEqual(events.check_within_event(self.events_list,(600,600)),self.ev1)
 
         test = events.all_grids_in_event(self.events_list[2])
-
-        a = models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in test)))
-        print(a)
+        test2 = events.event_winner(self.events_list[2])
+        print(test2)
+        #a = models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in test)))
+        
  
