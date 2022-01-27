@@ -1,4 +1,5 @@
 import {request} from './api_networking.js';
+import * as geolib from 'geolib';
 
 /**
  * 
@@ -33,6 +34,41 @@ function getBoundsAsJSON(bounds){
     result.push({"latitude":bounds[i][0], "longitude":bounds[i][1]});
   }
   return result;
+}
+
+function convertToGeoLib(coordinate){
+  return {"latitude":coordinate[0],"longitude":coordinate[1]};
+}
+
+/*
+  This is assuming that grids obtained and passed here cover the entire event area. This is also assuming that the grid size given
+  accurately reflects the status of the event. (i.e. lowest possible grid size).
+*/
+export const getEventScores = (grids, event_bounds) => {
+  var event_conversion = [];
+  for(var i = 0; i < event_bounds.length; i++){
+    event_conversion.push(convertToGeoLib(event_bounds[i]));
+  }
+  var filtered_grids = grids.filter((grid) => {
+    var converted_bounds = [];
+    for(var i = 0; i < grid.bounds.length; i++){
+      converted_bounds.push(convertToGeoLib(grid.bounds[i]));
+    }
+    var center_point = geolib.getCenterOfBounds(converted_bounds);
+    geolib.isPointInPolygon(center_point, event_bounds);
+  });
+  //https://stackoverflow.com/questions/56375737/get-count-of-array-objects-belonging-to-a-partical-id-in-javascript-node-js
+  var colour_counts = {};
+  filtered_grids.forEach((grid) => {
+    if(!colour_counts[grid.colour])
+      colour_counts[grid.colour] = 0;
+    colour_counts[grid.colour]++;
+  });
+  var results = [];
+  Object.keys(colour_counts).forEach((colour) => {
+    results.push({"colour":colour, "count":colour_counts[colour]});
+  });
+  return results.sort((a,b) => a.count - b.count);
 }
 
 export const getEvents = () => {
