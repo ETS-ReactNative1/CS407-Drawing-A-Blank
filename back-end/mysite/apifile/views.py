@@ -62,7 +62,7 @@ class UserProfile(viewsets.ViewSet):
         user = User.objects.create_user(username, email, password)
 
         default_team_colours = {'terra': 'FF8C91', 'windy': '82FF8A', 'ocean': '47C4FF'}
-        team = Team.objects.get_or_create(name=team, defaults={'colour': default_team_colours[team]})
+        team, _ = Team.objects.get_or_create(name=team, defaults={'colour': default_team_colours[team]})
 
         Player.objects.create(user=user, team=team)
 
