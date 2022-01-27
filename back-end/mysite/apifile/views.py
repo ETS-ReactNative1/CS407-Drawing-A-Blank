@@ -52,7 +52,7 @@ class UserProfile(viewsets.ViewSet):
         password = data["password"]
         team = data["team"]
 
-        if team != "terra" or team != "windy" or team != "ocean":
+        if team != "terra" and team != "windy" and team != "ocean":
             return Response("Invalid team selected")
         if User.objects.filter(email=email).exists():
             return Response("User with that email already exists")
