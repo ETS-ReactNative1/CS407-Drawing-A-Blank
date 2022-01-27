@@ -1,7 +1,7 @@
 import operator
 from functools import reduce
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team
@@ -32,7 +32,7 @@ class Events(viewsets.ViewSet):
 
             ret_val[event.id] = values
 
-        return Response(ret_val)
+        return Response(ret_val, status=status.HTTP_200_OK)
 
 
 class UserProfile(viewsets.ViewSet):
@@ -53,11 +53,11 @@ class UserProfile(viewsets.ViewSet):
         team = data["team"]
 
         if team != "terra" and team != "windy" and team != "ocean":
-            return Response("Invalid team selected")
+            return Response("Invalid team selected", status=status.HTTP_409_CONFLICT)
         if User.objects.filter(email=email).exists():
-            return Response("User with that email already exists")
+            return Response("User with that email already exists", status=status.HTTP_409_CONFLICT)
         elif User.objects.filter(username=username).exists():
-            return Response("User with that username already exists")
+            return Response("User with that username already exists", status=status.HTTP_409_CONFLICT)
 
         user = User.objects.create_user(username, email, password)
 
@@ -68,7 +68,7 @@ class UserProfile(viewsets.ViewSet):
 
         token, _ = Token.objects.get_or_create(user=user)
 
-        return Response({'token': token.key})
+        return Response({'token': token.key}, status=status.HTTP_201_CREATED)
 
     @action(methods=['post'], detail=False)
     def change_details(self, request):
@@ -93,7 +93,7 @@ class UserProfile(viewsets.ViewSet):
             player.weight = float(data["weight"])
         player.save()
 
-        return Response("User details updated")
+        return Response("User details updated", status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=False)
     def change_pass(self, request):
@@ -102,7 +102,7 @@ class UserProfile(viewsets.ViewSet):
 
         user.set_password(data["new_password"])
 
-        return Response("Password changed")
+        return Response("Password changed", status=status.HTTP_200_OK)
 
 
 class GridView(viewsets.ViewSet):
@@ -117,7 +117,7 @@ class GridView(viewsets.ViewSet):
         zoom = data['zoom']
 
         allGrids = grids.sub_sample((bl, tr), sub_dimension=zoom)
-        return Response(allGrids)
+        return Response(allGrids, status=status.HTTP_200_OK)
 
 
 class WorkoutSubmission(viewsets.ViewSet):
@@ -173,7 +173,7 @@ class WorkoutSubmission(viewsets.ViewSet):
             for tile in allGrids - checkedTiles:
                 Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
 
-        return Response("Workout added")
+        return Response("Workout added", status=status.HTTP_201_CREATED)
 
 
 def calc_calories(workout_type, dur):
