@@ -1,8 +1,11 @@
-import { request } from "./api_networking";
+import { request, getToken } from "./api_networking";
 
 export const submit_workout = (workout_json) => {
-    return request('POST','record-workout/','',JSON.stringify(workout_json))
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(err => console.log(err))
+    return getToken().then(token=>request('POST','workout/','',JSON.stringify(workout_json),token))
+    .then(response => {
+        if(response.status != 200){
+            throw new Error('Failed to add workout.');
+        }
+        response.json()
+    });
 } 

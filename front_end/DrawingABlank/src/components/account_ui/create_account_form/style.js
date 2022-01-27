@@ -56,7 +56,7 @@ const buttons = StyleSheet.create({
     buttonText:{
         textAlign:"center",
         fontSize:24
-    }
+    },
 })
 
 export {styles,buttons}
