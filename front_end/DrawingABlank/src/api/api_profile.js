@@ -24,5 +24,11 @@ export const updateProfile = (first_name="",last_name="",age="",gender="",height
     body = Object.fromEntries(Object.entries(body).filter(([_, v]) => v != ""));
     console.log("Sending profile update with:" + JSON.stringify(body));
     //Check this URL later
-    return getToken().then(token => request('POST','user/change_details/','',JSON.stringify(body), token));
+    return getToken().then(token => request('POST','user/change_details/','',JSON.stringify(body), token))
+    .then(response => {
+        if(response.status != 200 && response.status != 201){
+            throw new Error('Could not update profile.');
+        }
+        response.json()
+    });
 }

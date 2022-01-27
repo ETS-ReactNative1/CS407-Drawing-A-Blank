@@ -8,6 +8,10 @@ export const getGrids = (bottom_left, top_right) => {
     };
     console.log("Sending grid window request with:"+JSON.stringify(body));
     return getToken().then(token => request('POST','map/collect/','',JSON.stringify(body),token))
-    .then(response => response.json())
-    .catch(err => console.log("ERROR IN GRIDS:"+err));
+    .then(response => {
+        if(response.status != 200){
+            throw new Error('Could not retrieve grids.');
+        }
+        response.json()
+    });
 }

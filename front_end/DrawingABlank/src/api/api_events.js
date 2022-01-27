@@ -37,7 +37,12 @@ function getBoundsAsJSON(bounds){
 
 export const getEvents = () => {
   return getToken().then(token => request('GET', 'events/', '', '',token))
-    .then(response => response.json())
+    .then(response => {
+      if(response.status != 200){
+        throw new Error('Could not obtain events.');
+      }
+      return response.json();
+    })
     .then(data => {
       console.log("Got:"+JSON.stringify(data));
       var result = [];
@@ -67,6 +72,5 @@ export const getEvents = () => {
       }
       console.log('Returning :' + JSON.stringify(result));
       return result;
-    })
-    .catch(err => console.log("ERROR IN EVENTS:"+err));
+    });
 }

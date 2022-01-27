@@ -10,8 +10,12 @@ export const createUser = (username, email, password, team) => {
     };
     console.log("Sending create user request with " + JSON.stringify(body));
     return request('POST','user/','',JSON.stringify(body))
-    .then(response=>response.json()).then(res=>{console.log("GOT TOKEN RESPONSE:"+res);setToken(res.token)})
-    .catch(err => {console.log("ERROR CREATING USER:"+err);err});
+    .then(response=>{
+        if(response.status != 200){
+            throw new Error(JSON.stringify(response.json()));
+        }
+        return response.json()
+    }).then(res=>{console.log("GOT TOKEN RESPONSE:"+res);setToken(res.token)});
 }
 
 export const authenticateUser = (username,password) => {

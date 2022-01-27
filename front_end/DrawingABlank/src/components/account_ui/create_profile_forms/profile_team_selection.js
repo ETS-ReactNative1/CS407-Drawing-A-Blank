@@ -39,7 +39,7 @@ class ProfileTeamSelection extends Component{
         if(verification[0]){
             createUser(username,email,password,team).then(_ => {
                 this.moveToDetails();
-            }).catch(err => { //Handle this later when there are different status codes
+            }).catch(err => { 
                 alert(err);
                 this.props.navigation.navigate("login_screen");
             });
