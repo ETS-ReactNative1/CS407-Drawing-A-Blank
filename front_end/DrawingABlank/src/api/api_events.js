@@ -45,17 +45,10 @@ function convertToGeoLib(coordinate){
   accurately reflects the status of the event. (i.e. lowest possible grid size).
 */
 export const getEventScores = (grids, event_bounds) => {
-  var event_conversion = [];
-  for(var i = 0; i < event_bounds.length; i++){
-    event_conversion.push(convertToGeoLib(event_bounds[i]));
-  }
+  console.log("EVENT BOUNDS OBTAINED:"+event_bounds.length);
   var filtered_grids = grids.filter((grid) => {
-    var converted_bounds = [];
-    for(var i = 0; i < grid.bounds.length; i++){
-      converted_bounds.push(convertToGeoLib(grid.bounds[i]));
-    }
-    var center_point = geolib.getCenterOfBounds(converted_bounds);
-    geolib.isPointInPolygon(center_point, event_bounds);
+    var center_point = geolib.getCenter(grid["bounds"]);
+    return geolib.isPointInPolygon(center_point, event_bounds);
   });
   //https://stackoverflow.com/questions/56375737/get-count-of-array-objects-belonging-to-a-partical-id-in-javascript-node-js
   var colour_counts = {};

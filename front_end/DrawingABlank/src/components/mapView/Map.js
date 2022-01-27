@@ -15,7 +15,7 @@ import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 
 import {getInitialStateAnimated as getInitialState} from './testData';
-import {getEvents} from '../../api/api_events';
+import {getEvents, getEventScores} from '../../api/api_events';
 
 import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
@@ -176,7 +176,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
     Geolocation.getCurrentPosition(({coords}) => {
       getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
       [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {console.log("GRID AMOUNT:"+result.length);setGrids(result);});
+      .then(result => {console.log("GRID AMOUNT:"+result.length);setGrids(result);})
+      .then(_ => {console.log(getEventScores(grids,events[0].bounds.coordinates))})
     });
   }
 
