@@ -176,7 +176,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
     Geolocation.getCurrentPosition(({coords}) => {
       getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
       [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
+      .then(result => {console.log("GRID AMOUNT:"+result.length);setGrids(result);});
     });
   }
 

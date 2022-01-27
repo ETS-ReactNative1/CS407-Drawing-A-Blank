@@ -1,4 +1,4 @@
-import {request} from './api_networking.js';
+import {request, getToken} from './api_networking.js';
 import * as geolib from 'geolib';
 
 /**

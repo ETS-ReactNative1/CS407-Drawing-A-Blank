@@ -12,6 +12,6 @@ export const getGrids = (bottom_left, top_right) => {
         if(response.status != 200){
             throw new Error('Could not retrieve grids.');
         }
-        response.json()
+        return response.json();
     });
 }
