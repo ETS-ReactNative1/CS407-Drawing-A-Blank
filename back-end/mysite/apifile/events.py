@@ -8,8 +8,10 @@ from django.db.models import Q,Count
 from functools import reduce
 import operator
 
+
+
+UNIT_TILE_SIZE = 5
 def all_grids_in_event(event):
-    
     bounds = event.get_bounds()
     xs, ys = zip(*bounds)
     minx, maxx = min(xs), max(xs)
@@ -24,8 +26,8 @@ def all_grids_in_event(event):
     grid = np.zeros((X, Y), dtype=np.int8)
     mahotas.polygon.fill_polygon(newPoly, grid)
 
-    #https://www.desmos.com/calculator/mb6ktvx1az
-    return [(x + minx-1, y + miny) for (x, y) in zip(*np.nonzero(grid))]
+    #https://www.desmos.com/calculator/f5bqtsipez
+    return [(x + minx-1, y + miny) for (x, y) in zip(*np.nonzero(grid)) ]
 
 
 def clear_event_grids(event):
@@ -57,7 +59,7 @@ def event_winner(event):
 
 def check_within_event(events, point):
     """
-    Input: list of events, point to test if inside an event polygon
+    Input: list of events, point to test if inside an event polygon. Assumes no events overlap.
     Output: If point is in an event then that event otherwise None.
 
     """
