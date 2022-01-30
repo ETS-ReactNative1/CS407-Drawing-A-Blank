@@ -13,21 +13,18 @@ import {getDistance} from 'geolib';
 
 import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
-
 import {getInitialStateAnimated as getInitialState} from './testData';
-import {getEvents} from '../../api/api_events';
-
 import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
-import ExampleMarkers from '../events/resources/ExampleMarkers';
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
-import {NavigationRouteContext} from '@react-navigation/core';
-import setupGeolocation from './geoLocation';
-import {getGrids} from '../../api/api_grids';
 import useLocalGrids from './useLocalGrids';
 import useGeoLocation from './useGeoLocation';
+import useEvents from './useEvents';
+import useUserPath from './useUserPath';
+import useRegion from './useRegion';
+import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
@@ -45,7 +42,7 @@ const DEBUG_ZOOM_LEVEL = {
 };
 
 function Map({setOverlayVisible, setOverlayContent}) {
-  const [region, setRegion] = useState(getInitialState().region);
+  // const [region, setRegion] = useState(getInitialState().region);
   const navigation = useNavigation();
 
   const workout_button_start = 'Start Workout';
@@ -53,87 +50,21 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   const [workout_button_text, set_workout_button_text] =
     useState(workout_button_start);
+  // const workout_button_ref = useRef()
   const [workout_active, set_workout_active] = useState(false);
-  const [userPath, setUserPath] = useState([]);
-  const userPathRef = useRef(userPath);
+  // const [userPath, setUserPath] = useState([]);
+  // const userPathRef = useRef(userPath);
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
 
-  const [DrawGrids, setGridDrawScale] = useLocalGrids(DEBUG_ZOOM_LEVEL);
+  // might want to make hooks "pausible" if using state (not refs), e.g. dont re render on userpath change, if were not showing it
+  //    more an issue of proper state updates/ only do updates which we want to be shown
+  // refs are always "paused", must be manually listened to using useEffect
   const userLocation = useGeoLocation();
-
-  const [events, setEvents] = useState([]);
-
-  // draw user path onto map
-  function DrawUserPath() {
-    return (
-      <Polyline
-        coordinates={userPath}
-        strokeWidth={3 || USER_DRAW_DIAMETER}
-        strokeColor={USER_INK_COLOUR}
-      />
-    );
-  }
-
-  function DrawPolygons() {
-    return events.map((space, i) => {
-      if (!space.radius) {
-        return (
-          <Polygon
-            coordinates={space.bounds.coordinates}
-            strokeColor={space.bounds.strokeColor}
-            fillColor={space.bounds.fillColor}
-            strokeWidth={space.bounds.strokeWidth}
-            key={i}
-          />
-        );
-      } else {
-        return (
-          <Circle
-            center={space.bounds.center}
-            radius={space.bounds.radius}
-            fillColor={space.bounds.fillColor}
-            strokeWidth={0}
-            key={i}
-          />
-        );
-      }
-    });
-  }
-
-  function DrawMarkers() {
-    return events.map(event => (
-      <Marker
-        key={event.id}
-        coordinate={event.marker}
-        title={event.title}
-        anchor={{x: 0, y: 1}}
-        description={event.description}
-        image={{
-          uri: 'http://clipart-library.com/data_images/165937.png',
-        }}
-        onPress={() => {
-          var current_date = new Date();
-          var event_date = Date.parse(event.date_end);
-          var time_left = event_date - current_date;
-          console.log(current_date);
-          console.log(event.date_end);
-          var hours = Math.floor(time_left / (1000 * 3600));
-          var minutes = Math.floor(time_left / (1000 * 60)) % 60;
-          var seconds = Math.floor(time_left / 1000) % 60;
-          onEventPress(
-            'Running event #' + event.id,
-            hours +
-              ':' +
-              minutes +
-              ':' +
-              (seconds < 10 ? '0' + seconds : seconds),
-            event.description,
-          );
-        }}
-      />
-    ));
-  }
+  const [DrawGrids, setGridDrawScale] = useLocalGrids(DEBUG_ZOOM_LEVEL);
+  const [DrawEvents, events] = useEvents();
+  const [DrawUserPath, userPath] = useUserPath();
+  const [region, setRegion] = useRegion();
 
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc
@@ -152,31 +83,44 @@ function Map({setOverlayVisible, setOverlayContent}) {
     navigation.navigate('post_workout_stats', {recorder: recorder});
   }
 
-  useEffect(() => {
-    const {latitude, longitude} = userLocation;
-    const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
-    const oldUserPath = userPathRef.current;
+  // useEffect(() => {
+  //   addPathPoint(userLocation.current);
 
-    recorder.addCoordinate(latitude, longitude);
+  //   const {latitude, longitude} = userLocation.current;
+  //   const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
+  //   const oldUserPath = userPathRef.current;
 
-    //draw new user movement polygon - map their travelled path
-    userPathRef.current = [...oldUserPath, {latitude, longitude}];
+  //   recorder.addCoordinate(latitude, longitude);
 
-    setUserPath(userPathRef.current);
+  //   //draw new user movement polygon - map their travelled path
+  //   userPathRef.current = [...oldUserPath, {latitude, longitude}];
+
+  //   setUserPath(userPathRef.current);
+  //   if (isMapTracking.current) {
+  //     // setRegion({ // !! No longer doing following a user on map !!
+  //     //   //...region, //take previous zoom level
+  //     //   ...zoomLevel, //take zoom level from constant
+  //     //   latitude,
+  //     //   longitude,
+  //     // });
+  //   } else {
+  //   }
+  // }, [userLocation.current]);
+
+  useDidUpdateEffect(() => {
+    // set to map to user location when user location known (second userLocation change (init state -> actual))
     if (isMapTracking.current) {
+      const {latitude, longitude} = userLocation.current;
       setRegion({
+        // !! No longer doing following a user on map !!
         //...region, //take previous zoom level
-        ...zoomLevel, //take zoom level from constant
+        // ...zoomLevel, //take zoom level from constant
+        ...MAP_ZOOMLEVEL_CLOSE,
         latitude,
         longitude,
       });
-    } else {
     }
-  }, [userLocation]);
-
-  useEffect(() => {
-    getEvents().then(result => setEvents(result || []));
-  }, []);
+  }, [userLocation.current]);
 
   function handleRegionChange(newRegion) {
     const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
@@ -236,13 +180,12 @@ function Map({setOverlayVisible, setOverlayContent}) {
         region={region}
         mapType={'standard'}
         showsUserLocation={true}
-        onRegionChange={r => handleRegionChange(r)}
+        // onRegionChange={r => handleRegionChange(r)}
         minZoomLevel={5}
         maxZoomLevel={10}>
         <DrawGrids />
-        <DrawMarkers />
-        <DrawPolygons />
-        {workout_active ? <DrawUserPath /> : false}
+        <DrawEvents />
+        <DrawUserPath />
       </Animated>
 
       <MapControls
@@ -255,17 +198,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
         }}
         startWorkout={() => {
           if (!workout_active) {
-            console.log('Starting Workout...');
-            recorder.startWorkout();
-            Geolocation.getCurrentPosition(({coords}) =>
-              recorder.addCoordinate(coords.latitude, coords.longitude),
-            );
-            set_workout_active(true);
+            startWorkout();
             set_workout_button_text(workout_button_stop);
           } else {
-            console.log('Stopping Workout...');
-            recorder.stopWorkout();
-            set_workout_active(false);
+            stopWorkout();
             set_workout_button_text(workout_button_start);
             changeToStats();
           }
