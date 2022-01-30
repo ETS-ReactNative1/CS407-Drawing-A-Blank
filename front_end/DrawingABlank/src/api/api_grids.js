@@ -11,7 +11,9 @@ export const getGrids = (bottom_left, top_right, zoom = 10, {isPost} = {}) => {
 
   if (isPost)
     return () =>
-      request('POST', 'grid-window/', '', JSON.stringify(body), token);
+      getToken().then(t =>
+        request('POST', 'grid-window/', '', JSON.stringify(body), t),
+      );
 
   console.log('Sending grid window request with:' + JSON.stringify(body));
   return getToken()
@@ -19,6 +21,7 @@ export const getGrids = (bottom_left, top_right, zoom = 10, {isPost} = {}) => {
       request('POST', 'map/collect/', '', JSON.stringify(body), token),
     )
     .then(response => {
+      print('grids resp', response);
       if (response.status != 200) {
         throw new Error('Could not retrieve grids.');
       }
