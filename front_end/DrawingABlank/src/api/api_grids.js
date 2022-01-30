@@ -10,7 +10,8 @@ export const getGrids = (bottom_left, top_right, zoom = 10, {isPost} = {}) => {
   };
 
   if (isPost)
-    return () => request('POST', 'grid-window/', '', JSON.stringify(body));
+    return () =>
+      request('POST', 'grid-window/', '', JSON.stringify(body), token);
 
   console.log('Sending grid window request with:' + JSON.stringify(body));
   return getToken()
