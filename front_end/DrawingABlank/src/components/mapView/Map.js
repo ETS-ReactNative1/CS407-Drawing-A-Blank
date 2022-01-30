@@ -181,8 +181,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
         mapType={'standard'}
         showsUserLocation={true}
         // onRegionChange={r => handleRegionChange(r)}
-        minZoomLevel={5}
-        maxZoomLevel={10}>
+        // minZoomLevel={5}
+        // maxZoomLevel={10}
+      >
         <DrawGrids />
         <DrawEvents />
         <DrawUserPath />

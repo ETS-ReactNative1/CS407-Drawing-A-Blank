@@ -12,7 +12,12 @@ import useGeoLocation from './useGeoLocation';
 
 export default function useRegion() {
   const userLocation = useGeoLocation();
-  const [region, setRegion] = useState();
+  const [region, setRegion] = useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0,
+    longitudeDelta: 0,
+  });
 
   useDidUpdateEffect(() => {
     setRegion(userLocation.current);
