@@ -10,7 +10,7 @@ export default function Cache(initContent = {}) {
     max_age = 0, // default always get latest from backend
   }) => {
     if (!content) {
-      content = refresh;
+      content = refreshContent();
     }
 
     expiry_date = Date.now() + max_age;
