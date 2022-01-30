@@ -5,7 +5,6 @@ from bresenham import bresenham
 from django.db.models import Q
 from pyproj import Transformer
 from .models import Grid, CoordsConvert
-from PIL import ImageColor
 
 """
 bng is main library used: https://pypi.org/project/bng/
@@ -25,6 +24,8 @@ converted to all numeric so that the library converts it to the correct letter.(
 the bng coordinates work) 
 
 """
+
+UNIT_TILE_SIZE = 5
 
 
 def distance(point_a, point_b):
@@ -75,18 +76,23 @@ def latlong_to_grid(latlong):
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
     grid = transformer.transform(latlong[0], latlong[1])
+    easting = round(grid[0])
+    easting = easting - (easting % UNIT_TILE_SIZE)
+    northing = round(grid[1])
+    northing = northing - (northing % UNIT_TILE_SIZE)
+    return easting, northing
 
-    return round(grid[0]), round(grid[1])
 
-
-def bounds_of_grid(location, dist=1):
+def bounds_of_grid(location, size=1):
     """
     Returns the latitude and longitudes of the input grid. 
-    The distance argument determines how large the grid is e.g. distance=1 means the grid is 1x1 meters.
+    The size argument determines how large the grid is e.g. size=2 means the bounds describe a 2x2 grid
 
     Function input: Grid reference as easting and northing tuple Function output: A list of tuples containing
     converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
+
+    dist = size * UNIT_TILE_SIZE
 
     easting, northing = location
 
@@ -94,10 +100,25 @@ def bounds_of_grid(location, dist=1):
     tiles = CoordsConvert.objects.filter(Q(easting=easting, northing=northing) |
                                          Q(easting=easting + dist, northing=northing) |
                                          Q(easting=easting, northing=northing + dist) |
-                                         Q(easting=easting + dist, northing=northing + dist)).order_by("easting",
-                                                                                                       "northing")
+                                         Q(easting=easting + dist, northing=northing + dist)).order_by("easting", "northing")
     if len(tiles) != 4:
-        return []
+        coordinates = []
+
+        # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids
+        # coordinates.
+        grid_diffs = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
+        for diff in grid_diffs:
+            new_easting = easting + diff[0]
+            new_northing = northing + diff[1]
+
+            # convert to latlong
+            latitude, longitude = grid_to_latlong((new_easting, new_northing))
+            if not CoordsConvert.objects.filter(easting=new_easting, northing=new_northing).exists():
+                CoordsConvert.objects.create(easting=new_easting, northing=new_northing,
+                                             longitude=longitude, latitude=latitude)
+            coordinates.append({"latitude": latitude, "longitude": longitude})
+
+        return coordinates
     return [{"latitude": tiles[0].latitude, "longitude": tiles[0].longitude},
             {"latitude": tiles[1].latitude, "longitude": tiles[1].longitude},
             {"latitude": tiles[3].latitude, "longitude": tiles[3].longitude},
@@ -125,9 +146,10 @@ def grids_in_radius(position, radius=4):
     # seems fine for now, could set the function's center at 0,0 and just
     # add the offset to the origin of the square.
     grids = points_in_circle_np(radius, x, y)
+    grids = [(x[0] - (x[0] % UNIT_TILE_SIZE), x[1] - (x[1] % UNIT_TILE_SIZE)) for x in grids]
 
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
-    return grids
+    return set(grids)
 
 
 def grids_in_path(point_a, point_b):
@@ -143,11 +165,13 @@ def grids_in_path(point_a, point_b):
 
     # Using the bresenham line algorithm implemented using a library.
     grids = list(bresenham(east_a, north_a, east_b, north_b))
+    grids = [(x[0] - (x[0] % UNIT_TILE_SIZE), x[1] - (x[1] % UNIT_TILE_SIZE)) for x in grids]
 
     # https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
     # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
 
-    return grids
+    # convert to set to remove duplicate grids from modulo op
+    return set(grids)
 
 
 def all_grids_with_path(point_a, point_b, radius):
@@ -165,122 +189,54 @@ def all_grids_with_path(point_a, point_b, radius):
     return all_grids
 
 
-def super_sample(coords, zoom_level=1):
-    """
-    uses all tiles visible and ensures that not too many grids are sent back to the user.
-    zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
-    zoom_level=2 means 2x2m grids.
-    
-    also considers the colours and finds the average colour for that larger grid.
-    """
-
-    bottomLeft = coords[0]
-    topRight = coords[2]
-
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
-
-    # get the differences
-    east_diff = abs(upper_east - lower_east)
-    north_diff = abs(upper_north - lower_north)
-    print(east_diff, north_diff)
-
-    # ensure both E and N are both divisible by zoom_level
-    padding_E = east_diff % zoom_level
-    padding_N = north_diff % zoom_level
-    tiles_E = Grid.objects.filter(northing__range=(lower_north, upper_north + padding_N),
-                                  easting__range=(lower_east, upper_east + padding_E))
-
-    # create 2d arrays that are smaller dimensions due to larger grids.
-    east_size = (east_diff + padding_E) // zoom_level
-    north_size = (north_diff + padding_N) // zoom_level
-    coords = np.zeros(shape=(east_size, north_size), dtype=object)
-    colours = np.zeros(shape=(east_size, north_size), dtype=object)
-
-    # rgb values to get avg.
-    for i in range(len(colours)):
-        for j in range(len(colours[i])):
-            colours[i][j] = (0, 0, 0)
-
-    # group grids into NxN blocks based on zoom level.
-    for tile in tiles_E:
-        index = ((tile.easting - lower_east), (tile.northing - lower_north))
-
-        # gets the bottom left per NxN grid. and also not the top row as that is divisible by zoom_level due to padding.
-        if (index[0] < east_diff and index[1] < north_diff):
-
-            # do element wise addition in 3 tuple (rgb) for avg per grid.
-            colours[index[0] // zoom_level][index[1] // zoom_level] = [sum(x) for x in
-                                                                       zip(ImageColor.getcolor("#" + tile.team.colour,
-                                                                                               "RGB"),
-                                                                           colours[index[0] // zoom_level][
-                                                                               index[1] // zoom_level])]
-
-            # check if bottom left of large grid.
-            if index[0] % zoom_level == 0 and index[1] % zoom_level == 0:
-                # uses zoom level to get larger bounds.
-                coords[index[0] // zoom_level][index[1] // zoom_level] = bounds_of_grid((tile.easting, tile.northing),
-                                                                                        zoom_level)
-
-    coords = coords.flatten()
-    colours = colours.flatten()
-    allCoords = []
-    for i in range(coords.size):
-        # blend colour: largest value will always be FF(255) and then everything will be scaled relative to that.
-        avg_colour = tuple(ti // (zoom_level * zoom_level) for ti in colours[i])
-        avg_colour = tuple(ti / (max(avg_colour)) for ti in avg_colour)
-        avg_colour = tuple(int(ti * 255) for ti in avg_colour)
-
-        # https://www.codespeedy.com/convert-rgb-to-hex-color-code-in-python/
-        allCoords.append({"colour": '%02x%02x%02x' % avg_colour, "bounds": coords[i]})
-    return allCoords
-
-
-def super_sample_alt(coords, zoom_level=1):
+def sub_sample(coords, sub_dimension=1):
     """
         uses all tiles visible and ensures that not too many grids are sent back to the user.
         zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
-        zoom_level=2 means 2x2m grids.
+        zoom_level=2 means 2x2 grids.
 
         also considers the colours and finds the average colour for that larger grid.
-        """
+    """
 
-    bottomLeft = coords[0]
-    topRight = coords[2]
+    if sub_dimension == 1:
+        return grids_visible(coords)
 
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
+    zoom_level = sub_dimension * UNIT_TILE_SIZE
 
-    # get the differences
-    east_diff = abs(upper_east - lower_east)
-    north_diff = abs(upper_north - lower_north)
-    print(east_diff, north_diff)
+    bottom_left = coords[0]
+    top_right = coords[1]
 
-    # ensure both E and N are both divisible by zoom_level
-    upper_east = upper_east + east_diff % zoom_level
-    upper_north = upper_north + north_diff % zoom_level
+    lower_east, lower_north = latlong_to_grid(bottom_left)
+    upper_east, upper_north = latlong_to_grid(top_right)
 
     tiles = Grid.objects.raw('''SELECT
-                                        id,
-                                        (northing DIV ''' + str(zoom_level) + ''') as north,
-                                        (easting DIV ''' + str(zoom_level) + ''') as east,
-                                        (SELECT colour
-                                        FROM apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id
-                                        WHERE north = (northing DIV ''' + str(zoom_level) +
-                             ''') AND east = (easting DIV ''' +
-                             str(zoom_level) + ''')
-                                        GROUP BY colour
-                                        ORDER BY COUNT(*) DESC
-                                        LIMIT 1) as colour
-                                    FROM apifile_grid 
-                                    WHERE easting >= ''' + str(lower_east) + ''' AND easting <= ''' + str(upper_east)
-                             + ''' AND northing >= ''' + str(lower_north) + ''' AND northing <= '''
-                             + str(upper_north) + '''
-                                    GROUP BY north, east''')
+                                    id,
+                                    east,
+                                    north,
+                                    colour 
+                                FROM 
+                                    (
+                                    SELECT  
+                                        apifile_grid.id,
+                                        (easting DIV ''' + str(zoom_level) + ''') AS east,
+                                        (northing DIV ''' + str(zoom_level) + ''') AS north,
+                                        colour,
+                                        COUNT(*) as num  
+                                    FROM 
+                                        apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id  
+                                    WHERE  
+                                        easting >= ''' + str(lower_east) + ''' 
+                                        AND easting <= ''' + str(upper_east) + '''
+                                        AND northing >= ''' + str(lower_north) + ''' 
+                                        AND northing <= ''' + str(upper_north) + '''  
+                                    GROUP BY east, north, colour
+                                    ORDER BY east, north, num DESC
+                                    ) RES
+                                GROUP BY east, north ORDER BY east, north;''')
 
     all_coords = []
     for tile in tiles:
-        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), dist=zoom_level)
+        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), size=sub_dimension)
         if bounds:
             all_coords.append({"colour": tile.colour, "bounds": bounds})
     return all_coords
@@ -292,13 +248,13 @@ def grids_visible(coords):
     Function output: coordinates of every grid that is visible.
     """
     # if quadrilateral and bottomleft < topRight then only need two coords.
-    bottomLeft = coords[0]
-    topRight = coords[2]
+    bottom_left = coords[0]
+    top_right = coords[1]
 
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
+    lower_east, lower_north = latlong_to_grid(bottom_left)
+    upper_east, upper_north = latlong_to_grid(top_right)
 
-    allCoords = []
+    all_coords = []
 
     # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
     # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
@@ -307,38 +263,6 @@ def grids_visible(coords):
                                 easting__range=(lower_east, upper_east))
 
     for tile in tiles:
-        allCoords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
+        all_coords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
 
-    return allCoords
-
-
-def grids_visible_alt(coords):
-    """
-    Function input: 4 longitude/latitude coordinates that the screen can see
-    Function output: coordinates of every grid that is visible.
-    """
-    # if quadrilateral and bottomleft < topRight then only need two coords.
-    bottomLeft = coords[0]
-    topRight = coords[2]
-
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
-
-    bounds = np.zeros(shape=(upper_east - lower_east + 2, upper_north - lower_north + 2, 2))
-    colours = np.zeros(shape=(upper_east - lower_east + 1, upper_north - lower_north + 1), dtype="S6")
-
-    # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
-    # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
-    # or by saving coordinates to not calculate again. Then you can access less coordinates and do less calculations.
-    tiles = Grid.objects.filter(northing__range=(lower_north, upper_north),
-                                easting__range=(lower_east, upper_east))
-    for tile in tiles:
-        index = (tile.easting - lower_east, tile.northing - lower_north)
-        colours[index[0]][index[1]] = tile.team.colour
-        for bound in ((0, 0), (1, 0), (0, 1), (1, 1)):
-            if bounds[index[0] + bound[0]][index[1] + bound[1]][0] == 0:
-                coords = grid_to_latlong((tile.easting + bound[0], tile.northing + bound[1]))
-                bounds[index[0] + bound[0]][index[1] + bound[1]][0] = coords[0]
-                bounds[index[0] + bound[0]][index[1] + bound[1]][1] = coords[1]
-
-    return {"colour": colours.tolist(), "bounds": bounds.tolist()}
+    return all_coords
