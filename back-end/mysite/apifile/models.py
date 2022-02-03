@@ -66,8 +66,10 @@ class Event(models.Model):
         upper_northing = centre_northing + r
 
         events = Event.get_current_events()
-        events = events.filter(eventBounds__easting__gte=lower_easting, eventBounds__northing__gte=lower_northing,
-                               eventBounds__easting__lte=upper_easting, eventBounds__northing__lte=upper_northing)
+        events = events.filter(eventBounds__easting__gte=lower_easting,
+                               eventBounds__northing__gte=lower_northing,
+                               eventBounds__easting__lte=upper_easting,
+                               eventBounds__northing__lte=upper_northing)
         return events
 
     @staticmethod

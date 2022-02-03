@@ -1,5 +1,5 @@
 
-from .models import Event, EventBounds,Grid
+from .models import Event, EventBounds, Grid
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import mahotas
