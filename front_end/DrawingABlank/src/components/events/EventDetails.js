@@ -9,17 +9,31 @@
 import React from 'react';
 import type {Node} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import EventLeaderboard from './EventLeaderboard';
 
 const EventDetails = ({eventType, timeRemaining, radius, desc}): Node => {
   return (
-    <View>
+    <View style={{width:"100%"}}>
       <Text style={styles.header}>Event details</Text>
       <Text style={styles.header2}>{'\tEvent type'}</Text>
       <Text style={styles.body}>{`\t\t\t${eventType}`}</Text>
       <Text style={styles.header2}>{'\Time remaining'}</Text>
       <Text style={styles.body}>{`\t\t\t${timeRemaining}`}</Text>
-      <Text style={styles.header2}>{'\tDescription'}</Text>
-      <Text style={styles.body}>{`\t\t\t${desc}`}</Text>
+      <EventLeaderboard title="Event leaderboard" data={[{
+          title:"Ocean",
+          picture:require('../../assets/img/ocean.png'),
+          points:154
+        },
+        {
+          title:"Windy",
+          picture:require('../../assets/img/windy.png'),
+          points:143
+        },
+        {
+          title:"Terra",
+          picture:require('../../assets/img/terra.png'),
+          points:125
+        }]}/>
     </View>
   );
 };
