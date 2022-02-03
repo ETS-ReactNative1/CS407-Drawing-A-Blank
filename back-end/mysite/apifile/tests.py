@@ -26,11 +26,11 @@ class GridTestCase(TestCase):
         models.Grid.objects.create(easting="431255", northing="265430", team=team, time=datetime.now())
 
     def test_grid_windowing(self):
-        out = grids.sub_sample([[52.285296, -1.549612], [0, 0], [52.289372, -1.530621], [0, 0]])
+        out = grids.sub_sample(([52.285296, -1.549612], [52.289372, -1.530621]))
         self.assertEqual(len(out), 7)
 
     def test_sub_sample_windowing(self):
-        out = grids.sub_sample([[52.285296, -1.549612], [0, 0], [52.289372, -1.530621], [0, 0]], 2)
+        out = grids.sub_sample(([52.285296, -1.549612], [52.289372, -1.530621]), 2)
         for row in out:
             print(str(row))
         self.assertEqual(len(out), 6)
@@ -54,7 +54,7 @@ class SubSampleTest(TestCase):
     def test_sub(self):
         print("")
         # 8x8= 64 (1x1m) grids converted to a 2x2 grid with each grid being 4x4m
-        out = grids.sub_sample([[52.285951, -1.5329989], [0, 0], [52.286022, -1.5328809], [0, 0]], sub_dimension=4)
+        out = grids.sub_sample(([52.285951, -1.5329989], [52.286022, -1.5328809]), sub_dimension=4)
         print(str(out))
 
 """

@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
+import * as Authentication from '../../../api/api_authentication.js';
+
 
 class LoginScreen extends Component{
     state = {
@@ -19,11 +21,6 @@ class LoginScreen extends Component{
     }
 
     detailsComplete = () =>{
-        //Accepts unicode: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
-        const rex_email = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-        if(!rex_email.test(this.state.email)){
-            return [false, "Please enter a valid email."];
-        }
         if(this.state.password == ""){
             return [false, "Please enter a password."];
         }
@@ -37,8 +34,12 @@ class LoginScreen extends Component{
             alert(verification[1]);
             return;
         }
-        //Continue with the login process...
-        this.props.navigation.navigate('map_view_complete');
+        Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
+            this.props.navigation.navigate('map_view_complete');
+        }).catch(err => {
+            console.log("ERROR LOGGING IN:"+err);
+            alert(err);
+        });
     }
 
     changeToRegister = () =>{
@@ -59,7 +60,7 @@ class LoginScreen extends Component{
                 <View style={styles.loginForm}>
                     <View style={styles.loginFormInputs}>
                         <TextInput style={styles.credentialsInput}
-                        placeholder="Email"
+                        placeholder="Username or Email"
                         placeholderTextColor="black"
                         ref="email"
                         onChangeText={this.handleEmail}/>

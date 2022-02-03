@@ -203,11 +203,11 @@ def sub_sample(coords, sub_dimension=1):
 
     zoom_level = sub_dimension * UNIT_TILE_SIZE
 
-    bottomLeft = coords[0]
-    topRight = coords[2]
+    bottom_left = coords[0]
+    top_right = coords[1]
 
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
+    lower_east, lower_north = latlong_to_grid(bottom_left)
+    upper_east, upper_north = latlong_to_grid(top_right)
 
     tiles = Grid.objects.raw('''SELECT
                                     id,
@@ -248,13 +248,13 @@ def grids_visible(coords):
     Function output: coordinates of every grid that is visible.
     """
     # if quadrilateral and bottomleft < topRight then only need two coords.
-    bottomLeft = coords[0]
-    topRight = coords[2]
+    bottom_left = coords[0]
+    top_right = coords[1]
 
-    lower_east, lower_north = latlong_to_grid(bottomLeft)
-    upper_east, upper_north = latlong_to_grid(topRight)
+    lower_east, lower_north = latlong_to_grid(bottom_left)
+    upper_east, upper_north = latlong_to_grid(top_right)
 
-    allCoords = []
+    all_coords = []
 
     # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
     # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
@@ -263,6 +263,6 @@ def grids_visible(coords):
                                 easting__range=(lower_east, upper_east))
 
     for tile in tiles:
-        allCoords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
+        all_coords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
 
-    return allCoords
+    return all_coords
