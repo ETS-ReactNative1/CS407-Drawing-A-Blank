@@ -5,6 +5,7 @@ from bresenham import bresenham
 from django.db.models import Q
 from pyproj import Transformer
 from .models import Grid, CoordsConvert
+from .constants import UNIT_TILE_SIZE
 
 """
 bng is main library used: https://pypi.org/project/bng/
@@ -24,8 +25,6 @@ converted to all numeric so that the library converts it to the correct letter.(
 the bng coordinates work) 
 
 """
-
-UNIT_TILE_SIZE = 5
 
 
 def distance(point_a, point_b):
