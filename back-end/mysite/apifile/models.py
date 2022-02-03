@@ -73,7 +73,7 @@ class Event(models.Model):
         events = events.filter(eventbounds__easting__gte=lower_easting,
                                eventbounds__northing__gte=lower_northing,
                                eventbounds__easting__lte=upper_easting,
-                               eventbounds__northing__lte=upper_northing)
+                               eventbounds__northing__lte=upper_northing).distinct()
         return events
 
     @staticmethod
