@@ -64,7 +64,7 @@ export const getEventScores = (grids, event_bounds) => {
   Object.keys(colour_counts).forEach((colour) => {
     results.push({"colour":colour, "count":colour_counts[colour], "details":COLOUR_TO_TEAM[colour]});
   });
-  return results.sort((a,b) => a.count - b.count);
+  return results.sort((a,b) => a.count - b.count).reverse();
 }
 
 export const getEvents = () => {
