@@ -1,4 +1,4 @@
-export default function Cache(initContent = {}) {
+export default function SimpleCache(initContent = {}) {
   this.content = initContent;
 
   this.addEntry = ({
@@ -7,13 +7,13 @@ export default function Cache(initContent = {}) {
     refreshContent,
     //requestObject,
     //requesterObject,
-    max_age = 0, // default always get latest from backend
+    time_to_expire = 0, // default always get latest from backend
   }) => {
     if (!content) {
       content = refreshContent();
     }
 
-    expiry_date = Date.now() + max_age;
+    expiry_date = Date.now() + time_to_expire;
 
     this.content[key] = [
       content, // promise
@@ -24,12 +24,18 @@ export default function Cache(initContent = {}) {
 
   // return just the "content" field of an element
   this.getEntryContent = async (key, getLatestFlag) => {
+    console.log('hgetcontetn', await this.getEntry(key, getLatestFlag));
     return (await this.getEntry(key, getLatestFlag))[0];
   };
 
-  this.getEntry = ({key}, getLatestFlag) => {
-    [content, refreshContent, expiry_date] = this.content[key];
+  this.getEntry = (key, getLatestFlag) => {
+    console.log('content', this.content);
+    entry = this.content[key];
 
+    if (!entry) return [[]];
+
+    const [content, refreshContent, expiry_date] = this.content[key];
+    console.log('getentry');
     if (expiry_date >= Date.now() || getLatestFlag) {
       updatedElement = [refreshContent(), ...this.content[key]];
       this.content[key] = updatedElement;

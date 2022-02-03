@@ -61,7 +61,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //    more an issue of proper state updates/ only do updates which we want to be shown
   // refs are always "paused", must be manually listened to using useEffect
   const userLocation = useGeoLocation();
-  const [DrawGrids, setGridDrawScale] = useLocalGrids(DEBUG_ZOOM_LEVEL);
+  const [DrawGrids, setGridDrawScale] = useLocalGrids(DEBUG_ZOOM_LEVEL, [], {
+    useCache: 1,
+  });
   const [DrawEvents, events] = useEvents();
   const [DrawUserPath, userPath] = useUserPath();
   const [region, setRegion] = useRegion();
@@ -124,51 +126,19 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   function handleRegionChange(newRegion) {
     const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
+    // console.log('new', newRegion);
+    const zoom = {longitudeDelta, latitudeDelta};
+    setGridDrawScale(zoom);
+    return;
 
-    const zoom = convertZoomRepresentation({longitudeDelta, latitudeDelta});
+    // zoom = convertZoomRepresentation({longitudeDelta, latitudeDelta});
+    // setGridDrawScale(zoom);
 
     function convertZoomRepresentation(RNM_Zoom) {
       // #1 Converting map zoom level to backend zoom arg type
       // #2 Managing the frequency of requests made for a new zoom level/tile size
 
       const {longitudeDelta, latitudeDelta} = RNM_Zoom;
-
-      // backend debug = 0.01 for field of view
-      // 10 for tile
-      setGridDrawScale(RNM_Zoom);
-
-      // when zoomed out enough, want to merge tiles
-      // i.e. downsample
-
-      // have a few different LoDs (level of detail)
-      // either cache each LoD or just generate a new request
-      // unfeasible to do a new LoD for continuous scale
-      //    too many requests per second or too much memory usage
-      // For now, no cache the request not the response grid object
-      //    making a new request even if no changes to LoD
-      // still requires LoD setups tho - discretize the zoom
-
-      // deltas ratio is constant, (range due to different phone dimensions)
-      // take just one of the deltas as level of zoom
-
-      // are essentially picking most suitable tilesize
-      // based on screen size/ map size
-
-      // get tile size of that bucket
-      // "what tile size corresponsds to this lod level"
-      //zoomLoDs[zoomLoD] = tileSize;
-
-      // need map of zoom levels to zub sample
-      // i.e. scale subsampling (zoom arg) with region zoom/ pinch
-      // but want them to appear the same size on screen regardless of zoom level
-      //
-
-      // to be made continous
-      // will need to seperae from backend
-      // otherwise space or time becomes and issue (round trip time vs cahce memory)
-      // contiuos - get most detailed tile set
-      // work on that set on front end - compute better size from that -
-      //    would require merging/downsampling on the frontend
     }
   }
 
@@ -177,10 +147,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
       <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        region={region}
+        initialRegion={region}
         mapType={'standard'}
         showsUserLocation={true}
-        // onRegionChange={r => handleRegionChange(r)}
+        onRegionChange={r => handleRegionChange(r)}
         // minZoomLevel={5}
         // maxZoomLevel={10}
       >
