@@ -5,7 +5,7 @@ from rest_framework.authtoken import views as views_auth_token
 
 router = routers.DefaultRouter()
 
-router.register("events", views.Events, "events")
+router.register("events", views.EventView, "events")
 router.register("map", views.GridView, "map")
 router.register("user", views.UserProfile, "user")
 router.register("workout", views.WorkoutSubmission, "workout")

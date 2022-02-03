@@ -13,7 +13,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 
 
-class Events(viewsets.ViewSet):
+class EventView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
 
     def get_permissions(self):
@@ -38,8 +38,25 @@ class Events(viewsets.ViewSet):
         return Response("Event added", status=status.HTTP_201_CREATED)
 
     def list(self, _):
-        ret_val = dict()
         events = Event.get_current_events()
+        ret_val = EventView.event_list_to_json(events)
+
+        return Response(ret_val, status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False)
+    def local(self, request):
+        data = request.data
+        centre = grids.latlong_to_grid(data['point'])
+        dist = data['distance']
+
+        events = Event.get_events_in_distance(centre, dist)
+        ret_val = EventView.event_list_to_json(events)
+
+        return Response(ret_val, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def event_list_to_json(events):
+        ret_val = dict()
         for event in events:
             bounds = event.get_bounds()
             for i in range(0, len(bounds)):
@@ -49,10 +66,8 @@ class Events(viewsets.ViewSet):
                 'end': event.end,
                 'bounds': bounds
             }
-
             ret_val[event.id] = values
-
-        return Response(ret_val, status=status.HTTP_200_OK)
+        return ret_val
 
 
 class UserProfile(viewsets.ViewSet):

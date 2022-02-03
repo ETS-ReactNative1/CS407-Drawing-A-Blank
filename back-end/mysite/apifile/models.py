@@ -62,12 +62,12 @@ class Event(models.Model):
     players = models.ManyToManyField(Player, through='EventPerformance')
 
     @staticmethod
-    def get_events_in_distance(centre, r):
+    def get_events_in_distance(centre, dist):
         centre_easting, centre_northing = centre
-        lower_easting = centre_easting - r
-        lower_northing = centre_northing - r
-        upper_easting = centre_easting + r
-        upper_northing = centre_northing + r
+        lower_easting = centre_easting - dist
+        lower_northing = centre_northing - dist
+        upper_easting = centre_easting + dist
+        upper_northing = centre_northing + dist
 
         events = Event.get_current_events()
         events = events.filter(eventbounds__easting__gte=lower_easting,
