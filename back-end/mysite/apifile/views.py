@@ -25,8 +25,8 @@ class Events(viewsets.ViewSet):
 
     def create(self, request):
         data = request.data
-        start = data['start_date']
-        end = data['end_date']
+        start = datetime.datetime.strptime(data['start_date'], '%d/%m/%Y')
+        end = datetime.datetime.strptime(data['end_date'], '%d/%m/%Y')
         bounds = data['bounds']
 
         event = Event.objects.create(start=start, end=end)
