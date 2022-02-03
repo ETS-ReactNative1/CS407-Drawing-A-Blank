@@ -18,7 +18,6 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -31,7 +30,7 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
       </Stack.Navigator>
     </NavigationContainer>
-    */
+   /*
     <EventSummary
       eventId={3}
       teams={["Windy","Terra","Ocean"]}
@@ -40,5 +39,6 @@ export default function App() {
       personal_team={"Windy"}
       score_history={[[100,125,200,300],[50,125,150,200],[25,50,75,100]]}
     />
+    */
   );
 }
