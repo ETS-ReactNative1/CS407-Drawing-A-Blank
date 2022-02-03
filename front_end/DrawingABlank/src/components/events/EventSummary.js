@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {Text, View, ScrollView} from 'react-native';
+import {Text, View, ScrollView, TouchableOpacity} from 'react-native';
 import EventPodium from './EventPodium.js';
+import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import {styles} from './style.js';
+import { LineChart, Path, Grid } from 'react-native-svg-charts'
 
 class EventSummary extends Component {
     
@@ -21,6 +23,22 @@ class EventSummary extends Component {
     }
 
     render(){
+        const TEAM_COLOURS = {"Terra":"#FF8C91","Windy":"#82FF8A","Ocean":"#47C4FF"}
+        const LINE_DATA = [
+            {
+                data:this.props.score_history[0],
+                svg:{stroke:TEAM_COLOURS[this.props.teams[0]], strokeWidth:2}
+            },
+            {
+                data:this.props.score_history[1],
+                svg:{stroke:TEAM_COLOURS[this.props.teams[1]], strokeWidth:2}
+            },
+            {
+                data:this.props.score_history[2],
+                svg:{stroke:TEAM_COLOURS[this.props.teams[2]], strokeWidth:2}
+            },
+        ];
+        console.log(LINE_DATA);
         return(
             <ScrollView style={styles.summary}>
                 <View style={styles.summary_title}>
@@ -34,6 +52,16 @@ class EventSummary extends Component {
                 teams={this.props.teams}
                 points={[300,200,100]}
                 height={300}/>
+                <WorkoutLineGraph
+                    graphTitle="Team Points vs. Time"
+                    yData={LINE_DATA}
+                    xFunction={(value, index) => {}}
+                    height={200}
+                />
+                <TouchableOpacity style={styles.continue_button}>
+                    <Text style={styles.continue_button_text} onPress={()=>{}}>Continue</Text>
+                </TouchableOpacity>
+                <View style={{padding:20}}></View>
             </ScrollView>
         );
     }

@@ -38,6 +38,7 @@ export default function App() {
       points={[300,200,100]}
       personal_score={20}
       personal_team={"Windy"}
+      score_history={[[100,125,200,300],[50,125,150,200],[25,50,75,100]]}
     />
   );
 }

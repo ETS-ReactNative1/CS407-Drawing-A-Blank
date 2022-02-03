@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
         textAlign:'right'
     },
     summary:{
-        padding:10
+        padding:20,
     },
     summary_title:{
     },
@@ -76,5 +76,18 @@ export const styles = StyleSheet.create({
         color:"#de1610",
         fontSize:26,
         textAlign:"center"
-    }
+    },
+    continue_button:{
+        borderRadius:5,
+        borderColor:"black",
+        borderWidth:1,
+        backgroundColor:"#6db0f6",
+        width:"100%",
+        alignSelf:"center"
+    },
+
+    continue_button_text:{
+        textAlign:"center",
+        fontSize:24
+    },
 });
