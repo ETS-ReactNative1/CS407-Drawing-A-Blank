@@ -1,6 +1,13 @@
 import {request, getToken} from './api_networking.js';
 import * as geolib from 'geolib';
 
+//Stores the team name and picture with each colour
+const COLOUR_TO_TEAM = {
+  "FF8C91":{team:"Terra",picture:require('../assets/img/terra.png')},
+  "82FF8A":{team:"Windy",picture:require('../assets/img/windy.png')},
+  "47C4FF":{team:"Ocean",picture:require('../assets/img/ocean.png')}
+}
+
 /**
  * 
  * @param {JSON Object} bounds | The bounds of the event which will be used to calculate a centre 
@@ -47,7 +54,7 @@ export const getEventScores = (grids, event_bounds) => {
     return geolib.isPointInPolygon(center_point, event_bounds);
   });
   //https://stackoverflow.com/questions/56375737/get-count-of-array-objects-belonging-to-a-partical-id-in-javascript-node-js
-  var colour_counts = {};
+  var colour_counts = {}; 
   filtered_grids.forEach((grid) => {
     if(!colour_counts[grid.colour])
       colour_counts[grid.colour] = 0;
@@ -55,7 +62,7 @@ export const getEventScores = (grids, event_bounds) => {
   });
   var results = [];
   Object.keys(colour_counts).forEach((colour) => {
-    results.push({"colour":colour, "count":colour_counts[colour]});
+    results.push({"colour":colour, "count":colour_counts[colour], "details":COLOUR_TO_TEAM[colour]});
   });
   return results.sort((a,b) => a.count - b.count);
 }

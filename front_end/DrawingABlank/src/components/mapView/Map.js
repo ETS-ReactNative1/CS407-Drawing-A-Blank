@@ -59,6 +59,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   const [grids, setGrids] = useState([]);
 
+  const [eventScores, setEventScores] = useState([]);
+
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -176,9 +178,23 @@ function Map({setOverlayVisible, setOverlayContent}) {
     Geolocation.getCurrentPosition(({coords}) => {
       getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
       [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {console.log("GRID AMOUNT:"+result.length);setGrids(result);})
-      .then(_ => {console.log(getEventScores(grids,events[0].bounds.coordinates))})
+      .then(result => {setGrids(result)})
+      .then(_ => {collectEventScores()})
     });
+  }
+
+  function collectEventScores(){
+    result = []
+    events.forEach((event) => {
+      var eventScore = getEventScores(grids,event.bounds.coordinates);
+      result.push_back({
+        title:eventScore["details"]["team"],
+        picture:eventScore["details"]["picture"],
+        points:eventScore["count"]
+      });
+    });
+    setEventScores(result);
+    console.log(eventScores);
   }
 
   useEffect(() => {
