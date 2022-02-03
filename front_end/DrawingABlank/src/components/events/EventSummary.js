@@ -7,7 +7,8 @@ class EventSummary extends Component {
     render(){
         return(
             <View>
-                <EventPodium teams={["Windy","Terra","Ocean"]}/>
+                <EventPodium teams={["Windy","Terra","Ocean"]}
+                height={300}/>
             </View>
         );
     }

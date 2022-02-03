@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {View} from 'react-native';
 import {styles} from './style.js';
-import { BarChart, Grid } from 'react-native-svg-charts';
+import { BarChart, XAxis } from 'react-native-svg-charts';
 import { Text as SVGText } from 'react-native-svg';
 import { Image as SVGImage } from 'react-native-svg';
+import * as scale from 'd3-scale';
 
 class EventPodium extends Component{
     //COLOURS:
@@ -24,21 +25,24 @@ class EventPodium extends Component{
                 svg: {
                     fill: TEAM_COLOURS[this.props.teams[2]],
                 },
-                picture: TEAM_AVATARS[this.props.teams[2]]
+                picture: TEAM_AVATARS[this.props.teams[2]],
+                points:100
             },
             {
                 value: 3,
                 svg: {
                     fill: TEAM_COLOURS[this.props.teams[0]],
                 },
-                picture: TEAM_AVATARS[this.props.teams[0]]
+                picture: TEAM_AVATARS[this.props.teams[0]],
+                points:300
             },
             {
                 value: 2,
                 svg: {
                     fill: TEAM_COLOURS[this.props.teams[1]],
                 },
-                picture: TEAM_AVATARS[this.props.teams[1]]
+                picture: TEAM_AVATARS[this.props.teams[1]],
+                points: 200
             },
         ]
         const PODIUM_IMAGE_POS = 70
@@ -61,7 +65,7 @@ class EventPodium extends Component{
         )
 
         return (
-            <View style={{ flexDirection: 'row', height: 300}}>
+            <View style={{height: this.props.height}}>
                 <BarChart
                     style={{ height:"100%", flex:1 }}
                     data={PODIUM_DATA}
@@ -74,6 +78,14 @@ class EventPodium extends Component{
                 >
                     <Labels/>
                 </BarChart>
+                
+                <XAxis
+                    style={{ marginTop: 0 }}
+                    data={ PODIUM_DATA }
+                    scale={scale.scaleBand}
+                    formatLabel={ (value, index) => PODIUM_DATA[index].points + " points" }
+                    labelStyle={ { color: 'black' } }
+                />
             </View>
         )
     }
