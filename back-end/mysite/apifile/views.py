@@ -9,12 +9,14 @@ import datetime
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from authentication import ExpTokenAuthentication
 
 
 class Events(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [ExpTokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -56,7 +58,7 @@ class Events(viewsets.ViewSet):
 
 
 class UserProfile(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [ExpTokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -126,7 +128,7 @@ class UserProfile(viewsets.ViewSet):
 
 
 class GridView(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @action(methods=['post'], detail=False)
@@ -141,7 +143,7 @@ class GridView(viewsets.ViewSet):
 
 
 class WorkoutSubmission(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
@@ -198,3 +200,24 @@ class WorkoutSubmission(viewsets.ViewSet):
 
 def calc_calories(workout_type, dur):
     return 0
+
+class ObtainExpAuthToken(ObtainAuthToken):
+    serializer_class = AuthTokenSerializer
+
+    def post(self, request):
+        # authenticates username + password
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid():
+            # get the user and their current token if exists, or make new one if not exist
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+
+            # if token fetched, refresh expiry
+            if not created:
+                token.created = datetime.datetime.utcnow()
+                token.save()
+            
+            return Response({'token': token.key})
+                
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
