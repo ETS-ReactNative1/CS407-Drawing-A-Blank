@@ -148,4 +148,5 @@ REST_FRAMEWORK = {
 # python manage.py crontab add
 # everytime a new job is added to this list
 # will run the test function every sunday at 00:00
+# * * * * * will run every minute (useful for debugging)
 CRONJOBS = [('0 0 * * 0', 'apifile.cron.test')]
