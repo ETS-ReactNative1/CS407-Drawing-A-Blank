@@ -1,16 +1,17 @@
 import operator
 from functools import reduce
-from django.db.models import Q
+from django.db.models import Q, F
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from . import grids
-from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds
+from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 import datetime
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from . import events
 
 
 class EventView(viewsets.ViewSet):
@@ -186,7 +187,7 @@ class WorkoutSubmission(viewsets.ViewSet):
 
         bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
         team = workout.player.team
-        for i in range(1, len(bounds)):
+        for i in range(len(bounds) + 1, 0, -1):
             speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
                                           (bounds[i - 1].easting, bounds[i - 1].northing),
                                           (bounds[i].time - bounds[i - 1].time).total_seconds())
@@ -205,10 +206,24 @@ class WorkoutSubmission(viewsets.ViewSet):
                     tile.team = team
                     tile.time = bounds[i].time
                     tile.save()
+                    WorkoutSubmission.add_participation(user, (tile.easting, tile.northing))
             for tile in allGrids - checkedTiles:
                 Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
+                WorkoutSubmission.add_participation(user, tile)
 
         return Response("Workout added", status=status.HTTP_201_CREATED)
+
+    @staticmethod
+    def add_participation(user, tile):
+        closest_event = Event.objects.all().annotate(
+            distance=(F('eventbounds__easting') - tile[0])**2 +
+                     (F('eventbounds__northing') - tile[1])**2).order_by('distance').first()
+        event = events.check_within_event(closest_event, tile)
+        if event:
+            event_perf, created = EventPerformance.objects.get_or_create(user=user, event=event, defaults={'contribution': 1})
+            if not created:
+                event_perf.contribution += 1
+                event_perf.save()
 
 
 def calc_calories(workout_type, dur):
