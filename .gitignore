@@ -1,0 +1,9 @@
+
+*.pyc
+back-end/mysite/mysite/__pycache__/settings.cpython-38.pyc
+*.pyc
+back-end/.DS_Store
+back-end/mysite/.DS_Store
+back-end/mysite/apifile/__pycache__/grids.cpython-38.pyc
+back-end/mysite/apifile/__pycache__/models.cpython-38.pyc
+back-end/mysite/db.sqlite3

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apifile.apps.ApifileConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -76,16 +77,15 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # LOCAL CONNECTION
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
-    }
-}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
+#     }
+# }
 
 
-"""
 # DCS CONNECTION
 DATABASES = {
     'default': {
@@ -143,3 +143,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+# needs to be added in terminal like 
+# python manage.py crontab add
+# everytime a new job is added to this list
+# will run the test function every sunday at 00:00
+CRONJOBS = [('0 0 * * 0', 'apifile.cron.test')]
