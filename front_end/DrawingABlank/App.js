@@ -32,6 +32,12 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
     */
-    <EventSummary/>
+    <EventSummary
+      eventId={3}
+      teams={["Windy","Terra","Ocean"]}
+      points={[300,200,100]}
+      personal_score={20}
+      personal_team={"Windy"}
+    />
   );
 }

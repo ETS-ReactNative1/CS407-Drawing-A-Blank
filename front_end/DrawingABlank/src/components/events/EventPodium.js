@@ -26,7 +26,7 @@ class EventPodium extends Component{
                     fill: TEAM_COLOURS[this.props.teams[2]],
                 },
                 picture: TEAM_AVATARS[this.props.teams[2]],
-                points:100
+                points:this.props.points[2]
             },
             {
                 value: 3,
@@ -34,7 +34,7 @@ class EventPodium extends Component{
                     fill: TEAM_COLOURS[this.props.teams[0]],
                 },
                 picture: TEAM_AVATARS[this.props.teams[0]],
-                points:300
+                points:this.props.points[0]
             },
             {
                 value: 2,
@@ -42,7 +42,7 @@ class EventPodium extends Component{
                     fill: TEAM_COLOURS[this.props.teams[1]],
                 },
                 picture: TEAM_AVATARS[this.props.teams[1]],
-                points: 200
+                points: this.props.points[1]
             },
         ]
         const PODIUM_IMAGE_POS = 70

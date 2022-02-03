@@ -49,5 +49,32 @@ export const styles = StyleSheet.create({
         fontSize:24,
         color:"black",
         textAlign:'right'
+    },
+    summary:{
+        padding:10
+    },
+    summary_title:{
+    },
+    summary_title_text:{
+        fontSize:32,
+        color:"black",
+        textAlign:"center"
+    },
+    summary_description_text:{
+        fontSize:20,
+        color:"black",
+        textAlign:"center"
+    },
+    summary_status:{
+    },
+    summary_status_winner:{
+        color:"#0fd945",
+        fontSize:26,
+        textAlign:"center"
+    },
+    summary_status_loser:{
+        color:"#de1610",
+        fontSize:26,
+        textAlign:"center"
     }
 });
