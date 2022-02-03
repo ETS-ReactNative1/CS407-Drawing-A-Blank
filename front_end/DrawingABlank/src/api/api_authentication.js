@@ -1,6 +1,12 @@
 import { RecyclerViewBackedScrollViewBase } from "react-native";
 import { request, setToken } from "./api_networking.js";
 
+/*
+    USER ACCOUNT LOGIN DETAILS FOR TESTING:
+    newtestuser
+    abc123
+*/
+
 export const createUser = (username, email, password, team) => {
     body = {
         "username":username,

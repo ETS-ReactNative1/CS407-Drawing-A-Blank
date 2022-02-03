@@ -1,0 +1,53 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+    leaderboard:{
+        padding:15
+    },
+    leaderboard_title:{
+        borderBottomColor:"#979797",
+        borderBottomWidth:2,
+        paddingBottom:5
+    },
+    leaderboard_title_text:{
+        color:"black",
+        fontSize:32,
+        textAlign:'left'
+    },
+    leaderboard_entries:{
+        paddingTop:15
+    },
+    leaderboard_entry:{
+        borderBottomColor:"#979797",
+        borderBottomWidth:2,
+        flexDirection:'row',
+        paddingBottom:5
+    },
+    leaderboard_entry_picture:{
+        alignContent:'flex-start',
+        padding:10
+    },
+    leaderboard_entry_picture_params:{
+        width:64,
+        height:64
+    },
+    leaderboard_entry_score:{
+        justifyContent:'center',
+        alignItems:'flex-end',
+        marginLeft:'auto',
+        paddingRight:10
+    },
+    leaderboard_entry_title:{
+        alignContent:'space-around',
+        justifyContent:'center'
+    },
+    leaderboard_entry_title_text:{
+        fontSize:24,
+        color:"black",
+    },
+    leaderboard_entry_score_text:{
+        fontSize:24,
+        color:"black",
+        textAlign:'right'
+    }
+});

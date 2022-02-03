@@ -16,10 +16,8 @@ const EventDetails = ({eventType, timeRemaining, radius, desc}): Node => {
       <Text style={styles.header}>Event details</Text>
       <Text style={styles.header2}>{'\tEvent type'}</Text>
       <Text style={styles.body}>{`\t\t\t${eventType}`}</Text>
-      <Text style={styles.header2}>{'\ttime remaining'}</Text>
+      <Text style={styles.header2}>{'\Time remaining'}</Text>
       <Text style={styles.body}>{`\t\t\t${timeRemaining}`}</Text>
-      <Text style={styles.header2}>{'\tEvent radius'}</Text>
-      <Text style={styles.body}>{`\t\t\t${radius}`}</Text>
       <Text style={styles.header2}>{'\tDescription'}</Text>
       <Text style={styles.body}>{`\t\t\t${desc}`}</Text>
     </View>
