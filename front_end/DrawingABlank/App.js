@@ -10,14 +10,12 @@ import {NavigationContainer} from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
 import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
-import EventLeaderboard from './src/components/events/EventLeaderboard.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
 
 export default function App() {
   return (
-    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -30,22 +28,5 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
       </Stack.Navigator>
     </NavigationContainer>
-    */
-    <EventLeaderboard 
-      title="Test Leaderboard"
-      data={[{
-        picture:require('./src/assets/img/terra.png'),
-        title:"Terra",
-        points:123
-      },{
-        picture:require('./src/assets/img/ocean.png'),
-        title:"Ocean",
-        points:64
-      },{
-        picture:require('./src/assets/img/windy.png'),
-        title:"Windy",
-        points:32
-      }]}
-    />
   );
 }
