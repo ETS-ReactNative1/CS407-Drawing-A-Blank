@@ -120,5 +120,5 @@ class eventBound(TestCase):
         # a = models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in test)))
 
     def test_get_events_in_distance(self):
-        self.assertEqual(len(Event.get_events_in_distance(100, 200)), 2)
-        self.assertEqual(len(Event.get_events_in_distance(300, 300)), 3)
+        self.assertEqual(len(Event.get_events_in_distance((100, 100), 200)), 2)
+        self.assertEqual(len(Event.get_events_in_distance((300, 300), 300)), 3)
