@@ -58,6 +58,19 @@ class Event(models.Model):
     players = models.ManyToManyField(Player, through='EventPerformance')
 
     @staticmethod
+    def get_events_in_distance(centre, r):
+        centre_easting, centre_northing = centre
+        lower_easting = centre_easting - r
+        lower_northing = centre_northing - r
+        upper_easting = centre_easting + r
+        upper_northing = centre_northing + r
+
+        events = Event.get_current_events()
+        events = events.filter(eventBounds__easting__gte=lower_easting, eventBounds__northing__gte=lower_northing,
+                               eventBounds__easting__lte=upper_easting, eventBounds__northing__lte=upper_northing)
+        return events
+
+    @staticmethod
     def get_current_events():
         today = timezone.now()
         curr_events = Event.objects.filter(start__lte=today, end__gte=today)
