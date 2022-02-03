@@ -4,18 +4,38 @@ from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from . import grids
-from .models import Event, Workout, WorkoutPoint, Grid, Player, Team
+from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds
 import datetime
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 
 
 class Events(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def create(self, request):
+        data = request.data
+        start = data['start_date']
+        end = data['end_date']
+        bounds = data['bounds']
+
+        event = Event.objects.create(start=start, end=end)
+
+        for bound in bounds:
+            easting, northing = grids.latlong_to_grid(bound)
+            EventBounds.objects.create(event=event, easting=easting, northing=northing)
+
+        return Response("Event added", status=status.HTTP_201_CREATED)
 
     def list(self, _):
         ret_val = dict()
