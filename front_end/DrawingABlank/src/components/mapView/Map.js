@@ -25,6 +25,7 @@ import useEvents from './useEvents';
 import useUserPath from './useUserPath';
 import useRegion from './useRegion';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
+import useZoomLevel from './useZoomLevel';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
@@ -42,7 +43,7 @@ const DEBUG_ZOOM_LEVEL = {
 };
 
 function Map({setOverlayVisible, setOverlayContent}) {
-  // const [region, setRegion] = useState(getInitialState().region);
+  const [region, setRegion] = useState(getInitialState().region);
   const navigation = useNavigation();
 
   const workout_button_start = 'Start Workout';
@@ -61,13 +62,15 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //    more an issue of proper state updates/ only do updates which we want to be shown
   // refs are always "paused", must be manually listened to using useEffect
   const userLocation = useGeoLocation();
-  const [DrawGrids, setGridDrawScale] = useLocalGrids(DEBUG_ZOOM_LEVEL, [], {
+  const [DrawGrids, setZoomLevel] = useLocalGrids(DEBUG_ZOOM_LEVEL, [], {
     useCache: 1,
   });
+  // const [zoomLevel, tileSize, setZoomLevel] = useZoomLevel();
+  const [zoomLevel, tileSize] = useZoomLevel();
   const [DrawEvents, events] = useEvents();
   const [DrawUserPath, userPath] = useUserPath();
-  const [region, setRegion] = useRegion();
-
+  // const [region, setRegion] = useRegion();
+  // console.log('region', region);
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc
     setOverlayContent(
@@ -108,11 +111,13 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //   } else {
   //   }
   // }, [userLocation.current]);
+  // console.log('remount', region);
 
   useDidUpdateEffect(() => {
     // set to map to user location when user location known (second userLocation change (init state -> actual))
     if (isMapTracking.current) {
       const {latitude, longitude} = userLocation.current;
+      console.log('region change', region);
       setRegion({
         // !! No longer doing following a user on map !!
         //...region, //take previous zoom level
@@ -120,6 +125,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
         ...MAP_ZOOMLEVEL_CLOSE,
         latitude,
         longitude,
+        //longitudeDelta: region.longitudeDelta,
+        //latitudeDelta: region.latitudeDelta,
       });
     }
   }, [userLocation.current]);
@@ -128,7 +135,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
     const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
     // console.log('new', newRegion);
     const zoom = {longitudeDelta, latitudeDelta};
-    setGridDrawScale(zoom);
+    //setGridDrawScale(zoom);
+    setZoomLevel(zoom);
     return;
 
     // zoom = convertZoomRepresentation({longitudeDelta, latitudeDelta});
@@ -147,6 +155,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
+        // region={region}
         initialRegion={region}
         mapType={'standard'}
         showsUserLocation={true}

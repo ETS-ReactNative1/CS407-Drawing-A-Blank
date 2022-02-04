@@ -24,18 +24,16 @@ export default function SimpleCache(initContent = {}) {
 
   // return just the "content" field of an element
   this.getEntryContent = async (key, getLatestFlag) => {
-    console.log('hgetcontetn', await this.getEntry(key, getLatestFlag));
     return (await this.getEntry(key, getLatestFlag))[0];
   };
 
   this.getEntry = (key, getLatestFlag) => {
-    console.log('content', this.content);
     entry = this.content[key];
 
     if (!entry) return [[]];
 
     const [content, refreshContent, expiry_date] = this.content[key];
-    console.log('getentry');
+
     if (expiry_date >= Date.now() || getLatestFlag) {
       updatedElement = [refreshContent(), ...this.content[key]];
       this.content[key] = updatedElement;

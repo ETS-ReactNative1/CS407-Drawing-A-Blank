@@ -5,6 +5,7 @@ import Cache from './SimpleCache';
 import {Polygon} from 'react-native-maps';
 import {createEmptyStatement} from 'typescript';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
+import useZoomLevel from './useZoomLevel';
 //import staticLoDs from './LoDs';
 
 // similar hooks can be build for each large state e.g. markers/events
@@ -25,47 +26,63 @@ export default function useLocalGrids(
   initGrids = [],
   {useCache = 0} = {},
 ) {
+  // simple translation - should rework
   const convertZoomType = z => {
     z = z['latitudeDelta'];
-    console.log('z', z);
+
     if (z < 0.00029) {
       return 5;
     } else if (z < 0.0024) {
       return 10;
     } else if (z < 0.0089) {
       return 15;
-    } else if (z < 0.4) {
+    } else if (z < 0.016) {
       return 20;
-    } else if (z < 0.3) {
+    } else if (z < 0.037) {
       return 25;
     }
     return 30;
   };
 
   const userLocation = useGeoLocation();
-  const zoomLevel = useRef(initZoom); // type RNM
+  const [zoomLevel] = useZoomLevel();
+  // const [zoomLevel, tileSize] = useZoomLevel();
+  // const zoomLevel = useRef(initZoom); // type RNM
   // const [zoomLevel, setZoomLevel] = useState(initZoom);
   // am setting zoom level on each time zoom changes, since deltas are used,
   // will also trigger a render on movement
-  const [tileSize, setTileSize] = useState(convertZoomType(zoomLevel.current));
+  const [tileSize, setTileSize] = useState(5);
 
   const [localGrids, setLocalGrids] = useState(initGrids);
 
   // console.log('grid', testGrid);
 
+  // useEffect(() => {
+  //   setTileSize(convertZoomType(zoomLevel.current));
+  // }, [zoomLevel.current]);
+
   const setZoomLevel = zl => {
     // console.log('zl', zl);
     zoomLevel.current = zl;
-
+    // console.log('zoomlevel: ', zoomLevel);
     setTileSize(convertZoomType(zl));
   };
+
+  // const setZoomLevel = () => {};
 
   function buildTestEntry({latitudeDelta, longitudeDelta}, tileSize) {
     const {latitude, longitude} = userLocation.current;
     const ts = (tileSize + 1) * 5;
+
     const refresh = getGrids(
-      [latitude - latitudeDelta / 2, longitude - longitudeDelta / 2],
-      [latitude + latitudeDelta / 2, longitude + longitudeDelta / 2],
+      [
+        latitude - (30 * latitudeDelta) / 2,
+        longitude - (30 * longitudeDelta) / 2,
+      ],
+      [
+        latitude + (30 * latitudeDelta) / 2,
+        longitude + (30 * longitudeDelta) / 2,
+      ],
       ts,
       {isPost: true},
     );
@@ -115,6 +132,13 @@ export default function useLocalGrids(
         },
         4,
       ),
+      buildTestEntry(
+        {
+          latitudeDelta: 0.4070263557894961,
+          longitudeDelta: 0.3541556242108345,
+        },
+        5,
+      ),
       ,
     ];
 
@@ -153,7 +177,7 @@ export default function useLocalGrids(
       );
     } else {
       // use cached data
-      console.log('getting from cache');
+      console.log('getting from cache', tileSize);
       key = tileSize;
       grids = gridZoomCache.getEntryContent(key); // flag overrides entry expiry_date to now
     }

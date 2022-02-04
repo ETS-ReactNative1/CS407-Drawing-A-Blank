@@ -25,6 +25,10 @@ export const getGrids = (
       getToken()
         .then(t => request('POST', 'map/collect/', '', JSON.stringify(body), t))
         .then(res => res.json());
+    // .then(res => {
+    //   console.log('res', res);
+    //   return res;
+    // });
   }
 
   return getToken()
