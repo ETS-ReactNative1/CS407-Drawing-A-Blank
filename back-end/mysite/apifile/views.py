@@ -12,11 +12,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from authentication import ExpTokenAuthentication
+from . import authentication
 
 
 class Events(viewsets.ViewSet):
-    authentication_classes = [ExpTokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -58,7 +58,7 @@ class Events(viewsets.ViewSet):
 
 
 class UserProfile(viewsets.ViewSet):
-    authentication_classes = [ExpTokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -128,7 +128,7 @@ class UserProfile(viewsets.ViewSet):
 
 
 class GridView(viewsets.ViewSet):
-    authentication_classes = [ExpTokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @action(methods=['post'], detail=False)
@@ -143,7 +143,7 @@ class GridView(viewsets.ViewSet):
 
 
 class WorkoutSubmission(viewsets.ViewSet):
-    authentication_classes = [ExpTokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
@@ -204,6 +204,10 @@ def calc_calories(workout_type, dur):
 class ObtainExpAuthToken(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
 
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
     def post(self, request):
         # authenticates username + password
         serializer = self.get_serializer(data=request.data)
@@ -221,3 +225,5 @@ class ObtainExpAuthToken(ObtainAuthToken):
             return Response({'token': token.key})
                 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+obtain_exp_auth_token = ObtainExpAuthToken.as_view()

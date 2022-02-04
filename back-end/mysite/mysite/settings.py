@@ -140,7 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.ExpTokenAuthentication',
+        'apifile.authentication.ExpTokenAuthentication',
     ],
 }
 
@@ -149,4 +149,4 @@ REST_FRAMEWORK = {
 # everytime a new job is added to this list
 # '0 0 * * 0' will run the test function every sunday at 00:00
 # * * * * * will run every minute (useful for debugging)
-CRONJOBS = [('* * * * *', 'apifile.cron.test')]
+CRONJOBS = [('0 0 * * 0', 'apifile.cron.purge_tokens')]

@@ -1,6 +1,8 @@
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import exceptions
+from django.utils.translation import gettext_lazy as _
 import datetime
+import pytz
 
 class ExpTokenAuthentication(TokenAuthentication):
 
@@ -14,10 +16,15 @@ class ExpTokenAuthentication(TokenAuthentication):
 
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+       
+        # localise datetime objects as cannot compare naive and aware
+        # aka set to same timezone regardless of os clock
+        utc=pytz.UTC
+        time_now = utc.localize(datetime.datetime.utcnow()) 
 
         # if token expired, raise error
-        # currently set to 5 minute expiry for testing
-        if token.created < datetime.datetime.utcnow - datetime.timedelta(minutes=5):
+        # currently set to 1 day usage
+        if token.created < time_now - datetime.timedelta(days=1):
             raise exceptions.AuthenticationFailed(_('Token expired'))
 
         return (token.user, token)

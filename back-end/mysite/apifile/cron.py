@@ -2,6 +2,10 @@ from .models import Player, Team
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 import random
+import datetime
+import pytz
+
+from . import authentication
 
 # placeholder for when events end
 def event_end():
@@ -15,7 +19,16 @@ def purge_tokens():
     # get all tokens in token table
     # if token.created is older than x
     # delete
-    pass
+    
+    tokens = authentication.ExpTokenAuthentication().get_model().objects.all()
+
+    utc=pytz.UTC
+    time_now = utc.localize(datetime.datetime.utcnow()) 
+
+    # delete any 7 day old unused tokens
+    for token in tokens:
+        if token.created < time_now - datetime.timedelta(days=7):
+                token.delete()
 
 # testing case, cron job adds a user to db
 def test():
@@ -32,3 +45,5 @@ def test():
     Player.objects.create(user=user, team=team)
 
     token, _ = Token.objects.get_or_create(user=user)
+
+    print("hi")
