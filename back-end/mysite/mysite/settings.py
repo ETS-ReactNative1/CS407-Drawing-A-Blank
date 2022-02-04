@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apifile.apps.ApifileConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +77,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # LOCAL CONNECTION
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -85,17 +86,16 @@ DATABASES = {
 }
 
 
-"""
 # DCS CONNECTION
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'drawabdb',
-        'USER': 'drawab',
-        'PASSWORD': 'MX37mtd4m7nR',
-        'HOST': 'mysql.dcs.warwick.ac.uk',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'drawabdb',
+#         'USER': 'drawab',
+#         'PASSWORD': 'MX37mtd4m7nR',
+#         'HOST': 'mysql.dcs.warwick.ac.uk',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -143,3 +143,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.ExpTokenAuthentication',
     ],
 }
+
+# needs to be added in terminal like 
+# python manage.py crontab add
+# everytime a new job is added to this list
+# '0 0 * * 0' will run the test function every sunday at 00:00
+# * * * * * will run every minute (useful for debugging)
+CRONJOBS = [('* * * * *', 'apifile.cron.test')]
