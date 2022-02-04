@@ -78,24 +78,24 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # LOCAL CONNECTION
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
+#     }
+# }
 
 
 # DCS CONNECTION
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'drawabdb',
-#         'USER': 'drawab',
-#         'PASSWORD': 'MX37mtd4m7nR',
-#         'HOST': 'mysql.dcs.warwick.ac.uk',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'drawabdb',
+        'USER': 'drawab',
+        'PASSWORD': 'MX37mtd4m7nR',
+        'HOST': 'mysql.dcs.warwick.ac.uk',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
