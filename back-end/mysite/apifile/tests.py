@@ -74,24 +74,21 @@ class eventBound(TestCase):
         # small area to test insideness with concave shapes.
         self.ev2 = Event.objects.create(start=datetime.datetime.now(),
                                         end=datetime.datetime.now() + datetime.timedelta(days=50))
-        EventBounds.objects.create(event=self.ev2, easting=100, northing=100)
-        EventBounds.objects.create(event=self.ev2, easting=200, northing=100)
-        EventBounds.objects.create(event=self.ev2, easting=200, northing=200)
-        EventBounds.objects.create(event=self.ev2, easting=100, northing=200)
-        EventBounds.objects.create(event=self.ev2, easting=100, northing=175)
-        EventBounds.objects.create(event=self.ev2, easting=125, northing=175)
-        EventBounds.objects.create(event=self.ev2, easting=125, northing=125)
-        EventBounds.objects.create(event=self.ev2, easting=100, northing=125)
+        EventBounds.objects.create(event=self.ev2, easting=1000, northing=1000)
+        EventBounds.objects.create(event=self.ev2, easting=2000, northing=1000)
+        EventBounds.objects.create(event=self.ev2, easting=2000, northing=2000)
+        EventBounds.objects.create(event=self.ev2, easting=1000, northing=2000)
+        EventBounds.objects.create(event=self.ev2, easting=1000, northing=1750)
+        EventBounds.objects.create(event=self.ev2, easting=1250, northing=1750)
+        EventBounds.objects.create(event=self.ev2, easting=1250, northing=1250)
+        EventBounds.objects.create(event=self.ev2, easting=1000, northing=1250)
 
         # small event to test counts
         self.ev3 = Event.objects.create(start=datetime.datetime.now(),
                                         end=datetime.datetime.now() + datetime.timedelta(days=50))
-        EventBounds.objects.create(event=self.ev3, easting=10, northing=10)
-        EventBounds.objects.create(event=self.ev3, easting=20, northing=10)
-        EventBounds.objects.create(event=self.ev3, easting=20, northing=20)
-        EventBounds.objects.create(event=self.ev3, easting=15, northing=20)
-        EventBounds.objects.create(event=self.ev3, easting=15, northing=15)
-        EventBounds.objects.create(event=self.ev3, easting=10, northing=15)
+        grids = [(100,100),(100,125),(75,125),(75,150),(100,150),(100,175),(25,175),(25,150),(50,150),(50,125),(25,125),(25,100)]
+        for i in grids:
+            EventBounds.objects.create(event=self.ev3,easting=i[0], northing=i[1])
 
         # events list to test if the function returns the correct event
         self.events_list = [self.ev1, self.ev2, self.ev3]
@@ -101,17 +98,19 @@ class eventBound(TestCase):
         models.Team.objects.create(name="Test Team2", colour="00FF00")
         team = models.Team.objects.get(name="Test Team1")
         team2 = models.Team.objects.get(name="Test Team2")
+        
 
-        models.Grid.objects.create(easting="15", northing="15", team=team, time=datetime.datetime.now())
-        models.Grid.objects.create(easting="10", northing="10", team=team2, time=datetime.datetime.now())
-        models.Grid.objects.create(easting="15", northing="10", team=team, time=datetime.datetime.now())
-        models.Grid.objects.create(easting="25", northing="25", team=team, time=datetime.datetime.now())  # outside event
+
+        models.Grid.objects.create(easting="75", northing="115", team=team, time=datetime.datetime.now())
+        models.Grid.objects.create(easting="60", northing="150", team=team2, time=datetime.datetime.now())
+        models.Grid.objects.create(easting="35", northing="160", team=team, time=datetime.datetime.now())
+        models.Grid.objects.create(easting="250", northing="250", team=team, time=datetime.datetime.now())  # outside event
 
     def test_bounds(self):
         self.assertEqual(events.check_within_event(self.events_list, (110, 150)), None)
-        self.assertEqual(events.check_within_event(self.events_list, (150, 150)), self.ev2)
+        self.assertEqual(events.check_within_event(self.events_list, (60,120)), self.ev3)
         self.assertEqual(events.check_within_event(self.events_list, (150, 600)), None)
-        self.assertEqual(events.check_within_event(self.events_list, (600, 600)), self.ev1)
+        self.assertEqual(events.check_within_event(self.events_list, (1500, 1500)), self.ev2)
 
         test = events.all_grids_in_event(self.events_list[2])
         print(test)
@@ -120,5 +119,5 @@ class eventBound(TestCase):
         # a = models.Grid.objects.filter( reduce(operator.or_, (Q(easting=i, northing=j) for i,j in test)))
 
     def test_get_events_in_distance(self):
-        self.assertEqual(len(Event.get_events_in_distance((100, 100), 200)), 2)
-        self.assertEqual(len(Event.get_events_in_distance((300, 300), 300)), 3)
+        self.assertEqual(len(Event.get_events_in_distance((1000, 1000), 200)), 2)
+        self.assertEqual(len(Event.get_events_in_distance((300, 300), 300)), 2)

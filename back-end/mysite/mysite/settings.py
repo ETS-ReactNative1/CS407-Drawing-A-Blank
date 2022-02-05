@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*uqmp+)l-x7%x@5*fbgi$jz3e%m0zj!mhu)(0_ce!a01ug=tls
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost']
 
 # Application definition
 
@@ -76,14 +76,13 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # LOCAL CONNECTION
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
     }
 }
-
 
 """
 # DCS CONNECTION
@@ -96,7 +95,7 @@ DATABASES = {
         'HOST': 'mysql.dcs.warwick.ac.uk',
     }
 }
-
+"""
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
