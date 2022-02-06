@@ -49,8 +49,9 @@ def clear_event_grids(event):
     Input: event to clear grids in
     Output: None, deletes grids within event.
     """
-    bounds = all_grids_in_event(event)
-    Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in bounds))).delete()
+    all_grids = all_grids_in_event(event)
+    if(all_grids is not None):
+        Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids))).delete()
     return None
 
 
@@ -60,9 +61,9 @@ def event_winner(event):
     Output: count the number of grids within event per team. ***Descending order*** 
     """
 
-    bounds = all_grids_in_event(event)
-    if(bounds is not None):
-        grids = Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in bounds)))
+    all_grids = all_grids_in_event(event)
+    if(all_grids is not None):
+        grids = Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids)))
         return grids.values('team').annotate(total=Count('team')).order_by('-total')
 
     return None
