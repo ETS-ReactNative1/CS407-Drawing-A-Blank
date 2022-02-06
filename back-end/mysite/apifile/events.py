@@ -21,9 +21,15 @@ def event_center(bounds):
 
 
 def all_grids_in_event(event):
+
+    """
+    Input: Event object
+    Output: List of all grids in the event.
+    """   
     bounds = event.get_bounds()
 
-    #Subtract each bound by half of unit tile rounded (needs to be int) to get "center".
+    #Subtract each bound by half of unit tile rounded (needs to be int to work) to get "center" 
+    #Translating the bounds to be in the "center" coordinate space instead of bottom left of each grid.
     for i in range(len(bounds)):
         bounds[i] = (bounds[i][0]-math.ceil(UNIT_TILE_SIZE/2),bounds[i][1]-math.ceil(UNIT_TILE_SIZE/2))
 
