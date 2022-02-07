@@ -43,7 +43,8 @@ const DEBUG_ZOOM_LEVEL = {
 };
 
 function Map({setOverlayVisible, setOverlayContent}) {
-  const [region, setRegion] = useState(getInitialState().region);
+  const [region, setRegion] = useRegion();
+  // const [region, setRegion] = useState(getInitialState().region);
   const navigation = useNavigation();
 
   const workout_button_start = 'Start Workout';
@@ -62,11 +63,11 @@ function Map({setOverlayVisible, setOverlayContent}) {
   //    more an issue of proper state updates/ only do updates which we want to be shown
   // refs are always "paused", must be manually listened to using useEffect
   const userLocation = useGeoLocation();
-  const [DrawGrids, setZoomLevel] = useLocalGrids(DEBUG_ZOOM_LEVEL, [], {
+  const [DrawGrids, grids] = useLocalGrids([], {
     useCache: 1,
   });
   // const [zoomLevel, tileSize, setZoomLevel] = useZoomLevel();
-  const [zoomLevel, tileSize] = useZoomLevel();
+
   const [DrawEvents, events] = useEvents();
   const [DrawUserPath, userPath] = useUserPath();
   // const [region, setRegion] = useRegion();
@@ -132,6 +133,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }, [userLocation.current]);
 
   function handleRegionChange(newRegion) {
+    setRegion(newRegion);
+    return;
+
     const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
     // console.log('new', newRegion);
     const zoom = {longitudeDelta, latitudeDelta};

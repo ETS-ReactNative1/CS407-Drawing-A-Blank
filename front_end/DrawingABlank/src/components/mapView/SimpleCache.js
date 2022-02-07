@@ -27,10 +27,15 @@ export default function SimpleCache(initContent = {}) {
     return (await this.getEntry(key, getLatestFlag))[0];
   };
 
+  this.setEntry = (key, cb) => {
+    // cache fov is out of date
+    // this.
+  };
+
   this.getEntry = (key, getLatestFlag) => {
     entry = this.content[key];
 
-    if (!entry) return [[]];
+    if (!entry) return [false];
 
     const [content, refreshContent, expiry_date] = this.content[key];
 

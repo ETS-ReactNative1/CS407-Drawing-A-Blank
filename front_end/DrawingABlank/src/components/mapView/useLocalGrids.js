@@ -21,136 +21,42 @@ import useZoomLevel from './useZoomLevel';
 
 const gridZoomCache = new Cache({});
 
-export default function useLocalGrids(
-  initZoom,
-  initGrids = [],
-  {useCache = 0} = {},
-) {
-  // simple translation - should rework
-  const convertZoomType = z => {
-    z = z['latitudeDelta'];
-
-    if (z < 0.00029) {
-      return 5;
-    } else if (z < 0.0024) {
-      return 10;
-    } else if (z < 0.0089) {
-      return 15;
-    } else if (z < 0.016) {
-      return 20;
-    } else if (z < 0.037) {
-      return 25;
-    }
-    return 30;
-  };
-
+export default function useLocalGrids(initGrids = [], {useCache = 0} = {}) {
+  const [_, _, bufferedRegion, zoomLayer] = useRegion();
   const userLocation = useGeoLocation();
-  const [zoomLevel] = useZoomLevel();
-  // const [zoomLevel, tileSize] = useZoomLevel();
-  // const zoomLevel = useRef(initZoom); // type RNM
-  // const [zoomLevel, setZoomLevel] = useState(initZoom);
-  // am setting zoom level on each time zoom changes, since deltas are used,
-  // will also trigger a render on movement
-  const [tileSize, setTileSize] = useState(5);
-
   const [localGrids, setLocalGrids] = useState(initGrids);
 
-  // console.log('grid', testGrid);
+  useEffect(() => {
+    // clear cache
+    //  if only want to cache for zoom level
+  }, [bufferedRegion]);
 
-  // useEffect(() => {
-  //   setTileSize(convertZoomType(zoomLevel.current));
-  // }, [zoomLevel.current]);
+  useEffect(() => {
+    //clear caache
+    //  if only want to cache for region
+  }, [zoomLayer]);
 
-  const setZoomLevel = zl => {
-    // console.log('zl', zl);
-    zoomLevel.current = zl;
-    // console.log('zoomlevel: ', zoomLevel);
-    setTileSize(convertZoomType(zl));
-  };
-
-  // const setZoomLevel = () => {};
-
-  function buildTestEntry({latitudeDelta, longitudeDelta}, tileSize) {
-    const {latitude, longitude} = userLocation.current;
-    const ts = (tileSize + 1) * 5;
-
+  function buildCacheEntry(
+    {latitude, longitude, latitudeDelta, longitudeDelta},
+    tileSize,
+  ) {
     const refresh = getGrids(
-      [
-        latitude - (30 * latitudeDelta) / 2,
-        longitude - (30 * longitudeDelta) / 2,
-      ],
-      [
-        latitude + (30 * latitudeDelta) / 2,
-        longitude + (30 * longitudeDelta) / 2,
-      ],
-      ts,
+      [latitude - latitudeDelta / 2, longitude - longitudeDelta / 2],
+      [latitude + latitudeDelta / 2, longitude + longitudeDelta / 2],
+      tileSize,
       {isPost: true},
     );
 
     // refresh().then(res => console.log('res', res));
     // console.log('r', refresh, refresh(), userLocation.current);
 
-    return [ts, refresh(), refresh];
+    return [tileSize, refresh(), refresh];
   }
-
-  useDidUpdateEffect(() => {
-    console.log('Generating Zoomlevel Grid Cache Entries');
-
-    const testGrid = [
-      buildTestEntry(
-        {
-          latitudeDelta: 0.00029472723308288096,
-          longitudeDelta: 0.00026319175958633423,
-        },
-        0,
-      ),
-      buildTestEntry(
-        {
-          latitudeDelta: 0.0024015043252560986,
-          longitudeDelta: 0.0021447613835332557,
-        },
-        1,
-      ),
-      buildTestEntry(
-        {
-          latitudeDelta: 0.008977814245206162,
-          longitudeDelta: 0.008017458021641,
-        },
-        2,
-      ),
-      buildTestEntry(
-        {
-          latitudeDelta: 0.04028943063934065,
-          longitudeDelta: 0.03597881644964218,
-        },
-        3,
-      ),
-      buildTestEntry(
-        {
-          latitudeDelta: 0.3070263557894961,
-          longitudeDelta: 0.2741556242108345,
-        },
-        4,
-      ),
-      buildTestEntry(
-        {
-          latitudeDelta: 0.4070263557894961,
-          longitudeDelta: 0.3541556242108345,
-        },
-        5,
-      ),
-      ,
-    ];
-
-    console.log('Caching Grid Cache Entries');
-
-    loadCacheTestData(testGrid);
-  }, [userLocation.current]);
 
   useEffect(() => {
     reScaleGrids(); // front end grid draw scaling - tiles draw style
     reSampleGrids(useCache); // cached vs live updates - tiles objects fetch
-  }, [tileSize]);
+  }, [zoomLayer, bufferedRegion]);
 
   const reScaleGrids = () => {
     // subsamples grid based on zoom level
@@ -178,9 +84,35 @@ export default function useLocalGrids(
     } else {
       // use cached data
       console.log('getting from cache', tileSize);
-      key = tileSize;
-      grids = gridZoomCache.getEntryContent(key); // flag overrides entry expiry_date to now
+      // if deviated too far
+      // set entry
+      // also for loading initial cache entry - cant be static forever
+
+      /////key = tileSize;
+      tileSize = zoomLayer * 5;
+      key = {
+        tileSize,
+        latititude: bufferedRegion.latitude,
+        longitude: bufferedRegion.longitude,
+      };
+      // if entry doesnt exist, generate it
+      // curently just generate a new bounded area of events
+      // should ideally use existing ones if user enters back into already cahced bound area
+      //  or just clear cache every time bound changes
+
+      // get grids or set it in cache
+      grids = gridZoomCache.getEntryContent(key); // flag overrides expiry_date to now
+
+      // if no cache entry for latlng + zoom
+      // make it and save it to cache
+      if (!grids) {
+        entry = buildCacheEntry(bufferedRegion, tileSize);
+        entry[0] = key; // to string maybe for comparison
+        gridZoomCache.addEntry(entry);
+        grids = entry.refresh();
+      }
     }
+
     grids = (await grids) || [];
 
     setLocalGrids(grids);
@@ -227,7 +159,7 @@ export default function useLocalGrids(
     });
   };
 
-  return [DrawGrids, setZoomLevel, localGrids];
+  return [DrawGrids, localGrids];
 }
 
 // const loadLoDs = () => {
