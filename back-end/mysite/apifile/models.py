@@ -167,7 +167,7 @@ class Event(models.Model):
         all_grids = self.all_grids()
         if all_grids is not None:
             grids = Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids)))
-            return grids.values('player').annotate(total=Count('player__team')).order_by('-total')
+            return grids.values('player__team').annotate(total=Count('player__team')).order_by('-total')
 
     def center(self):
         """
