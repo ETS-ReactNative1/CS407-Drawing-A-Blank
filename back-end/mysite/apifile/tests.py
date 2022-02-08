@@ -1,7 +1,9 @@
 import datetime
 from django.test import TestCase
+from rest_framework.authtoken.admin import User
+
 from . import models
-from .models import Event, EventBounds
+from .models import Event, EventBounds, Player
 
 
 class EventBoundTests(TestCase):
@@ -43,12 +45,16 @@ class EventBoundTests(TestCase):
         models.Team.objects.create(name="Test Team2", colour="00FF00")
         team = models.Team.objects.get(name="Test Team1")
         team2 = models.Team.objects.get(name="Test Team2")
+        u1 = User.objects.create_user("tu1", "tu1@test.com", "tu1")
+        u2 = User.objects.create_user("tu2", "tu2@test.com", "tu2")
+        p1 = Player.objects.create(user=u1, team=team)
+        p2 = Player.objects.create(user=u2, team=team2)
 
-        models.Grid.objects.create(easting="75", northing="115", team=team, time=datetime.datetime.now())
-        models.Grid.objects.create(easting="60", northing="150", team=team2, time=datetime.datetime.now())
-        models.Grid.objects.create(easting="35", northing="160", team=team, time=datetime.datetime.now())
-        models.Grid.objects.create(easting="250", northing="250", team=team,
-                                   time=datetime.datetime.now())  # outside event
+        models.Grid.objects.create(easting="75", northing="115", player=p1, time=datetime.datetime.now())
+        models.Grid.objects.create(easting="60", northing="150", player=p2, time=datetime.datetime.now())
+        models.Grid.objects.create(easting="35", northing="160", player=p1, time=datetime.datetime.now())
+        # outside event
+        models.Grid.objects.create(easting="250", northing="250", player=p1, time=datetime.datetime.now())
 
     def test_bounds(self):
         for event in self.events_list:
