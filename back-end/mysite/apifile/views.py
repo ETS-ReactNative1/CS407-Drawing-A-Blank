@@ -11,7 +11,6 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from . import events
 
 
 class EventView(viewsets.ViewSet):
@@ -218,9 +217,9 @@ class WorkoutSubmission(viewsets.ViewSet):
         closest_event = Event.objects.all().annotate(
             distance=(F('eventbounds__easting') - tile[0])**2 +
                      (F('eventbounds__northing') - tile[1])**2).order_by('distance').first()
-        event = events.check_within_event(closest_event, tile)
-        if event:
-            event_perf, created = EventPerformance.objects.get_or_create(user=user, event=event, defaults={'contribution': 1})
+        if closest_event.check_within_event(tile):
+            event_perf, created = EventPerformance.objects.get_or_create(user=user, event=closest_event,
+                                                                         defaults={'contribution': 1})
             if not created:
                 event_perf.contribution += 1
                 event_perf.save()
