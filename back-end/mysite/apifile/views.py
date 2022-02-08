@@ -1,16 +1,16 @@
+import datetime
 import operator
 from functools import reduce
-from django.db.models import Q, F
+from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import viewsets, status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
-import datetime
-from rest_framework.decorators import action
-from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
 
 
 class EventView(viewsets.ViewSet):
