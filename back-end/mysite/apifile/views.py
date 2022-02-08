@@ -213,9 +213,7 @@ class WorkoutSubmission(viewsets.ViewSet):
 
     @staticmethod
     def add_participation(user, tile):
-        closest_event = Event.objects.all().annotate(
-            distance=(F('eventbounds__easting') - tile[0])**2 +
-                     (F('eventbounds__northing') - tile[1])**2).order_by('distance').first()
+        closest_event = Event.get_closest_event(tile)
         if closest_event.check_within_event(tile):
             event_perf, created = EventPerformance.objects.get_or_create(user=user, event=closest_event,
                                                                          defaults={'contribution': 1})
