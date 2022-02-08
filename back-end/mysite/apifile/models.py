@@ -75,10 +75,10 @@ class Event(models.Model):
     @staticmethod
     def get_closest_event(point):
         return Event.objects.all().annotate(
-            distance=(Cast(F('eventbounds__easting') - point[0],
-                           output_field=models.IntegerField()) ** 2 +
-                      Cast(F('eventbounds__northing') - point[1],
-                           output_field=models.IntegerField()) ** 2)).order_by('distance').first()
+            distance=((Cast(F('eventbounds__easting'), output_field=models.IntegerField())
+                       - point[0]) ** 2
+                      + (Cast(F('eventbounds__northing'), output_field=models.IntegerField())
+                         - point[1]) ** 2)).order_by('distance').first()
 
     @staticmethod
     def get_events_in_distance(centre, dist):
