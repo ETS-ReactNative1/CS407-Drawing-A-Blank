@@ -95,11 +95,8 @@ class Event(models.Model):
                                eventbounds__northing__lte=upper_northing).distinct()
 
         closest_event = Event.get_closest_event(centre)
-        print(closest_event)
         if closest_event.check_within(centre):
-            print(events)
             events = events.union(Event.objects.filter(id=closest_event.id))
-            print(events)
         return events
 
     @staticmethod
