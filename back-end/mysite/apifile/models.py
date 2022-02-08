@@ -2,7 +2,7 @@ import math
 import operator
 from functools import reduce
 
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F
 from shapely.geometry import Point, Polygon
 
 from .constants import UNIT_TILE_SIZE
@@ -84,6 +84,11 @@ class Event(models.Model):
                                eventbounds__northing__gte=lower_northing,
                                eventbounds__easting__lte=upper_easting,
                                eventbounds__northing__lte=upper_northing).distinct()
+        closest_event = Event.objects.all().annotate(
+            distance=(F('eventbounds__easting') - centre_easting)**2 +
+                     (F('eventbounds__northing') - centre_northing)**2).order_by('distance').first()
+        if closest_event.check_within_event(centre):
+            events.union(Event.objects.filter(id=closest_event.id))
         return events
 
     @staticmethod
