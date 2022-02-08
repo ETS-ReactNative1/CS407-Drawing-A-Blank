@@ -31,23 +31,6 @@ class Team(models.Model):
     colour = models.CharField(max_length=6)  # hex colour
 
 
-class Grid(models.Model):
-    easting = models.PositiveIntegerField()
-    northing = models.PositiveIntegerField()
-    time = models.DateTimeField()
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    published = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = (("easting", "northing"),)
-
-    def check_tile_override(self, date_time):
-        if self.time < date_time:
-            return True
-        else:
-            return False
-
-
 class Item(models.Model):
     asset = models.FilePathField(path="items/asset")  # temp file paths
     thumbnail = models.FilePathField(path="items/thumbnail")  # temp file paths
@@ -64,6 +47,23 @@ class Player(models.Model):
     weight = models.FloatField(null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item)
+
+
+class Grid(models.Model):
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
+    time = models.DateTimeField()
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    published = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = (("easting", "northing"),)
+
+    def check_tile_override(self, date_time):
+        if self.time < date_time:
+            return True
+        else:
+            return False
 
 
 class Event(models.Model):

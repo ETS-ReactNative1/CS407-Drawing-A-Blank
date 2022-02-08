@@ -151,7 +151,7 @@ class GridView(viewsets.ViewSet):
         tr = data['top_right']
         zoom = data['zoom']
 
-        allGrids = grids.sub_sample((bl, tr), sub_dimension=zoom)
+        allGrids = grids.grids_visible((bl, tr))
         return Response(allGrids, status=status.HTTP_200_OK)
 
 
@@ -185,7 +185,6 @@ class WorkoutSubmission(viewsets.ViewSet):
             WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing)
 
         bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
-        team = workout.player.team
         for i in range(len(bounds) + 1, 0, -1):
             speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
                                           (bounds[i - 1].easting, bounds[i - 1].northing),
@@ -202,12 +201,12 @@ class WorkoutSubmission(viewsets.ViewSet):
             for tile in tiles:
                 checkedTiles.add((tile.easting, tile.northing))
                 if tile.check_tile_override(bounds[i].time):
-                    tile.team = team
+                    tile.player = player
                     tile.time = bounds[i].time
                     tile.save()
                     WorkoutSubmission.add_participation(user, (tile.easting, tile.northing))
             for tile in allGrids - checkedTiles:
-                Grid.objects.create(easting=tile[0], northing=tile[1], team=team, time=bounds[i].time)
+                Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
                 WorkoutSubmission.add_participation(user, tile)
 
         return Response("Workout added", status=status.HTTP_201_CREATED)

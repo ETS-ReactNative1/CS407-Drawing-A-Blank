@@ -188,59 +188,6 @@ def all_grids_with_path(point_a, point_b, radius):
     return all_grids
 
 
-def sub_sample(coords, sub_dimension=1):
-    """
-        uses all tiles visible and ensures that not too many grids are sent back to the user.
-        zoom_level indicates the size of each grid. zoom_level=1 means 1x1 grids so nothing gets sampled.
-        zoom_level=2 means 2x2 grids.
-
-        also considers the colours and finds the average colour for that larger grid.
-    """
-
-    if sub_dimension == 1:
-        return grids_visible(coords)
-
-    zoom_level = sub_dimension * UNIT_TILE_SIZE
-
-    bottom_left = coords[0]
-    top_right = coords[1]
-
-    lower_east, lower_north = latlong_to_grid(bottom_left)
-    upper_east, upper_north = latlong_to_grid(top_right)
-
-    tiles = Grid.objects.raw('''SELECT
-                                    id,
-                                    east,
-                                    north,
-                                    colour 
-                                FROM 
-                                    (
-                                    SELECT  
-                                        apifile_grid.id,
-                                        (easting DIV ''' + str(zoom_level) + ''') AS east,
-                                        (northing DIV ''' + str(zoom_level) + ''') AS north,
-                                        colour,
-                                        COUNT(*) as num  
-                                    FROM 
-                                        apifile_grid JOIN apifile_team ON apifile_grid.team_id = apifile_team.id  
-                                    WHERE  
-                                        easting >= ''' + str(lower_east) + ''' 
-                                        AND easting <= ''' + str(upper_east) + '''
-                                        AND northing >= ''' + str(lower_north) + ''' 
-                                        AND northing <= ''' + str(upper_north) + '''  
-                                    GROUP BY east, north, colour
-                                    ORDER BY east, north, num DESC
-                                    ) RES
-                                GROUP BY east, north ORDER BY east, north;''')
-
-    all_coords = []
-    for tile in tiles:
-        bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), size=sub_dimension)
-        if bounds:
-            all_coords.append({"colour": tile.colour, "bounds": bounds})
-    return all_coords
-
-
 def grids_visible(coords):
     """
     Function input: 4 longitude/latitude coordinates that the screen can see
@@ -262,6 +209,6 @@ def grids_visible(coords):
                                 easting__range=(lower_east, upper_east))
 
     for tile in tiles:
-        all_coords.append({"colour": tile.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
+        all_coords.append({"colour": tile.player.team.colour, "bounds": bounds_of_grid((tile.easting, tile.northing))})
 
     return all_coords
