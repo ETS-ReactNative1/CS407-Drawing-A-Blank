@@ -150,4 +150,4 @@ REST_FRAMEWORK = {
 # everytime a new job is added to this list
 # '0 0 * * 0' will run the test function every sunday at 00:00
 # * * * * * will run every minute (useful for debugging)
-CRONJOBS = []
+CRONJOBS = [('@daily', 'apifile.cron.event_check')]

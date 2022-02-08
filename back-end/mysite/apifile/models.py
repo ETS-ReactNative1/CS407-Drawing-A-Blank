@@ -73,15 +73,15 @@ class Event(models.Model):
     players = models.ManyToManyField(Player, through='EventPerformance')
 
     @staticmethod
-    def get_closest_event(point):
-        return Event.objects.all().annotate(
+    def get_closest_active_event(point):
+        return Event.get_current_events().annotate(
             distance=((Cast(F('eventbounds__easting'), output_field=models.IntegerField())
                        - point[0]) ** 2
                       + (Cast(F('eventbounds__northing'), output_field=models.IntegerField())
                          - point[1]) ** 2)).order_by('distance').first()
 
     @staticmethod
-    def get_events_in_distance(centre, dist):
+    def get_events_within_distance(centre, dist):
         centre_easting, centre_northing = centre
         lower_easting = centre_easting - dist
         lower_northing = centre_northing - dist
@@ -94,7 +94,7 @@ class Event(models.Model):
                                eventbounds__easting__lte=upper_easting,
                                eventbounds__northing__lte=upper_northing).distinct()
 
-        closest_event = Event.get_closest_event(centre)
+        closest_event = Event.get_closest_active_event(centre)
         if closest_event.check_within(centre):
             events = events.union(Event.objects.filter(id=closest_event.id))
         return events

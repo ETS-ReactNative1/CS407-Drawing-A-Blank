@@ -49,7 +49,7 @@ class EventView(viewsets.ViewSet):
         centre = grids.latlong_to_grid(data['point'])
         dist = data['distance']
 
-        events = Event.get_events_in_distance(centre, dist)
+        events = Event.get_events_within_distance(centre, dist)
         ret_val = EventView.event_list_to_json(events)
 
         return Response(ret_val, status=status.HTTP_200_OK)
@@ -213,7 +213,7 @@ class WorkoutSubmission(viewsets.ViewSet):
 
     @staticmethod
     def add_participation(user, tile):
-        closest_event = Event.get_closest_event(tile)
+        closest_event = Event.get_closest_active_event(tile)
         if closest_event.check_within_event(tile):
             event_perf, created = EventPerformance.objects.get_or_create(user=user, event=closest_event,
                                                                          defaults={'contribution': 1})
