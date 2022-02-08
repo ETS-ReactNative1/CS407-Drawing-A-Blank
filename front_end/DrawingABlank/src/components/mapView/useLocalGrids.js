@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {getGrids} from '../../api/api_grids';
 import useGeoLocation from './useGeoLocation';
 import Cache from './SimpleCache';
+import useRegion from './useRegion';
 import {Polygon} from 'react-native-maps';
 import {createEmptyStatement} from 'typescript';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
@@ -15,21 +16,24 @@ import useZoomLevel from './useZoomLevel';
 // Has to be applied in buckets - will result in "popping in" of grids effect whilst panning across a bucket boundary
 
 // use test data: make a random polygon, get it to change with zoom distance
-// loadinto cache, to test cache
+// loadinto cache, t test cache
 // fetch and display a range of cache entries based on zoom level
 // at least log the trigger
 
 const gridZoomCache = new Cache({});
 
-export default function useLocalGrids(initGrids = [], {useCache = 0} = {}) {
-  const [_, _, bufferedRegion, zoomLayer] = useRegion();
+export default function useLocalGrids(
+  initGrids = [],
+  {renderRegion, zoomLayer},
+  {useCache = 0} = {},
+) {
   const userLocation = useGeoLocation();
   const [localGrids, setLocalGrids] = useState(initGrids);
 
   useEffect(() => {
     // clear cache
     //  if only want to cache for zoom level
-  }, [bufferedRegion]);
+  }, [renderRegion]);
 
   useEffect(() => {
     //clear caache
@@ -56,7 +60,7 @@ export default function useLocalGrids(initGrids = [], {useCache = 0} = {}) {
   useEffect(() => {
     reScaleGrids(); // front end grid draw scaling - tiles draw style
     reSampleGrids(useCache); // cached vs live updates - tiles objects fetch
-  }, [zoomLayer, bufferedRegion]);
+  }, [zoomLayer, renderRegion]);
 
   const reScaleGrids = () => {
     // subsamples grid based on zoom level
@@ -74,7 +78,7 @@ export default function useLocalGrids(initGrids = [], {useCache = 0} = {}) {
       // Need to "convert" from longLatDeltas to tile size
       // By experimentation
 
-      const tileSize = 10 || getTileSize(zoomLevel.current) || 10;
+      const tileSize = 5;
       console.log('lat', latitude, 'delta', latitudeDelta);
       grids = getGrids(
         [latitude - latitudeDelta / 2, longitude - longitudeDelta / 2],
@@ -89,11 +93,11 @@ export default function useLocalGrids(initGrids = [], {useCache = 0} = {}) {
       // also for loading initial cache entry - cant be static forever
 
       /////key = tileSize;
-      tileSize = zoomLayer * 5;
+      const tileSize = zoomLayer * 5;
       key = {
         tileSize,
-        latititude: bufferedRegion.latitude,
-        longitude: bufferedRegion.longitude,
+        latititude: renderRegion.latitude,
+        longitude: renderRegion.longitude,
       };
       // if entry doesnt exist, generate it
       // curently just generate a new bounded area of events
@@ -106,7 +110,7 @@ export default function useLocalGrids(initGrids = [], {useCache = 0} = {}) {
       // if no cache entry for latlng + zoom
       // make it and save it to cache
       if (!grids) {
-        entry = buildCacheEntry(bufferedRegion, tileSize);
+        entry = buildCacheEntry(renderRegion, tileSize);
         entry[0] = key; // to string maybe for comparison
         gridZoomCache.addEntry(entry);
         grids = entry.refresh();

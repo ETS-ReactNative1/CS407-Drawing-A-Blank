@@ -4,10 +4,11 @@ import useGeoLocation from './useGeoLocation';
 import {Marker, Polygon, Circle} from 'react-native-maps';
 
 import Cache from './SimpleCache';
-export default function useEvents(initZoom, initEvents, {useCache} = {}) {
-  const userLocation = useGeoLocation(); //state
-  const zoomLevel = useRef(initZoom); // type RNM
-
+export default function useEvents(
+  initEvents,
+  {renderRegion, zoomLayer},
+  {useCache} = {},
+) {
   const [events, setEvents] = useState([]);
   const eventCache = useRef(new Cache({}));
 
