@@ -44,12 +44,7 @@ export default function useLocalGrids(
     {latitude, longitude, latitudeDelta, longitudeDelta},
     tileSize,
   ) {
-    const refresh = getGrids(
-      [latitude - latitudeDelta / 2, longitude - longitudeDelta / 2],
-      [latitude + latitudeDelta / 2, longitude + longitudeDelta / 2],
-      tileSize,
-      {isPost: true},
-    );
+    const refresh = getGrids(renderRegion, tileSize, {isPost: true});
 
     // refresh().then(res => console.log('res', res));
     // console.log('r', refresh, refresh(), userLocation.current);
@@ -87,7 +82,7 @@ export default function useLocalGrids(
       );
     } else {
       // use cached data
-      console.log('getting from cache', tileSize);
+
       // if deviated too far
       // set entry
       // also for loading initial cache entry - cant be static forever
@@ -99,26 +94,34 @@ export default function useLocalGrids(
         latititude: renderRegion.latitude,
         longitude: renderRegion.longitude,
       };
+
       // if entry doesnt exist, generate it
       // curently just generate a new bounded area of events
       // should ideally use existing ones if user enters back into already cahced bound area
       //  or just clear cache every time bound changes
 
       // get grids or set it in cache
-      grids = gridZoomCache.getEntryContent(key); // flag overrides expiry_date to now
-
+      console.log('Getting from cache, key:', tileSize);
+      grids = await gridZoomCache.getEntryContent(key); // flag overrides expiry_date to now
+      console.log('Retrieved possible grids:', grids);
       // if no cache entry for latlng + zoom
       // make it and save it to cache
       if (!grids) {
+        console.log('No Cache Entry: Fetching Grids');
         entry = buildCacheEntry(renderRegion, tileSize);
+        console.log('Entry Built, adding to cache');
         entry[0] = key; // to string maybe for comparison
+        console.log('entry', entry);
         gridZoomCache.addEntry(entry);
-        grids = entry.refresh();
+        console.log('Successfully added to cache');
+        grids = entry[1];
       }
     }
 
-    grids = (await grids) || [];
+    console.log('grids', grids);
 
+    grids = (await grids) || [];
+    console.log('Displaying Grids: ', grids);
     setLocalGrids(grids);
   };
 

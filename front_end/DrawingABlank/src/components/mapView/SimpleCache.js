@@ -1,14 +1,14 @@
 export default function SimpleCache(initContent = {}) {
   this.content = initContent;
 
-  this.addEntry = ({
+  this.addEntry = ([
     key,
     content,
     refreshContent,
     //requestObject,
     //requesterObject,
     time_to_expire = 0, // default always get latest from backend
-  }) => {
+  ]) => {
     if (!content) {
       content = refreshContent();
     }
@@ -23,8 +23,9 @@ export default function SimpleCache(initContent = {}) {
   };
 
   // return just the "content" field of an element
-  this.getEntryContent = async (key, getLatestFlag) => {
-    return (await this.getEntry(key, getLatestFlag))[0];
+  this.getEntryContent = (key, getLatestFlag) => {
+    e = this.getEntry(key, getLatestFlag)[0];
+    return e;
   };
 
   this.setEntry = (key, cb) => {

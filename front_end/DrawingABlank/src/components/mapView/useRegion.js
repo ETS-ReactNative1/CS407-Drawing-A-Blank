@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 import useGeoLocation from './useGeoLocation';
+import {getCorners} from './utils';
 
 // issue perhaps of region not being set for first load
 // due to geolocation async update
@@ -29,8 +30,7 @@ export default function useRegion() {
   const [region, setRegion] = useState({
     latitude: 0,
     longitude: 0,
-    latitudeDelta: 0,
-    longitudeDelta: 0,
+    ...INIT_ZOOM,
   });
   const [bufferedRegion, setBufferedRegion] = useState(region); // detaches map render zone from map view zone (probbaly only need one as state)
   const [zoomLayer, setZoomLayer] = useState(1);
@@ -69,7 +69,7 @@ export default function useRegion() {
       latitudeDelta: r.latitudeDelta,
       longitudeDelta: r.longitudeDelta,
     };
-    const location = {latitude: r.latititude, longitude: r.longitude};
+    const location = {latitude: r.latitude, longitude: r.longitude};
 
     // only if zoom changed by more than cache entry size
     //    useLocalZoom conditions
@@ -89,21 +89,21 @@ export default function useRegion() {
 
     // should probably try to find existing regions first
     const getBestBufferRegion = (viewWindow, viewZoom) => {
-      const getCorners = (lat, long, dLat, dLong) => {
-        dLat = dLat;
-        dLong = dLong;
-        const bottomLeft = {
-          latitude: lat - dLat / 2,
-          longitude: long - dLong / 2,
-        };
+      // const getCorners = (lat, long, dLat, dLong) => {
+      //   dLat = dLat;
+      //   dLong = dLong;
+      //   const bottomLeft = {
+      //     latitude: lat - dLat / 2,
+      //     longitude: long - dLong / 2,
+      //   };
 
-        const topRight = {
-          latitude: lat + dLat / 2,
-          longitude: long + dLong / 2,
-        };
+      //   const topRight = {
+      //     latitude: lat + dLat / 2,
+      //     longitude: long + dLong / 2,
+      //   };
 
-        return [bottomLeft, topRight];
-      };
+      //   return [bottomLeft, topRight];
+      // };
 
       // change to same area per grid cache entry
       // from getting grids at distance away from user dependent on zoom level
@@ -132,12 +132,7 @@ export default function useRegion() {
       // buffered deltas can be used if want to have a buffer region size per zoom
       // for now just constant width bufferRegion regardless of zoom
 
-      const [bottomLeft, topRight] = getCorners(
-        latBuf,
-        longBuf,
-        dLatBuff,
-        dLongBuff,
-      );
+      const [bottomLeft, topRight] = getCorners(bufferedRegion);
 
       // if outside the buffered region
       //  - considers only view position, not field of view
@@ -150,6 +145,8 @@ export default function useRegion() {
         longitude < bottomLeft.longitude
       ) {
         // return new bounded region centre point
+        // could make renderRegion zoom proportional to user zoom for performance gain when zoomed
+        // e.g. bufferLatDelta = 2*latitudeDelta (2 is the proportion)
         return [{...viewWindow, ...BUFFER_ZOOM_LEVEL}, 1];
       }
       return [bufferedRegion, 0]; // might still cause re render - react probably doesnt deep compare
@@ -162,7 +159,11 @@ export default function useRegion() {
     // setRegionLocation(location);
 
     // find if the user is looking outside the "rendered region box" - for loading in events around the user window
+
+    console.log('getting renderregion', location, zoom);
     const [bufRegion, isNewRegion] = getBestBufferRegion(location, zoom);
+
+    console.log('New RenderRegion: ', isNewRegion, bufRegion);
 
     // find if the user has change zoom layer - for listenting to zoom changes
     const [zLayer, isNewZoomLayer] = convertDeltaToZLayer(zoom);

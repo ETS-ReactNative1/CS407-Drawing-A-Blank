@@ -139,7 +139,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   // }, [userLocation.current]);
 
   function handleRegionChange(newRegion) {
-    setRegion(newRegion);
+    updateViewRegion(newRegion);
     return;
 
     const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
@@ -159,7 +159,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       const {longitudeDelta, latitudeDelta} = RNM_Zoom;
     }
   }
-
+  console.log('Moving Map to Region ', viewRegion);
   return (
     <View style={styles.mapContainer}>
       <Animated
