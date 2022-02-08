@@ -10,12 +10,14 @@ import {NavigationContainer} from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
 import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
+import Leaderboard from './src/components/leaderboard/leaderboard.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
 
 export default function App() {
   return (
+    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -28,5 +30,10 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
       </Stack.Navigator>
     </NavigationContainer>
+    */
+    <Leaderboard
+      title="Test"
+      data={[{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"}]}
+    />
   );
 }
