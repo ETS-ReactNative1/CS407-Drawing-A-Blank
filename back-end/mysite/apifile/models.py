@@ -114,6 +114,7 @@ class Event(models.Model):
         Output: If point is in an event then that event otherwise None.
 
         """
+        point = (point[0] + (UNIT_TILE_SIZE / 2), point[1] + (UNIT_TILE_SIZE / 2))
         point = Point(point)
         bounds = self.get_bounds()
         polygon = Polygon(bounds)
