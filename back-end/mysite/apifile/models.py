@@ -95,7 +95,9 @@ class Event(models.Model):
                                eventbounds__northing__lte=upper_northing).distinct()
 
         closest_event = Event.get_closest_event(centre)
+        print(closest_event)
         if closest_event.check_within(centre):
+            print("contained")
             events.union(Event.objects.filter(id=closest_event.id))
         return events
 
