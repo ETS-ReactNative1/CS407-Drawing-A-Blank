@@ -3,6 +3,7 @@ import operator
 from functools import reduce
 
 from django.db.models import Q, Count, F, Func
+from django.db.models.functions import Cast
 from shapely.geometry import Point, Polygon
 
 from .constants import UNIT_TILE_SIZE
@@ -74,8 +75,10 @@ class Event(models.Model):
     @staticmethod
     def get_closest_event(point):
         return Event.objects.all().annotate(
-            distance=(Func(F('eventbounds__easting') - point[0], function="ABS")) ** 2 +
-                     (Func(F('eventbounds__northing') - point[1], function="ABS")) ** 2).order_by('distance').first()
+            distance=(Cast(F('eventbounds__easting') - point[0],
+                           output_field=models.IntegerField()) ** 2 +
+                      Cast(F('eventbounds__northing') - point[1],
+                           output_field=models.IntegerField()) ** 2)).order_by('distance').first()
 
     @staticmethod
     def get_events_in_distance(centre, dist):
