@@ -97,8 +97,9 @@ class Event(models.Model):
         closest_event = Event.get_closest_event(centre)
         print(closest_event)
         if closest_event.check_within(centre):
-            print("contained")
-            events.union(Event.objects.filter(id=closest_event.id))
+            print(events)
+            events = events.union(Event.objects.filter(id=closest_event.id))
+            print(events)
         return events
 
     @staticmethod
