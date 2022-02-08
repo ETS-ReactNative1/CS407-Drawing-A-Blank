@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*uqmp+)l-x7%x@5*fbgi$jz3e%m0zj!mhu)(0_ce!a01ug=tls
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apifile.apps.ApifileConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -76,13 +77,14 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # LOCAL CONNECTION
-
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
     }
 }
+
 
 """
 # DCS CONNECTION
@@ -95,7 +97,7 @@ DATABASES = {
         'HOST': 'mysql.dcs.warwick.ac.uk',
     }
 }
-"""
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -142,3 +144,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+# needs to be added in terminal like
+# python manage.py crontab add
+# everytime a new job is added to this list
+# '0 0 * * 0' will run the test function every sunday at 00:00
+# * * * * * will run every minute (useful for debugging)
+CRONJOBS = [('* * * * *', 'apifile.cron.test')]
