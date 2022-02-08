@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {View} from 'react-native';
+import {View, Animated as nativeAniamted} from 'react-native';
 import MapView, {
   AnimatedRegion,
   Marker,
@@ -25,7 +25,7 @@ import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationRouteContext} from '@react-navigation/core';
 import setupGeolocation from './geoLocation';
-import { getGrids } from '../../api/api_grids';
+import {getGrids} from '../../api/api_grids';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
@@ -34,6 +34,7 @@ const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
 const DEBUG_ZOOM_LEVEL = 0.01;
+const AnimatedPolygon = nativeAniamted.createAnimatedComponent(Polygon);
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion] = useState(getInitialState().region);
@@ -59,6 +60,39 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   const [grids, setGrids] = useState([]);
 
+  const fadeAnim = useRef(new nativeAniamted.Value(0)).current;
+  const fadeIn = () => {
+    // Will change fadeAnim value to 1 in 5 seconds
+    nativeAniamted
+      .timing(fadeAnim, {
+        toValue: 0,
+        duration: 5000,
+        useNativeDriver: false,
+      })
+      .start();
+  };
+
+  const fadeOut = () => {
+    // Will change fadeAnim value to 0 in 3 seconds
+    nativeAniamted
+      .timing(fadeAnim, {
+        toValue: 300,
+        duration: 3000,
+        useNativeDriver: false,
+      })
+      .start();
+  };
+
+  var polyColour = fadeAnim.interpolate({
+    inputRange: [0, 300],
+    outputRange: ['rgba(43, 145, 222, 0.7)', 'rgba(43, 145, 222, 0)'],
+  });
+  var polyLineColour = fadeAnim.interpolate({
+    inputRange: [0, 300],
+    outputRange: [1, 0],
+  });
+  var toggle = true;
+
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -77,19 +111,20 @@ function Map({setOverlayVisible, setOverlayContent}) {
     );
   }
 
-  function DrawGrids(){
-    return grids.map((grid, i)=>{
-      if(grid.bounds.length > 0){
-        return(
+  function DrawGrids() {
+    if (typeof grids === 'undefined') {
+      return <View />;
+    }
+    return grids.map((grid, i) => {
+      if (grid.bounds.length > 0) {
+        return (
           <Polygon
             coordinates={grid.bounds}
-            strokeColor={"#000000"}
-            fillColor={"#"+grid.colour}
+            strokeColor={'#000000'}
+            fillColor={'#' + grid.colour}
             strokeWidth={1}
             key={i}
-          >
-
-          </Polygon>
+          />
         );
       }
     });
@@ -174,9 +209,19 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   function collectGrids() {
     Geolocation.getCurrentPosition(({coords}) => {
-      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
-      [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
+      getGrids(
+        [
+          coords.latitude - DEBUG_ZOOM_LEVEL,
+          coords.longitude - DEBUG_ZOOM_LEVEL,
+        ],
+        [
+          coords.latitude + DEBUG_ZOOM_LEVEL,
+          coords.longitude + DEBUG_ZOOM_LEVEL,
+        ],
+      ).then(result => {
+        setGrids(result);
+        console.log('GRID AMOUNT:' + result.length);
+      });
     });
   }
 
@@ -190,9 +235,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
         const {latitude, longitude} = userLocation;
         const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
         const oldUserPath = userPathRef.current;
-        
-        recorder.addCoordinate(latitude,longitude);
-        
+
+        recorder.addCoordinate(latitude, longitude);
+
         userLocation.current = {latitude, longitude};
         //draw new user movement polygon - map their travelled path
         userPathRef.current = [
@@ -224,7 +269,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
     getEvents().then(result => setEvents(result));
     collectGrids();
-    }, []);
+  }, []);
+
 
   return (
     <View style={styles.mapContainer}>
@@ -233,10 +279,36 @@ function Map({setOverlayVisible, setOverlayContent}) {
         style={styles.map}
         region={region}
         mapType={'standard'}
-        showsUserLocation={true}>
-        <DrawGrids />
+        showsUserLocation={true}
+        minZoomLevel={5}
+        maxZoomLevel={10}>
+        {/*<DrawGrids />*/}
         <DrawMarkers />
         <DrawPolygons />
+        {/*Example polygon for fading out and in */}
+        <AnimatedPolygon
+          coordinates={[
+            {latitude: 52.34331013, longitude: -1.77326202},
+            {latitude: 52.46730532, longitude: -1.54392242},
+            {latitude: 52.29084259, longitude: -1.4635849},
+          ]}
+          strokeColor={'#000'}
+          strokeWidth={polyLineColour}
+          fillColor={polyColour}
+          key={234}
+          tappable={true}
+          onPress={() => {
+            if (toggle) {
+              console.log('fade out');
+              fadeOut();
+              toggle = false;
+            } else {
+              console.log('fade in');
+              fadeIn();
+              toggle = true;
+            }
+          }}
+        />
         {workout_active ? <DrawUserPath /> : false}
       </Animated>
 
@@ -253,7 +325,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
             console.log('Starting Workout...');
             recorder.startWorkout();
             Geolocation.getCurrentPosition(({coords}) =>
-               recorder.addCoordinate(coords.latitude, coords.longitude),
+              recorder.addCoordinate(coords.latitude, coords.longitude),
             );
             set_workout_active(true);
             set_workout_button_text(workout_button_stop);
@@ -276,12 +348,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }
         // will probably need to redo how this works too at the same time
-        calculateDistanceToUser={
-          useCallback((dest) => {
-            //To fix
-            return 0;
-          })
-        }
+        calculateDistanceToUser={useCallback(dest => {
+          //To fix
+          return 0;
+        })}
       />
     </View>
   );
@@ -319,7 +389,7 @@ function generateColourSpace(to, from) {
   // should result in a sequence of circles drawn over time - on each user location update = path
   // still v sloppy, one "circle" per user blip - could combine multiple into a complex polygon easily
   // just dont know if it will actually help performance - should: fewer objects
-  else
+  else {
     return {
       center: to,
       radius: USER_DRAW_DIAMETER / 2,
@@ -327,6 +397,7 @@ function generateColourSpace(to, from) {
       strokeWidth: 0,
       id: Math.floor(Math.random() * 1000000),
     };
+  }
 }
 
 export default Map;
