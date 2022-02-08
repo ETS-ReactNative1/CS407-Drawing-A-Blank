@@ -30,8 +30,8 @@ class EventBoundTests(TestCase):
         # small event to test counts
         self.ev3 = Event.objects.create(start=datetime.datetime.now(),
                                         end=datetime.datetime.now() + datetime.timedelta(days=50))
-        test_points = [(100, 100), (100, 125), (75, 125), (75, 150), (100, 150), (100, 175), (25, 175), (25, 150), (50, 150),
-                      (50, 125), (25, 125), (25, 100)]
+        test_points = [(100, 100), (100, 125), (75, 125), (75, 150), (100, 150), (100, 175), (25, 175), (25, 150),
+                       (50, 150), (50, 125), (25, 125), (25, 100)]
         for i in test_points:
             EventBounds.objects.create(event=self.ev3, easting=i[0], northing=i[1])
 
@@ -72,3 +72,4 @@ class EventBoundTests(TestCase):
     def test_get_events_in_distance(self):
         self.assertEqual(len(Event.get_events_in_distance((1000, 1000), 200)), 2)
         self.assertEqual(len(Event.get_events_in_distance((300, 300), 300)), 2)
+        self.assertEqual(len(Event.get_events_in_distance((500, 500), 1)), 1)
