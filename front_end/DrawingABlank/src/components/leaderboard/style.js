@@ -25,6 +25,13 @@ export const styles = StyleSheet.create({
         flexDirection:'row',
         paddingBottom:2
     },
+    playercard:{
+        borderColor:"#979797",
+        borderWidth:1,
+        flexDirection:'row',
+        paddingLeft:10,
+        marginTop:20
+    },
     leaderboard_entry_picture:{
         alignContent:'flex-start',
         padding:10,

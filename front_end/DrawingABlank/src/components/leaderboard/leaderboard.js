@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Text, View, TextInput, ScrollView, Image} from 'react-native';
+import PlayerCard from './playercard.js';
 import {styles} from './style.js';
 
 class Leaderboard extends Component{
@@ -46,8 +47,15 @@ class Leaderboard extends Component{
                             </View>
                         </View>
                     ))}
+                    <View style={{paddingBottom:20}}></View>
                 </ScrollView>
                 {/*Player card goes here*/}
+                <PlayerCard
+                    rank={123}
+                    username="Our user"
+                    picture={require('../../assets/img/terra.png')}
+                    score={7}
+                />
             </View>
         );
     }
