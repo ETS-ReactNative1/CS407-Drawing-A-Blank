@@ -227,7 +227,6 @@ class Leaderboard(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def points(self, request):
         data = request.data
-        range = data['distance']
 
         ret_val = Player.points()
 
