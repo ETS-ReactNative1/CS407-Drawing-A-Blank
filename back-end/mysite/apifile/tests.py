@@ -3,9 +3,25 @@ from django.test import TestCase
 from rest_framework.authtoken.admin import User
 
 from . import models
-from .models import Event, EventBounds, Player
+from .models import Event, EventBounds, Player,Team
 
 
+
+class LeaderboardTests(TestCase):
+    def setUp(self):
+
+        Team.objects.create(name="Test Team1", colour="FF0000")
+        team = models.Team.objects.get(name="Test Team1")
+
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        Player.objects.create(user=self.user , team=team)
+
+
+    def test_players(self):
+        a = Player.objects.all()
+        print(a)
+
+"""
 class EventBoundTests(TestCase):
     def setUp(self):
         # somewhat larger event to test performance
@@ -79,3 +95,4 @@ class EventBoundTests(TestCase):
         self.assertEqual(len(Event.get_events_in_distance((1000, 1000), 200)), 2)
         self.assertEqual(len(Event.get_events_in_distance((300, 300), 300)), 2)
         self.assertEqual(len(Event.get_events_in_distance((500, 500), 1)), 1)
+"""
