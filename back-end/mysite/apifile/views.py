@@ -228,7 +228,7 @@ class Leaderboard(viewsets.ViewSet):
     def points(self, request):
         data = request.data
 
-        ret_val = Player.points()
+        ret_val = Player.objects.all().points()
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
