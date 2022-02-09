@@ -230,7 +230,7 @@ class Leaderboard(viewsets.ViewSet):
         data = request.data
 
         ret_val = Player.points()
-        ret_val = Leaderboard.to_json(ret_val)
+        # ret_val = Leaderboard.to_json(ret_val)
         
         return Response(ret_val, status=status.HTTP_200_OK)
 
