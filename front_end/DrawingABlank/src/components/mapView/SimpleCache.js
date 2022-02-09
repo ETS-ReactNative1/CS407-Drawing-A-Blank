@@ -7,7 +7,7 @@ export default function SimpleCache(initContent = {}) {
     refreshContent,
     //requestObject,
     //requesterObject,
-    time_to_expire = 0, // default always get latest from backend
+    time_to_expire = 10000, // default always get latest from backend
   ]) => {
     if (!content) {
       content = refreshContent();
@@ -28,6 +28,10 @@ export default function SimpleCache(initContent = {}) {
   this.getEntryContent = (key, getLatestFlag) => {
     e = this.getEntry(key, getLatestFlag)[0];
     return e;
+  };
+
+  this.clear = () => {
+    this.content = {};
   };
 
   this.setEntry = (key, cb) => {

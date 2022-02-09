@@ -30,10 +30,12 @@ export default function useLocalGrids(
 ) {
   const userLocation = useGeoLocation();
   const [localGrids, setLocalGrids] = useState(initGrids);
+  const requestsInFlight = useRef(0);
 
   useEffect(() => {
     // clear cache
     //  if only want to cache for zoom level
+    gridZoomCache.clear();
   }, [renderRegion]);
 
   useEffect(() => {
@@ -90,11 +92,13 @@ export default function useLocalGrids(
 
       /////key = tileSize;
       const tileSize = zoomLayer * 5;
-      key = {
-        tileSize,
-        latititude: renderRegion.latitude,
-        longitude: renderRegion.longitude,
-      };
+      // key = {
+      //   tileSize,
+      //   // latititude: renderRegion.latitude,
+      //   // longitude: renderRegion.longitude,
+      // };
+
+      key = zoomLayer;
 
       // if entry doesnt exist, generate it
       // curently just generate a new bounded area of events
@@ -104,14 +108,14 @@ export default function useLocalGrids(
       // get grids or set it in cache
       console.log('Getting from cache, key:', key);
       grids = await gridZoomCache.getEntryContent(key); // flag overrides expiry_date to now
-      console.log('Retrieved possible grids:', grids);
+      console.log('Retrieved possible grids:', grids[0]);
       // if no cache entry for latlng + zoom
       // make it and save it to cache
       if (!grids) {
         console.log('No Cache Entry: Fetching Grids');
         entry = buildCacheEntry(renderRegion, tileSize);
         console.log('Entry Built, adding to cache');
-        entry[0] = key; // to string maybe for comparison
+        entry[0] = key;
         console.log('entry', entry);
         gridZoomCache.addEntry(entry);
         console.log('Successfully added to cache');
@@ -119,10 +123,21 @@ export default function useLocalGrids(
       }
     }
 
-    //console.log('grids', grids);
-
+    // console.log('grids', grids);
+    requestsInFlight.current += 1;
     grids = (await grids) || [];
-    //console.log('Displaying Grids: ', grids);
+    // could setRegion here to futher prevent snapping (when async loads in)
+    // better do loading icon...
+
+    // or skip if map region is no longer here
+
+    // if view region is now outside the buffer region
+    //skip
+
+    requestsInFlight.current -= 1;
+
+    if (requestsInFlight.current > 0) return; // dont update if there is a future update expected
+    console.log('setting grids');
     setLocalGrids(grids);
   };
 
