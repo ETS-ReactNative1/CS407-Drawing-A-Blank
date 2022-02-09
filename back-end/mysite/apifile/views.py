@@ -221,6 +221,19 @@ class WorkoutSubmission(viewsets.ViewSet):
                 event_perf.contribution += 1
                 event_perf.save()
 
+class Leaderboard(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication]
+
+    @action(methods=['get'], detail=False)
+    def points(self, request):
+        data = request.data
+        range = data['distance']
+
+        ret_val = Player.points()
+
+        return Response(ret_val, status=status.HTTP_200_OK)
+
+
 
 def calc_calories(workout_type, dur):
     return 0

@@ -13,6 +13,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from django.db.models import Count
+
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
@@ -48,6 +50,9 @@ class Player(models.Model):
     weight = models.FloatField(null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item)
+
+    def points(self):
+        return Player.objects.all().annotate(points=Count('workout__workout_point')).order_by('points')
 
 
 class Grid(models.Model):
