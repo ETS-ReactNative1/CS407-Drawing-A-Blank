@@ -1,7 +1,7 @@
 import datetime
 from django.test import TestCase
 from rest_framework.authtoken.admin import User
-
+import pytz
 from . import models
 from .models import Event, EventBounds, Player,Team,Workout,WorkoutPoint
 from . import leaderboards
@@ -18,27 +18,28 @@ class LeaderboardTests(TestCase):
 
         self.user2 = User.objects.create_user(username='testuser2', password='12345')
         self.player2 = Player.objects.create(user=self.user2 , team=team)
-        self.workout1 = Workout.objects.create(player=self.player,duration=120,calories=0)
-        #now = datetime.datetime.now()
 
-        time = datetime.datetime(2022,1,1,hour=1,minute=0,second=0)
+
+        self.workout1 = Workout.objects.create(player=self.player,duration=120,calories=0)
+
+        time = datetime.datetime(2022,1,1,hour=1,minute=0,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout1,time=time,easting=100,northing=100)
 
-        time = datetime.datetime(2022,1,1,hour=1,minute=1,second=0)
+        time = datetime.datetime(2022,1,1,hour=1,minute=1,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout1,time=time,easting=150,northing=150)
 
-        time = datetime.datetime(2022,1,1,hour=1,minute=2,second=0)
+        time = datetime.datetime(2022,1,1,hour=1,minute=2,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout1,time=time,easting=300,northing=300)
 
 
-        self.workout2 = Workout.objects.create(player=self.player,duration=120,calories=0)
-        time = datetime.datetime(2020,1,1,hour=1,minute=0,second=0)
+        self.workout2 = Workout.objects.create(player=self.player2,duration=120,calories=0)
+        time = datetime.datetime(2020,1,1,hour=1,minute=0,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=0,northing=50)
 
-        time = datetime.datetime(2020,1,1,hour=1,minute=1,second=0)
+        time = datetime.datetime(2020,1,1,hour=1,minute=1,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=100,northing=100)
 
-        time = datetime.datetime(2020,1,1,hour=1,minute=2,second=0)
+        time = datetime.datetime(2020,1,1,hour=1,minute=2,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=0,northing=0)
 
 
@@ -46,9 +47,9 @@ class LeaderboardTests(TestCase):
         
 
     def test_players(self):
-        time = datetime.datetime(2021,1,1,hour=1,minute=0,second=0)
+        time = datetime.datetime(2021,1,1,hour=1,minute=0,second=0, tzinfo=pytz.UTC)
         print(leaderboards.distance_leaderboard(time))
-        time = datetime.datetime(2019,1,1,hour=1,minute=0,second=0)
+        time = datetime.datetime(2019,1,1,hour=1,minute=0,second=0, tzinfo=pytz.UTC)
         print(leaderboards.distance_leaderboard(time))
 
 

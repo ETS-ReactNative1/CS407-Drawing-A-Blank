@@ -37,7 +37,6 @@ def distance_leaderboard(time_range):
         workouts.append(cur_workout_points)
 
 
-
     #go through list of workouts and calculate distance per workout and add it to the respective player.
     for workout in workouts:
         dist = 0.0
@@ -48,7 +47,7 @@ def distance_leaderboard(time_range):
         distance_leaderboard[workout[0].workout.player] +=dist
 
 
-    return distance_leaderboard
+    return {k: v for k, v in sorted(distance_leaderboard.items(), key=lambda item: item[1],reverse=True)}
 
 
 def distance(point_a,point_b):
