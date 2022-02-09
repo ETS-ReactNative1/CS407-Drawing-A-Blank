@@ -151,7 +151,7 @@ class GridView(viewsets.ViewSet):
         tr = data['top_right']
         zoom = data['zoom']
 
-        allGrids = grids.grids_visible((bl, tr))
+        allGrids = grids.sub_sample((bl, tr), zoom)
         return Response(allGrids, status=status.HTTP_200_OK)
 
 
