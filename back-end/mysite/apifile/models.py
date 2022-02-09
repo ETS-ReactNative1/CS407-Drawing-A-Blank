@@ -48,6 +48,10 @@ class Player(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item)
 
+    def points():
+        return Player.objects.all().annotate(points=Count('workout__workout_point')).order_by('points')
+
+
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()

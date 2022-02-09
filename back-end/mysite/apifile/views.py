@@ -229,7 +229,7 @@ class Leaderboard(viewsets.ViewSet):
     def points(self, request):
         data = request.data
 
-        ret_val = Player.objects.all().annotate(points=Count('workout__workout_point')).order_by('points')
+        ret_val = Player.points()
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
