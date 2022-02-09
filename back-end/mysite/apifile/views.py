@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 
+from django.db.models import Count
 
 class EventView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
@@ -228,7 +229,7 @@ class Leaderboard(viewsets.ViewSet):
     def points(self, request):
         data = request.data
 
-        ret_val = Player.objects.all().points()
+        ret_val = Player.objects.all().annotate(points=Count('workout__workout_point')).order_by('points')
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
