@@ -33,7 +33,68 @@ export default function App() {
     */
     <Leaderboard
       title="Test"
-      data={[{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"}]}
+      data={[
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/terra.png'),
+          title: 'Arun',
+          points: '100',
+        },
+        {
+          picture: require('./src/assets/img/windy.png'),
+          title: 'Chris',
+          points: '1',
+        },
+        {
+          picture: require('./src/assets/img/terra.png'),
+          title: 'Charles',
+          points: '1000',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+        {
+          picture: require('./src/assets/img/ocean.png'),
+          title: 'Test user',
+          points: '24',
+        },
+      ]}
     />
   );
 }

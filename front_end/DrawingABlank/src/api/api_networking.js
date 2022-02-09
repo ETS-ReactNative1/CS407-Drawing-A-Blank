@@ -29,7 +29,7 @@ export const request = (req_method,req_endpoint,req_queries,req_body, req_authen
             'Authorization': req_authentication!= "" ? "Token " + req_authentication : "",
             'Content-Type':'application/json'
         },
-        body:req_body
+        profileBody:req_body
     })
 }
 

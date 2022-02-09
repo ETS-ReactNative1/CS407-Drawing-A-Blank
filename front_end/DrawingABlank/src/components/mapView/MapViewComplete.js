@@ -5,23 +5,23 @@ import {StyleSheet, View} from 'react-native';
 import {styles} from './style';
 import Overlay from '../../containers/Overlay';
 
-function MapViewComplete(){    
+function MapViewComplete() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   // use setOverlayContent to change the content of the overlay
   const [overlayContent, setOverlayContent] = useState();
 
-  return(
+  return (
     <View style={styles.mapContainer}>
-        <Map
+      <Map
         setOverlayVisible={setOverlayVisible}
         setOverlayContent={setOverlayContent}
-        />
-        <Overlay
+      />
+      <Overlay
         visible={overlayVisible}
         setVisible={setOverlayVisible}
         children={overlayContent}
-        />
+      />
     </View>
-  )
+  );
 }
 export default MapViewComplete;
