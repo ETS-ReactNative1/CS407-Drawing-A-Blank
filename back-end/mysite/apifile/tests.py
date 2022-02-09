@@ -3,8 +3,8 @@ from django.test import TestCase
 from rest_framework.authtoken.admin import User
 
 from . import models
-from .models import Event, EventBounds, Player,Team
-
+from .models import Event, EventBounds, Player,Team,Workout,WorkoutPoint
+from . import leaderboards
 
 
 class LeaderboardTests(TestCase):
@@ -14,12 +14,37 @@ class LeaderboardTests(TestCase):
         team = models.Team.objects.get(name="Test Team1")
 
         self.user = User.objects.create_user(username='testuser', password='12345')
-        Player.objects.create(user=self.user , team=team)
+        self.player = Player.objects.create(user=self.user , team=team)
+        self.workout1 = Workout.objects.create(player=self.player,duration=120,calories=0)
+        #now = datetime.datetime.now()
 
+        time = datetime.datetime(2022,1,1,hour=1,minute=0,second=0)
+        WorkoutPoint.objects.create(workout=self.workout1,time=time,easting=100,northing=100)
+
+        time = datetime.datetime(2022,1,1,hour=1,minute=1,second=0)
+        WorkoutPoint.objects.create(workout=self.workout1,time=time,easting=150,northing=150)
+
+        time = datetime.datetime(2022,1,1,hour=1,minute=2,second=0)
+        WorkoutPoint.objects.create(workout=self.workout1,time=time,easting=300,northing=300)
+
+
+        self.workout2 = Workout.objects.create(player=self.player,duration=120,calories=0)
+        time = datetime.datetime(2020,1,1,hour=1,minute=0,second=0)
+        WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=0,northing=50)
+
+        time = datetime.datetime(2020,1,1,hour=1,minute=1,second=0)
+        WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=100,northing=100)
+
+        time = datetime.datetime(2020,1,1,hour=1,minute=2,second=0)
+        WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=0,northing=0)
+
+
+
+        
 
     def test_players(self):
-        a = Player.objects.all()
-        print(a)
+        time = datetime.datetime(2021,1,1,hour=1,minute=0,second=0)
+        print(leaderboards.distance_leaderboard(time).values())
 
 """
 class EventBoundTests(TestCase):
