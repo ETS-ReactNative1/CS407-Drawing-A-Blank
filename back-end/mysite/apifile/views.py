@@ -230,9 +230,19 @@ class Leaderboard(viewsets.ViewSet):
         data = request.data
 
         ret_val = Player.points()
-        print(ret_val)
+        ret_val = Leaderboard.to_json(ret_val)
         
         return Response(ret_val, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def to_json(players):
+        ret_val = dict()
+        for player in players:
+            values = {
+                'points': player.points
+            }
+        ret_val[player.id] = values
+        return ret_val
 
 
 def calc_calories(workout_type, dur):
