@@ -49,7 +49,7 @@ class Player(models.Model):
     items = models.ManyToManyField(Item)
 
     def points():
-        return Player.objects.all().annotate(points=Count('workout__workout_point')).order_by('points')
+        return Player.objects.all().annotate(points=Count('workout__workoutpoint')).order_by('points')
 
 
 class Grid(models.Model):
