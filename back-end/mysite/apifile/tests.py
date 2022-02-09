@@ -15,6 +15,9 @@ class LeaderboardTests(TestCase):
 
         self.user = User.objects.create_user(username='testuser', password='12345')
         self.player = Player.objects.create(user=self.user , team=team)
+
+        self.user2 = User.objects.create_user(username='testuser2', password='12345')
+        self.player2 = Player.objects.create(user=self.user2 , team=team)
         self.workout1 = Workout.objects.create(player=self.player,duration=120,calories=0)
         #now = datetime.datetime.now()
 
@@ -44,7 +47,10 @@ class LeaderboardTests(TestCase):
 
     def test_players(self):
         time = datetime.datetime(2021,1,1,hour=1,minute=0,second=0)
-        print(leaderboards.distance_leaderboard(time).values())
+        print(leaderboards.distance_leaderboard(time))
+        time = datetime.datetime(2019,1,1,hour=1,minute=0,second=0)
+        print(leaderboards.distance_leaderboard(time))
+
 
 """
 class EventBoundTests(TestCase):
