@@ -230,9 +230,9 @@ class Leaderboard(viewsets.ViewSet):
         data = request.data
 
         ret_val = Player.points()
-
+        print(ret_val)
+        
         return Response(ret_val, status=status.HTTP_200_OK)
-
 
 
 def calc_calories(workout_type, dur):
