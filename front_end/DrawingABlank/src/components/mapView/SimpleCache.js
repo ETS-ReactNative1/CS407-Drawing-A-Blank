@@ -15,6 +15,8 @@ export default function SimpleCache(initContent = {}) {
 
     expiry_date = Date.now() + time_to_expire;
 
+    key = JSON.stringify(key);
+
     this.content[key] = [
       content, // promise
       refreshContent,
@@ -34,8 +36,10 @@ export default function SimpleCache(initContent = {}) {
   };
 
   this.getEntry = (key, getLatestFlag) => {
+    key = JSON.stringify(key);
     entry = this.content[key];
-
+    console.log('cahce', this.content);
+    console.log('e', this.content[key]);
     if (!entry) return [false];
 
     const [content, refreshContent, expiry_date] = this.content[key];

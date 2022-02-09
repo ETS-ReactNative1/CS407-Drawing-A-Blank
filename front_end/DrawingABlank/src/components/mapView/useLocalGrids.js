@@ -4,6 +4,7 @@ import useGeoLocation from './useGeoLocation';
 import Cache from './SimpleCache';
 import useRegion from './useRegion';
 import {Polygon} from 'react-native-maps';
+import {getCorners} from './utils';
 import {createEmptyStatement} from 'typescript';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 import useZoomLevel from './useZoomLevel';
@@ -101,7 +102,7 @@ export default function useLocalGrids(
       //  or just clear cache every time bound changes
 
       // get grids or set it in cache
-      console.log('Getting from cache, key:', tileSize);
+      console.log('Getting from cache, key:', key);
       grids = await gridZoomCache.getEntryContent(key); // flag overrides expiry_date to now
       console.log('Retrieved possible grids:', grids);
       // if no cache entry for latlng + zoom
@@ -118,10 +119,10 @@ export default function useLocalGrids(
       }
     }
 
-    console.log('grids', grids);
+    //console.log('grids', grids);
 
     grids = (await grids) || [];
-    console.log('Displaying Grids: ', grids);
+    //console.log('Displaying Grids: ', grids);
     setLocalGrids(grids);
   };
 
@@ -151,6 +152,11 @@ export default function useLocalGrids(
     });
   };
 
+  const DrawRenderRegion = () => {
+    coordinates = getCorners(renderRegion);
+    return <Polygon coordinates={coordinates} fillColor={'#000000'}></Polygon>;
+  };
+
   const DrawGrids = () => {
     return localGrids.map((grid, i) => {
       if (grid.bounds.length > 0) {
@@ -166,7 +172,7 @@ export default function useLocalGrids(
     });
   };
 
-  return [DrawGrids, localGrids];
+  return [DrawGrids, localGrids, DrawRenderRegion];
 }
 
 // const loadLoDs = () => {

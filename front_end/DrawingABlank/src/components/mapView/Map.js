@@ -27,6 +27,8 @@ import useRegion from './useRegion';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 import useZoomLevel from './useZoomLevel';
 
+import {debounce} from './utils';
+
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
 const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
@@ -44,7 +46,7 @@ const DEBUG_ZOOM_LEVEL = {
 
 function Map({setOverlayVisible, setOverlayContent}) {
   const [viewRegion, updateViewRegion, renderRegion, zoomLayer] = useRegion();
-  const [DrawGrids, grids] = useLocalGrids(
+  const [DrawGrids, grids, DrawRenderRegion] = useLocalGrids(
     [],
     {renderRegion, zoomLayer},
     {
@@ -176,6 +178,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         <DrawGrids />
         <DrawEvents />
         <DrawUserPath />
+        <DrawRenderRegion />
       </Animated>
 
       <MapControls

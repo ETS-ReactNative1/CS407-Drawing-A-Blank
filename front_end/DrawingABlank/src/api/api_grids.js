@@ -5,8 +5,8 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
   const corners = getCorners(region);
   console.log('buf region for girds', region);
   const body = {
-    bottom_left: corners[0],
-    top_right: corners[1],
+    bottom_left: Object.values(corners[0]),
+    top_right: Object.values(corners[1]),
     zoom,
   };
 

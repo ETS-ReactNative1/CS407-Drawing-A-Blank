@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 import useGeoLocation from './useGeoLocation';
-import {getCorners} from './utils';
+import {debounce, getCorners} from './utils';
 
 // issue perhaps of region not being set for first load
 // due to geolocation async update
@@ -13,8 +13,9 @@ import {getCorners} from './utils';
 
 // will need to do mercator projection to make same size window globlly
 const BUFFER_ZOOM_LEVEL = {
-  latitudeDelta: 0.6039001489487674,
-  longitudeDelta: 0.5393288657069206,
+  // must be wider than fursther zoom level
+  latitudeDelta: 5,
+  longitudeDelta: 5,
 };
 
 const INIT_ZOOM = {
@@ -217,5 +218,10 @@ export default function useRegion() {
   //   setRegion(buildRegion(userLocation.current, zoomLevel.current));
   // }, [tileSize]);
 
-  return [region, updateRegion, bufferedRegion, zoomLayer];
+  const debouncedUpdateRegion = debounce(
+    newRegion => updateRegion(newRegion),
+    1000,
+  );
+
+  return [region, debouncedUpdateRegion, bufferedRegion, zoomLayer];
 }
