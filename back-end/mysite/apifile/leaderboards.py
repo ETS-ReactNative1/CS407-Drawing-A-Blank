@@ -9,7 +9,7 @@ def distance_leaderboard(time_range):
     players = Player.objects.all()
     distance_leaderboard = {}
     for player in players:
-        distance_leaderboard[player] =0.0
+        distance_leaderboard[player.user.username] =0.0
 
 
 
@@ -28,7 +28,7 @@ def distance_leaderboard(time_range):
         for point in all_points[1:]:
             dist += distance(cur_point,(point.easting,point.northing))
             cur_point = (point.easting,point.northing)
-        distance_leaderboard[workout.player] +=dist
+        distance_leaderboard[workout.player.user.username] +=dist
 
     #sort distance dictionary and return.
     return {k: v for k, v in sorted(distance_leaderboard.items(), key=lambda item: item[1],reverse=True)}
