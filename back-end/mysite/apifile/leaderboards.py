@@ -13,20 +13,14 @@ def distance_leaderboard(time_range):
 
 
 
-    workouts = WorkoutPoint.objects.filter(time__gt=time_range)
-
-    #Create a unique list of workouts based on all the filtered workout points
-    unique_list = []
-    for x in workouts:
-        # check if exists in unique_list or not
-        if x.workout not in unique_list:
-            unique_list.append(x.workout) #add the workout object
+    workouts  =  Workout.objects.filter(workoutpoint__time__gt=time_range).distinct()
 
 
-    for unique_workout in unique_list:
+
+    for workout in workouts:
 
         #get all the workoutpoints in the workout
-        all_points = unique_workout.workoutpoint_set.all()
+        all_points = workout.workoutpoint_set.all()
 
         #calculate distance between each pair of adjacent points.
         cur_point = (all_points[0].easting,all_points[0].northing)
@@ -34,9 +28,12 @@ def distance_leaderboard(time_range):
         for point in all_points[1:]:
             dist += distance(cur_point,(point.easting,point.northing))
             cur_point = (point.easting,point.northing)
-        distance_leaderboard[unique_workout.player] +=dist
+        distance_leaderboard[workout.player] +=dist
 
+    #sort distance dictionary and return.
     return {k: v for k, v in sorted(distance_leaderboard.items(), key=lambda item: item[1],reverse=True)}
+
+
 
 
 """
