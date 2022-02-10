@@ -42,6 +42,16 @@ class LeaderboardTests(TestCase):
         time = datetime.datetime(2020,1,1,hour=1,minute=2,second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout2,time=time,easting=0,northing=0)
 
+        self.workout3 = Workout.objects.create(player=self.player2,duration=120,calories=0)
+        time = datetime.datetime(2022,1,1,hour=1,minute=0,second=0, tzinfo=pytz.UTC)
+        WorkoutPoint.objects.create(workout=self.workout3,time=time,easting=0,northing=0)
+
+        time = datetime.datetime(2022,1,1,hour=1,minute=1,second=0, tzinfo=pytz.UTC)
+        WorkoutPoint.objects.create(workout=self.workout3,time=time,easting=100,northing=0)
+
+        time = datetime.datetime(2022,1,1,hour=1,minute=2,second=0, tzinfo=pytz.UTC)
+        WorkoutPoint.objects.create(workout=self.workout3,time=time,easting=0,northing=0)
+
 
 
         

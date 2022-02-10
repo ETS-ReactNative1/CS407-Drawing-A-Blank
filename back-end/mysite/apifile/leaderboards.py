@@ -4,13 +4,7 @@ from django.db.models import Q
 from .models import Workout,WorkoutPoint,Player
 import math
 
-#def distance(point_a,point_b):
-
 def distance_leaderboard(time_range):
-    
-    #get all workout points greater than the input time.
-    workout_points = WorkoutPoint.objects.filter(time__gt=time_range)
-
     #initialize the dictionary/hashmap.
     players = Player.objects.all()
     distance_leaderboard = {}
@@ -19,9 +13,49 @@ def distance_leaderboard(time_range):
 
 
 
+    workouts = WorkoutPoint.objects.filter(time__gt=time_range)
+
+    #Create a unique list of workouts based on all the filtered workout points
+    unique_list = []
+    for x in workouts:
+        # check if exists in unique_list or not
+        if x.workout not in unique_list:
+            unique_list.append(x.workout) #add the workout object
+
+
+    for unique_workout in unique_list:
+
+        #get all the workoutpoints in the workout
+        all_points = unique_workout.workoutpoint_set.all()
+
+        #calculate distance between each pair of adjacent points.
+        cur_point = (all_points[0].easting,all_points[0].northing)
+        dist = 0.0
+        for point in all_points[1:]:
+            dist += distance(cur_point,(point.easting,point.northing))
+            cur_point = (point.easting,point.northing)
+        distance_leaderboard[unique_workout.player] +=dist
+
+    return {k: v for k, v in sorted(distance_leaderboard.items(), key=lambda item: item[1],reverse=True)}
+
+
+"""
+def distance_leaderboard(time_range):
+    
+    #get all workout points greater than the input time.
+    workout_points = WorkoutPoint.objects.filter(time__gt=time_range)
+    
+    #initialize the dictionary/hashmap.
+    players = Player.objects.all()
+    distance_leaderboard = {}
+    for player in players:
+        distance_leaderboard[player] =0.0
+
     #group workout points by their workout id (probably a better way to do this)
     workouts_list = []
     cur_workout = workout_points[0].workout
+
+    print(cur_workout.workoutpoint_set.all())
     cur_points = []
     for point in workout_points:
         #new workout
@@ -49,7 +83,7 @@ def distance_leaderboard(time_range):
 
     #sort by distance. https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
     return {k: v for k, v in sorted(distance_leaderboard.items(), key=lambda item: item[1],reverse=True)}
-
+"""
 
 def distance(point_a,point_b):
     return math.sqrt((point_a[0]-point_b[0])**2 +(point_a[1]-point_b[1])**2 )
