@@ -237,10 +237,7 @@ class Leaderboard(viewsets.ViewSet):
     @action(methods=['post'], detail=False)
     def distance(self, request):
         data = request.data
-        year = data["year"]
-        month = data["month"]
-        day = data["day"]
-        time = datetime.datetime(year, month, day, hour=0, minute=0, second=0, tzinfo=pytz.UTC)
+        time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
 
         ret_val = leaderboards.distance_leaderboard(time)
         return Response(ret_val, status=status.HTTP_200_OK)
