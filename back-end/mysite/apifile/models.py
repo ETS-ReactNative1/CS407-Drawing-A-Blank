@@ -200,9 +200,8 @@ class EventBounds(models.Model):
 
 class EventStandings(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE)
-    first = models.ForeignKey(Team, on_delete=models.CASCADE)
-    second = models.ForeignKey(Team, on_delete=models.CASCADE)
-    third = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    place = models.IntegerField()
 
 
 class Workout(models.Model):

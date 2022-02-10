@@ -43,8 +43,10 @@ def event_check():
             second = teams[unseen_teams.pop()]
             third = teams[unseen_teams.pop()]
 
-        EventStandings.objects.create(event=event, first=first,
-                                      second=second, third=third)
+        EventStandings.objects.create(event=event, team=first, place=1)
+        EventStandings.objects.create(event=event, team=second, place=2)
+        EventStandings.objects.create(event=event, team=third, place=3)
+
         # rewards
         players = EventPerformance.objects.select_related('player__team').filter(event=event)
         for playerPerf in players:
@@ -56,6 +58,7 @@ def event_check():
                 coins_gained = 1 * playerPerf.contribution
             playerPerf.player.coins += coins_gained
             playerPerf.player.save()
+
         # clear area
         event.clear_area()
 
