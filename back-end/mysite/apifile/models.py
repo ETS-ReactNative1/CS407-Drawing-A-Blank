@@ -13,9 +13,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
-
 class CoordsConvert(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
@@ -49,6 +49,7 @@ class Player(models.Model):
     items = models.ManyToManyField(Item)
     coins = models.PositiveIntegerField(default=0)
 
+    @staticmethod
     def points():
         return Player.objects.values('user').annotate(points=Count('workout__workoutpoint')).order_by('-points')
 

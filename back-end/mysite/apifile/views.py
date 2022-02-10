@@ -15,6 +15,7 @@ from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBound
 import pytz
 from django.db.models import Count
 
+
 class EventView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
 
@@ -223,27 +224,26 @@ class WorkoutSubmission(viewsets.ViewSet):
                 event_perf.contribution += 1
                 event_perf.save()
 
+
 class Leaderboard(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=False)
-    def points(self, request):
-        data = request.data
+    def points(self, _):
         ret_val = Player.points()
-        
         return Response(ret_val, status=status.HTTP_200_OK)
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['post'], detail=False)
     def distance(self, request):
         data = request.data
         year = data["year"]
         month = data["month"]
         day = data["day"]
-        time = datetime.datetime(year,month,day,hour=0,minute=0,second=0, tzinfo=pytz.UTC)
+        time = datetime.datetime(year, month, day, hour=0, minute=0, second=0, tzinfo=pytz.UTC)
 
         ret_val = leaderboards.distance_leaderboard(time)
         return Response(ret_val, status=status.HTTP_200_OK)
-
 
 
 def calc_calories(workout_type, dur):
