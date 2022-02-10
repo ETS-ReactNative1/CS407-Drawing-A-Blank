@@ -48,6 +48,7 @@ class Player(models.Model):
     weight = models.FloatField(null=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     items = models.ManyToManyField(Item)
+    coins = models.PositiveIntegerField(default=0)
 
 
 class Grid(models.Model):
@@ -175,8 +176,9 @@ class Event(models.Model):
 
         all_grids = self.all_grids()
         if all_grids is not None:
-            grids = Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids)))
-            return grids.values('player__team').annotate(total=Count('player__team')).order_by('-total')
+            teams = Team.objects.filter(
+                reduce(operator.or_, (Q(player__grid__easting=i, player__grid__northing=j) for i, j in all_grids)))
+            return teams.values('name').annotate(total=Count('name')).order_by('-total')
 
     def center(self):
         """
@@ -191,6 +193,13 @@ class EventBounds(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
+
+
+class EventStandings(models.Model):
+    event = models.OneToOneField(Event, on_delete=models.CASCADE)
+    first = models.ForeignKey(Team, on_delete=models.CASCADE)
+    second = models.ForeignKey(Team, on_delete=models.CASCADE)
+    third = models.ForeignKey(Team, on_delete=models.CASCADE)
 
 
 class Workout(models.Model):
