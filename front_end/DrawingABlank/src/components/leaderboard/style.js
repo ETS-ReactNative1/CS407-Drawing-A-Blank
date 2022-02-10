@@ -132,5 +132,14 @@ export const styles = StyleSheet.create({
     tab_text:{
         color:"black",
         textAlign:"center"
+    },
+    filters:{
+        paddingTop:10,
+        marginLeft:10,
+        paddingBottom:20,
+        flexDirection:'row',
+    },
+    filter:{
+        width:150
     }
 });

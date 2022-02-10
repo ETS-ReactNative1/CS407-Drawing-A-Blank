@@ -3,10 +3,23 @@ import {Text, View, TextInput, ScrollView, Image} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PlayerCard from './playercard.js';
 import {styles} from './style.js';
+import MultiSelect from 'react-native-multiple-select';
 
 class Leaderboard extends Component{
     state={
-        points_selected:true
+        points_selected:true,
+        options: [{
+            id: 'terra',
+            name: 'Terra'
+          }, {
+            id: 'ocean',
+            name: 'Ocean'
+          }, {
+            id: 'windy',
+            name: 'Windy'
+          }],
+        selectedOptions:[],
+        open:false,
     }
     setPoints = () =>{
         this.setState({points_selected:true});
@@ -14,6 +27,11 @@ class Leaderboard extends Component{
     setDistance = () =>{
         this.setState({points_selected:false});
     }
+
+    setOptions = (selectedOptions) =>{
+        this.setState({selectedOptions:selectedOptions});
+    }
+
     render(){
         return(
             <View style={styles.leaderboard}>
@@ -24,6 +42,30 @@ class Leaderboard extends Component{
                     <TouchableOpacity style={(!this.state.points_selected) ? styles.tab_button_selected : styles.tab_button_default} onPress={this.setDistance}>
                         <Text style={styles.tab_text}>Distance</Text>
                     </TouchableOpacity>
+                </View>
+                <View style={styles.filters}>
+                    <View style={styles.filter}>
+                        <MultiSelect
+                        hideTags
+                        items={this.state.options}
+                        uniqueKey="id"
+                        onSelectedItemsChange={this.setOptions}
+                        selectedItems={this.state.selectedOptions}
+                        selectText="Filter by team"
+                        onChangeInput={(text) => console.log(text)}
+                        tagRemoveIconColor="#CCC"
+                        tagBorderColor="#CCC"
+                        tagTextColor="#CCC"
+                        selectedItemTextColor="#CCC"
+                        selectedItemIconColor="#CCC"
+                        itemTextColor="#000"
+                        displayKey="name"
+                        textInputProps={{ editable: false }}
+                        searchInputPlaceholderText=""
+                        searchIcon={false}
+                        hideSubmitButton={true}
+                        />
+                    </View>
                 </View>
                 <ScrollView style={styles.leaderboard_entries} showsVerticalScrollIndicator={false}>
                     <View style={styles.leaderboard_entry}>
