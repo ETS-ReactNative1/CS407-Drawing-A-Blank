@@ -9,9 +9,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
+from . import leaderboards
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
-
+import pytz
 from django.db.models import Count
 
 class EventView(viewsets.ViewSet):
@@ -228,10 +229,21 @@ class Leaderboard(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def points(self, request):
         data = request.data
-
         ret_val = Player.points()
         
         return Response(ret_val, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def distance(self, request):
+        data = request.data
+        year = data["year"]
+        month = data["month"]
+        day = data["day"]
+        time = datetime.datetime(year,month,day,hour=0,minute=0,second=0, tzinfo=pytz.UTC)
+
+        ret_val = leaderboards.distance_leaderboard(time)
+        return Response(ret_val, status=status.HTTP_200_OK)
+
 
 
 def calc_calories(workout_type, dur):
