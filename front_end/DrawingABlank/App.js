@@ -31,9 +31,11 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
     */
+   
     <Leaderboard
       title="Test"
       data={[{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",points:"24"}]}
     />
+    
   );
 }

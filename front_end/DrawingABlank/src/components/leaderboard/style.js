@@ -106,17 +106,31 @@ export const styles = StyleSheet.create({
         fontSize:26,
         textAlign:"center"
     },
-    continue_button:{
-        borderRadius:5,
+    tab_buttons:{
+        width:300,
+        alignContent:"center",
+        alignItems:"center",
+        left:30,
+        flexDirection:"row",
         borderColor:"black",
         borderWidth:1,
+        borderTopLeftRadius:5,
+        borderBottomLeftRadius:5
+    },
+    tab_button_selected:{
+        width:150,
+        borderRightWidth:1,
+        borderColor:"black",
         backgroundColor:"#6db0f6",
-        width:"100%",
-        alignSelf:"center"
     },
-
-    continue_button_text:{
-        textAlign:"center",
-        fontSize:24
+    tab_button_default:{
+        width:150,
+        borderRightWidth:1,
+        borderColor:"black",
+        backgroundColor:"#b0d2f5",
     },
+    tab_text:{
+        color:"black",
+        textAlign:"center"
+    }
 });

@@ -1,12 +1,30 @@
 import React, {Component} from 'react';
 import {Text, View, TextInput, ScrollView, Image} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import PlayerCard from './playercard.js';
 import {styles} from './style.js';
 
 class Leaderboard extends Component{
+    state={
+        points_selected:true
+    }
+    setPoints = () =>{
+        this.setState({points_selected:true});
+    }
+    setDistance = () =>{
+        this.setState({points_selected:false});
+    }
     render(){
         return(
             <View style={styles.leaderboard}>
+                <View style={styles.tab_buttons}>
+                    <TouchableOpacity style={(this.state.points_selected) ? styles.tab_button_selected : styles.tab_button_default} onPress={this.setPoints}>
+                        <Text style={styles.tab_text}>Points</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={(!this.state.points_selected) ? styles.tab_button_selected : styles.tab_button_default} onPress={this.setDistance}>
+                        <Text style={styles.tab_text}>Distance</Text>
+                    </TouchableOpacity>
+                </View>
                 <ScrollView style={styles.leaderboard_entries} showsVerticalScrollIndicator={false}>
                     <View style={styles.leaderboard_entry}>
                         <View style={styles.leaderboard_entry_rank}>
