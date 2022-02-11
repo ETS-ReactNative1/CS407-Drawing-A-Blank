@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import {Text, View, TextInput, ScrollView, Image} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {styles} from './style.js';
 
 class PlayerCard extends Component{
     render(){
         return(
-            <View style={styles.playercard}>
+            <TouchableOpacity style={styles.playercard} onPress={this.props.onPress}>
                 <View style={styles.leaderboard_entry_rank}>
                     <Text style={styles.leaderboard_entry_rank_text}>{this.props.rank}</Text>
                 </View>
@@ -21,7 +22,7 @@ class PlayerCard extends Component{
                 <View style={styles.leaderboard_entry_score}>
                     <Text style={styles.leaderboard_entry_score_text}>{this.props.score}</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 }

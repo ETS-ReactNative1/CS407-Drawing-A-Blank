@@ -50,6 +50,20 @@ class Leaderboard extends Component{
         this.setState({showDatePicker:false});
     }
     
+    scrollToIndex = (index) => {
+        if(this.state.scrollViewRef){
+            var ENTRY_HEIGHT = 100;
+            this.state.scrollViewRef.scrollTo({
+                x:0,
+                y:ENTRY_HEIGHT*index,
+                animated:true
+            })
+        }
+    }
+
+    setReference = (ref) => {
+        this.setState({scrollViewRef:ref});
+    }
 
     render(){
         return(
@@ -99,7 +113,10 @@ class Leaderboard extends Component{
                     </View>
                     }
                 </View>
-                <ScrollView style={styles.leaderboard_entries} showsVerticalScrollIndicator={false}>
+                <ScrollView style={styles.leaderboard_entries}
+                            showsVerticalScrollIndicator={false} 
+                            ref={(ref) => this.setReference(ref)}
+                >
                     <View style={styles.leaderboard_entry}>
                         <View style={styles.leaderboard_entry_rank}>
                             <Text style={styles.leaderboard_entry_rank_text}>#</Text>
@@ -173,12 +190,14 @@ class Leaderboard extends Component{
                     username={this.props.data.points[this.props.data.userPointsIndex].title}
                     picture={this.props.data.points[this.props.data.userPointsIndex].picture}
                     score={this.props.data.points[this.props.data.userPointsIndex].points}
+                    onPress={() => this.scrollToIndex(this.props.data.userPointsIndex)}
                 /> : 
                 <PlayerCard
                     rank={this.props.data.userDistanceIndex+1}
                     username={this.props.data.distance[this.props.data.userDistanceIndex].title}
                     picture={this.props.data.distance[this.props.data.userDistanceIndex].picture}
                     score={this.props.data.distance[this.props.data.userDistanceIndex].points}
+                    onPress={() => this.scrollToIndex(this.props.data.userDistanceIndex)}
                 />}
             </View>
         );
