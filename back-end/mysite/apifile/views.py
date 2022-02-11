@@ -229,9 +229,10 @@ class Leaderboard(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['post'], detail=False)
     def points(self, request):
         data = request.data
+        test = data['date']
         time = datetime.datetime.strptime(data['date'], "%d/%m/%Y").date()
 
         ret_val = Player.points(time)
