@@ -85,7 +85,30 @@ class Leaderboard extends Component{
                             <Text style={styles.leaderboard_entry_score_text}>Score</Text>
                         </View>
                     </View>
-                    {this.props.data.map((info,index) => {
+                    {(this.state.points_selected) ? this.props.data.points.map((info,index) => {
+                        if(this.state.selectedOptions.length == 0 || this.state.selectedOptions.includes(info.team)){
+                        return (
+                        <View style={styles.leaderboard_entry}>
+                            <View style={styles.leaderboard_entry_rank}>
+                                <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_picture}>
+                                <Image
+                                    source={info.picture}
+                                    style={styles.leaderboard_entry_picture_params}
+                                />
+                            </View>
+                            <View style={styles.leaderboard_entry_title}>
+                                <Text style={styles.leaderboard_entry_title_text}>{info.title}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_team}>
+                                <Text style={styles.leaderboard_entry_team_text}>{info.team}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_score}>
+                                <Text style={styles.leaderboard_entry_score_text}>{info.points}</Text>
+                            </View>
+                        </View>
+                    )}}) : this.props.data.distance.map((info,index) => {
                         if(this.state.selectedOptions.length == 0 || this.state.selectedOptions.includes(info.team)){
                         return (
                         <View style={styles.leaderboard_entry}>
