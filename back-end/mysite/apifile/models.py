@@ -51,7 +51,7 @@ class Player(models.Model):
 
     @staticmethod
     def points(time):
-        return Player.objects.filter(workout__workoutpoint__time__gte=time).values('user').annotate(points=Count('workout__workoutpoint')).order_by('-points')
+        return Player.objects.filter(workout__workoutpoint__time__gte=time).values('user', 'team').annotate(points=Count('workout__workoutpoint')).order_by('-points')
 
 
 class Grid(models.Model):
