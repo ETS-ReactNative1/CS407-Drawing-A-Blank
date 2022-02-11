@@ -232,10 +232,9 @@ class Leaderboard(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def points(self, request):
         data = request.data
-        test = data['date']
         time = datetime.datetime.strptime(data['date'], "%d/%m/%Y").date()
 
-        ret_val = Player.points()
+        ret_val = Player.points(time)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
