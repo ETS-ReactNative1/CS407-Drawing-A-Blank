@@ -140,6 +140,12 @@ export const styles = StyleSheet.create({
         flexDirection:'row',
     },
     filter:{
-        width:150
+        width:200,
+        justifyContent:"center",
+        paddingRight:20
+    },
+    filter_text:{
+        color:"black",
+        fontSize:14
     }
 });

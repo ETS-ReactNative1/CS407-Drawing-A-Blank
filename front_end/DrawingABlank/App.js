@@ -35,8 +35,11 @@ export default function App() {
     <Leaderboard
       title="Test"
       data={{
-        points:[{picture:require('./src/assets/img/terra.png'),title:"Test user",team:"Terra",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",team:"Ocean",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user", team:"Ocean",points:"24"},{picture:require('./src/assets/img/windy.png'),title:"Test user", team:"Windy",points:"24"},{picture:require('./src/assets/img/terra.png'),title:"Test user",team:"Terra",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",team:"Ocean",points:"12"},{picture:require('./src/assets/img/ocean.png'),title:"Test user", team:"Ocean",points:"9"},{picture:require('./src/assets/img/windy.png'),title:"Test user", team:"Windy",points:"5"}]
-        ,distance:[{picture:require('./src/assets/img/ocean.png'),title:"Test user",team:"Ocean",points:"12km"},{picture:require('./src/assets/img/ocean.png'),title:"Test user", team:"Ocean",points:"9km"},{picture:require('./src/assets/img/windy.png'),title:"Test user", team:"Windy",points:"5km"}]}}
+        points:[{picture:require('./src/assets/img/terra.png'),title:"Test user",team:"Terra",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",team:"Ocean",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user", team:"Ocean",points:"24"},{picture:require('./src/assets/img/windy.png'),title:"Test user", team:"Windy",points:"24"},{picture:require('./src/assets/img/terra.png'),title:"Test user",team:"Terra",points:"24"},{picture:require('./src/assets/img/ocean.png'),title:"Test user",team:"Ocean",points:"12"},{picture:require('./src/assets/img/ocean.png'),title:"Test user", team:"Ocean",points:"9"},{picture:require('./src/assets/img/windy.png'),title:"Test user", team:"Windy",points:"5"}],
+        distance:[{picture:require('./src/assets/img/ocean.png'),title:"Test user",team:"Ocean",points:"12km"},{picture:require('./src/assets/img/ocean.png'),title:"Test user", team:"Ocean",points:"9km"},{picture:require('./src/assets/img/windy.png'),title:"Test user", team:"Windy",points:"5km"}],
+        userPointsIndex:1,
+        userDistanceIndex:0
+      }}
     />
     
   );
