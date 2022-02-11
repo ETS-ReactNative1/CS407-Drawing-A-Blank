@@ -9,13 +9,13 @@ class Leaderboard extends Component{
     state={
         points_selected:true,
         options: [{
-            id: 'terra',
+            id: 'Terra',
             name: 'Terra'
           }, {
-            id: 'ocean',
+            id: 'Ocean',
             name: 'Ocean'
           }, {
-            id: 'windy',
+            id: 'Windy',
             name: 'Windy'
           }],
         selectedOptions:[],
@@ -85,7 +85,9 @@ class Leaderboard extends Component{
                             <Text style={styles.leaderboard_entry_score_text}>Score</Text>
                         </View>
                     </View>
-                    {this.props.data.map((info,index) => (
+                    {this.props.data.map((info,index) => {
+                        if(this.state.selectedOptions.length == 0 || this.state.selectedOptions.includes(info.team)){
+                        return (
                         <View style={styles.leaderboard_entry}>
                             <View style={styles.leaderboard_entry_rank}>
                                 <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
@@ -100,13 +102,13 @@ class Leaderboard extends Component{
                                 <Text style={styles.leaderboard_entry_title_text}>{info.title}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_team}>
-                                <Text style={styles.leaderboard_entry_team_text}>Team</Text>
+                                <Text style={styles.leaderboard_entry_team_text}>{info.team}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_score}>
                                 <Text style={styles.leaderboard_entry_score_text}>{info.points}</Text>
                             </View>
                         </View>
-                    ))}
+                    )}})}
                     <View style={{paddingBottom:20}}></View>
                 </ScrollView>
                 {/*Player card goes here*/}
