@@ -13,6 +13,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from django.db.models import F
+
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
@@ -53,7 +55,7 @@ class Player(models.Model):
     def points(time):
         # 
         # .values('username','team', 'avatar')
-        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__workoutpoint')).order_by('-points')
+        return Player.objects.annotate(username=F('user__username')).values(username, 'team').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__workoutpoint')).order_by('-points')
 
 
 class Grid(models.Model):
