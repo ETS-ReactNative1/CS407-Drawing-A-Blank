@@ -235,15 +235,14 @@ class Leaderboard(viewsets.ViewSet):
         time = datetime.datetime.strptime(data['date'], "%d/%m/%Y").date()
 
         results = Player.points(time)
-        {"user__username":"cheese","team":4,"points":156}
 
         ret_val = dict()
 
         for res in results:
             vals = {
-                    "team": res["team"],
-                    "points": res["points"]
-                   }
+                "team": res["team"],
+                "points": res["points"]
+            }
             ret_val[res["user__username"]] = vals
 
         return Response(ret_val, status=status.HTTP_200_OK)
