@@ -230,8 +230,12 @@ class Leaderboard(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=False)
-    def points(self, _):
-        ret_val = Player.points()
+    def points(self, request):
+        data = request.data
+        time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
+
+        ret_val = Player.points(time)
+
         return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['post'], detail=False)

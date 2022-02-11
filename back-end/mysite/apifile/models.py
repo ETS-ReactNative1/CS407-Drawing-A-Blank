@@ -50,8 +50,8 @@ class Player(models.Model):
     coins = models.PositiveIntegerField(default=0)
 
     @staticmethod
-    def points():
-        return Player.objects.values('user').annotate(points=Count('workout__workoutpoint')).order_by('-points')
+    def points(time):
+        return Player.objects.filter(workout__workoutpoint__time__gte=time).values('user').annotate(points=Count('workout__workoutpoint')).order_by('-points')
 
 
 class Grid(models.Model):
