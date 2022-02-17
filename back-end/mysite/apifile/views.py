@@ -186,7 +186,7 @@ class WorkoutSubmission(viewsets.ViewSet):
             WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing)
 
         bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
-        for i in range(len(bounds), 0, -1):
+        for i in range(len(bounds) - 1, 0, -1):
             speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
                                           (bounds[i - 1].easting, bounds[i - 1].northing),
                                           (bounds[i].time - bounds[i - 1].time).total_seconds())
