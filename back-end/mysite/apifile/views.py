@@ -14,6 +14,7 @@ from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 from django.db.models import Count
 
+
 class EventView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
 
@@ -258,15 +259,13 @@ class Leaderboard(viewsets.ViewSet):
 
     @action(methods=['put'], detail=False)
     def test_data(self, _):
-         workouts =  Workout.objects.all()
-         
-         for w in workouts:
-            user = User.objects.filter(id=w.player)
-            for u in user:
-                player = Player.objects.filter(user=u.id)
-            # not correct, using number of gps points sent instead of grids (dummy data)
-            w.points = player.values('user__username').annotate(points=Count('workout__workoutpoints')).order_by('-points')
+        workouts = Workout.objects.all().select_related("player")
 
+        for w in workouts:
+            player = w.player
+            # not correct, using number of gps points sent instead of grids (dummy data)
+            w.points = player.values('user__username').annotate(points=Count('workout__workoutpoints')).order_by(
+                '-points')
 
 
 def calc_calories(workout_type, dur):

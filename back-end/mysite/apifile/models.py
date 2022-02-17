@@ -53,7 +53,9 @@ class Player(models.Model):
 
     @staticmethod
     def points(time):
-        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
+        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(
+            points=Count('workout__points')).order_by('-points')
+
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
@@ -210,7 +212,7 @@ class Workout(models.Model):
     duration = models.PositiveIntegerField()  # in seconds
     calories = models.PositiveIntegerField()
     type = models.CharField(max_length=10)  # e.g. walk, run
-    points = models.PositiveIntegerField(null=True) # number of grids touched in that workout
+    points = models.PositiveIntegerField(null=True)  # number of grids touched in that workout
 
 
 class WorkoutPoint(models.Model):
