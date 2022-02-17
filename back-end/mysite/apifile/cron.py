@@ -48,15 +48,17 @@ def event_check():
         EventStandings.objects.create(event=event, team=third, place=3)
 
         # rewards
-        players = EventPerformance.objects.select_related('player__team').filter(event=event)
+        players = EventPerformance.objects.filter(event=event, player__team=first)
         for playerPerf in players:
-            if playerPerf.player.team.name == first.name:
-                coins_gained = 3 * playerPerf.contribution
-            elif playerPerf.player.team.name == second.name:
-                coins_gained = 2 * playerPerf.contribution
-            else:
-                coins_gained = 1 * playerPerf.contribution
-            playerPerf.player.coins += coins_gained
+            playerPerf.player.coins += 3 * playerPerf.contribution
+            playerPerf.player.save()
+        players = EventPerformance.objects.filter(event=event, player__team=second)
+        for playerPerf in players:
+            playerPerf.player.coins += 2 * playerPerf.contribution
+            playerPerf.player.save()
+        players = EventPerformance.objects.filter(event=event, player__team=third)
+        for playerPerf in players:
+            playerPerf.player.coins += playerPerf.contribution
             playerPerf.player.save()
 
         # clear area
