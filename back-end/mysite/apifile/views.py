@@ -232,8 +232,8 @@ class Leaderboard(viewsets.ViewSet):
 
     @action(methods=['get'], detail=False)
     def points(self, request):
-        data = request.data
-        time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
+        date = "22/02/2021"
+        time = datetime.datetime.strptime(date, "%d/%m/%Y").date()
 
         results = Player.points(time)
 
