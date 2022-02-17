@@ -261,8 +261,9 @@ class Leaderboard(viewsets.ViewSet):
          workouts =  Workout.objects.all()
          
          for w in workouts:
-            user = User.objects.filter(id=w.player.user.id)
-            player = Player.objects.filter(user=user.id)
+            user = User.objects.filter(id=w.player)
+            for u in user:
+                player = Player.objects.filter(user=u.id)
             # not correct, using number of gps points sent instead of grids (dummy data)
             w.points = player.values('user__username').annotate(points=Count('workout__workoutpoints')).order_by('-points')
 
