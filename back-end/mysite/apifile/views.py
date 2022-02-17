@@ -232,7 +232,7 @@ class Leaderboard(viewsets.ViewSet):
 
     @action(methods=['get'], detail=False)
     def points(self, request):
-        date = "22/02/2021"
+        date = "22/02/2020"
         time = datetime.datetime.strptime(date, "%d/%m/%Y").date()
 
         results = Player.points(time)
