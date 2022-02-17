@@ -210,7 +210,7 @@ class Workout(models.Model):
     duration = models.PositiveIntegerField()  # in seconds
     calories = models.PositiveIntegerField()
     type = models.CharField(max_length=10)  # e.g. walk, run
-    points = models.PositiveIntegerField(Null=True) # number of grids touched in that workout
+    points = models.PositiveIntegerField(null=True) # number of grids touched in that workout
 
 
 class WorkoutPoint(models.Model):
