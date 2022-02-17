@@ -208,18 +208,18 @@ class WorkoutSubmission(viewsets.ViewSet):
                     tile.player = player
                     tile.time = bounds[i].time
                     tile.save()
-                    WorkoutSubmission.add_participation(user, (tile.easting, tile.northing))
+                    WorkoutSubmission.add_participation(player, (tile.easting, tile.northing))
             for tile in allGrids - checkedTiles:
                 Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
-                WorkoutSubmission.add_participation(user, tile)
+                WorkoutSubmission.add_participation(player, tile)
 
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def add_participation(user, tile):
+    def add_participation(player, tile):
         closest_event = Event.get_closest_active_event(tile)
         if closest_event.check_within(tile):
-            event_perf, created = EventPerformance.objects.get_or_create(user=user, event=closest_event,
+            event_perf, created = EventPerformance.objects.get_or_create(player=player, event=closest_event,
                                                                          defaults={'contribution': 1})
             if not created:
                 event_perf.contribution += 1
