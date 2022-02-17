@@ -12,8 +12,6 @@ from rest_framework.response import Response
 from . import leaderboards
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
-import pytz
-from django.db.models import Count
 
 
 class EventView(viewsets.ViewSet):
@@ -200,7 +198,10 @@ class WorkoutSubmission(viewsets.ViewSet):
                 tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
             else:
                 tiles = []
+
+            workout.points = len(tiles)
             checkedTiles = set()
+
             for tile in tiles:
                 checkedTiles.add((tile.easting, tile.northing))
                 if tile.check_tile_override(bounds[i].time):
