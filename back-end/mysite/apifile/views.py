@@ -12,8 +12,6 @@ from rest_framework.response import Response
 from . import leaderboards
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
-import pytz
-from django.db.models import Count
 
 
 class EventView(viewsets.ViewSet):
@@ -200,7 +198,10 @@ class WorkoutSubmission(viewsets.ViewSet):
                 tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
             else:
                 tiles = []
+
+            workout.points = len(tiles)
             checkedTiles = set()
+
             for tile in tiles:
                 checkedTiles.add((tile.easting, tile.northing))
                 if tile.check_tile_override(bounds[i].time):
@@ -230,11 +231,24 @@ class Leaderboard(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=False)
-    def points(self, _):
-        ret_val = Player.points()
+    def points(self, request):
+        data = request.data
+        time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
+
+        results = Player.points(time)
+
+        ret_val = dict()
+
+        for res in results:
+            vals = {
+                "team": res["team"],
+                "points": res["points"]
+            }
+            ret_val[res["user__username"]] = vals
+
         return Response(ret_val, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def distance(self, request):
         data = request.data
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()

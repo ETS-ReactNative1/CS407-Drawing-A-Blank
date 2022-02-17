@@ -13,6 +13,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from django.db.models import F
+
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
@@ -50,9 +52,8 @@ class Player(models.Model):
     coins = models.PositiveIntegerField(default=0)
 
     @staticmethod
-    def points():
-        return Player.objects.values('user').annotate(points=Count('workout__workoutpoint')).order_by('-points')
-
+    def points(time):
+        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
@@ -209,6 +210,7 @@ class Workout(models.Model):
     duration = models.PositiveIntegerField()  # in seconds
     calories = models.PositiveIntegerField()
     type = models.CharField(max_length=10)  # e.g. walk, run
+    points = models.PositiveIntegerField(null=True) # number of grids touched in that workout
 
 
 class WorkoutPoint(models.Model):
