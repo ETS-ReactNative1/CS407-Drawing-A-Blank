@@ -9,7 +9,7 @@ def distance_leaderboard(time_range,teams):
     players =None
 
     #Get all players/workouts from all teams
-    if(teams==None):
+    if(teams==None or teams ==[]):
         players = Player.objects.all()
         workouts = Workout.objects.filter(workoutpoint__time__gt=time_range).distinct()
     #Filter for teams in list.
