@@ -93,9 +93,14 @@ class LeaderboardTests(TestCase):
 
     def test_players(self):
         time = datetime.datetime(2021, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC )
-        print(leaderboards.distance_leaderboard(time,["Green","Blue"]))
-        time = datetime.datetime(2019, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
+        print("2021")
         print(leaderboards.distance_leaderboard(time,None))
+        print(leaderboards.distance_leaderboard(time,["Green","Blue"]))
+        
+        time = datetime.datetime(2019, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
+        print("2019")
+        print(leaderboards.distance_leaderboard(time,None))
+        print(leaderboards.distance_leaderboard(time,["Red"]))
 
 
 class EventBoundTests(TestCase):
