@@ -3,17 +3,22 @@ from . import grids
 from django.db.models import Q
 
 def distance_leaderboard(time_range,teams):
-    # initialize the dictionary/hashmap.
+
+
     workouts = None
     players =None
 
+    #Get all players/workouts from all teams
     if(teams==None):
         players = Player.objects.all()
         workouts = Workout.objects.filter(workoutpoint__time__gt=time_range).distinct()
+    #Filter for teams in list.
     else:
         players = Player.objects.filter(team__name__in=teams)
         workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time_range) & Q(player__team__name__in=teams)).distinct()
 
+
+    # initialize the dictionary/hashmap.
     dist_leaderboard = {}
     for player in players:
         dist_leaderboard[player.user.username] = 0.0
