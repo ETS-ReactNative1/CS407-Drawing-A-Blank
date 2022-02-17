@@ -8,3 +8,6 @@ def fill_points():
         player = Player.objects.filter(user=workouts.player)
         # not correct, using number of gps points sent instead of grids (dummy data)
         w.points = player.values('user__username').annotate(points=Count('workout__workoutpoints')).order_by('-points')
+
+if __name__ == "__main__":
+    fill_points()
