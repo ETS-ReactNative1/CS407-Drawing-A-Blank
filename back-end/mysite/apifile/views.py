@@ -164,33 +164,35 @@ class WorkoutSubmission(viewsets.ViewSet):
         workout = Workout.objects.create(player=player, duration=dur.total_seconds(), calories=cals, type=workout_type)
 
         for entry in waypoints:
-            latlong = (entry["latitude"], entry["longitude"])
-            easting, northing = grids.latlong_to_grid(latlong)
+            ghost = entry["isTracking"]
+            easting, northing = grids.latlong_to_grid((entry["latitude"], entry["longitude"]))
             timestamp = datetime.datetime.strptime(entry["timestamp"][:-1], '%Y-%m-%dT%H:%M:%S.%f')
-            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing)
+            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing,
+                                        ghost=ghost)
 
         bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
         for i in range(1, len(bounds)):
-            speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
-                                          (bounds[i - 1].easting, bounds[i - 1].northing),
-                                          (bounds[i].time - bounds[i - 1].time).total_seconds())
-            # calculate radius depending on speed
-            radius = grids.calculate_radius(speed)
-            allGrids = grids.all_grids_with_path((bounds[i].easting, bounds[i].northing),
-                                                 (bounds[i - 1].easting, bounds[i - 1].northing), radius)
-            if len(allGrids) > 0:
-                tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
-            else:
-                tiles = []
-            checkedTiles = set()
-            for tile in tiles:
-                checkedTiles.add((tile.easting, tile.northing))
-                if tile.check_tile_override(bounds[i].time):
-                    tile.player = player
-                    tile.time = bounds[i].time
-                    tile.save()
-            for tile in allGrids - checkedTiles:
-                Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
+            if not bounds[i].ghost and not bounds[i - 1].ghost:
+                speed = grids.calculate_speed((bounds[i].easting, bounds[i].northing),
+                                              (bounds[i - 1].easting, bounds[i - 1].northing),
+                                              (bounds[i].time - bounds[i - 1].time).total_seconds())
+                # calculate radius depending on speed
+                radius = grids.calculate_radius(speed)
+                allGrids = grids.all_grids_with_path((bounds[i].easting, bounds[i].northing),
+                                                     (bounds[i - 1].easting, bounds[i - 1].northing), radius)
+                if len(allGrids) > 0:
+                    tiles = Grid.objects.filter(reduce(operator.or_, (Q(easting=e, northing=n) for e, n in allGrids)))
+                else:
+                    tiles = []
+                checkedTiles = set()
+                for tile in tiles:
+                    checkedTiles.add((tile.easting, tile.northing))
+                    if tile.check_tile_override(bounds[i].time):
+                        tile.player = player
+                        tile.time = bounds[i].time
+                        tile.save()
+                for tile in allGrids - checkedTiles:
+                    Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
 
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
