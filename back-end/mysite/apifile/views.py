@@ -218,7 +218,7 @@ class WorkoutSubmission(viewsets.ViewSet):
     @staticmethod
     def add_participation(user, tile):
         closest_event = Event.get_closest_active_event(tile)
-        if closest_event.check_within_event(tile):
+        if closest_event.check_within(tile):
             event_perf, created = EventPerformance.objects.get_or_create(user=user, event=closest_event,
                                                                          defaults={'contribution': 1})
             if not created:
