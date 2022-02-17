@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from . import leaderboards
 from . import grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
-
+from django.db.models import Count
 
 class EventView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
@@ -255,6 +255,16 @@ class Leaderboard(viewsets.ViewSet):
 
         ret_val = leaderboards.distance_leaderboard(time)
         return Response(ret_val, status=status.HTTP_200_OK)
+
+    @action(methods=['put'], detail=False)
+    def test_data(self, _):
+         workouts =  Workout.objects.all()
+         
+         for w in workouts:
+            player = Player.objects.filter(user=workouts.player)
+            # not correct, using number of gps points sent instead of grids (dummy data)
+            w.points = player.values('user__username').annotate(points=Count('workout__workoutpoints')).order_by('-points')
+
 
 
 def calc_calories(workout_type, dur):
