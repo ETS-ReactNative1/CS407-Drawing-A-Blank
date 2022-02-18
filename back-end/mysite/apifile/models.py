@@ -55,43 +55,43 @@ class Player(models.Model):
     def points(time, teams):
         
         if(teams is None or teams ==[]):
-            # players = Player.objects.values('user__username')
-            # workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
-            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Sum('workout__points'))
+            players = Player.objects.values('user__username', 'team__name')
+            workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
+            # players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Sum('workout__points'))
          #Filter for teams in list.
         else:
-            # players = Player.objects.values('user__username').filter(team__name__in=teams)
-            # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
-            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
-        
-        all_players = Player.objects.values('user__username', 'team__name')
-        
-        zero_players = all_players.difference(players)
+            players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
+            workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
+            # players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
 
-        ret_val = []
-        for p in players:
-            res = {"name": p["user__username"],
-                "team": p["team__name"],
-                "score": p["score"]}
-            ret_val.append(res)
+        # all_players = Player.objects.values('user__username', 'team__name')
         
-        for z in zero_players:
-            res = {"name": z["username"],
-                "team": z["player__team__name"],
-                "score": 0}
-            ret_val.append(res)
+        # zero_players = [all_players.exclude(user__username__in=players.values('user__username'))]
 
         # ret_val = []
-        # for player in players:
-        #     res = {"name": player["user__username"],
-        #             "team": player["team__name"],
-        #             "score": 0}
+        # for p in players:
+        #     res = {"name": p["user__username"],
+        #         "team": p["team__name"],
+        #         "score": p["points"]}
         #     ret_val.append(res)
 
-        # for workout in workouts:
-        #     for res in ret_val:
-        #         if res["name"] == workout.player.user.username:
-        #             res["score"] += workout.points
+        # for z in zero_players:
+        #     res = {"name": z.user__username,
+        #         "team": z.team__name,
+        #         "score": 0}
+        #     ret_val.append(res)
+
+        ret_val = []
+        for player in players:
+            res = {"name": player["user__username"],
+                    "team": player["team__name"],
+                    "score": 0}
+            ret_val.append(res)
+
+        for workout in workouts:
+            for res in ret_val:
+                if res["name"] == workout.player.user.username:
+                    res["score"] += workout.points
 
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
