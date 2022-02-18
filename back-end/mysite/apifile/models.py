@@ -69,13 +69,13 @@ class Player(models.Model):
 
         ret_val = []
         for p in all_players:
-            if p["username"] in names:
+            if p.username in names:
                 res = {"name": players["user__username"],
                     "team": players["team__name"],
                     "score": players["score"]}
                 ret_val.append(res)
             else:
-                res = {"name": p["username"],
+                res = {"name": p.username,
                     "team": p["player__team__name"],
                     "score": 0}
                 ret_val.append(res)
