@@ -205,6 +205,7 @@ class WorkoutSubmission(viewsets.ViewSet):
                 tiles = []
 
             workout.points = len(tiles)
+            workout.save()
             checkedTiles = set()
 
             for tile in tiles:

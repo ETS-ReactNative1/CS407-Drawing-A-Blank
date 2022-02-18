@@ -2,7 +2,7 @@ import math
 import operator
 from functools import reduce
 
-from django.db.models import Q, Count, F, Func
+from django.db.models import Q, Count, F, Func, Sum
 from django.db.models.functions import Cast
 from shapely.geometry import Point, Polygon
 
@@ -54,15 +54,15 @@ class Player(models.Model):
     @staticmethod
     def points(time, teams):
         
-        if(teams==None or teams ==[]):
+        if(teams is None or teams ==[]):
             # players = Player.objects.values('user__username')
             # workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
-            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points'))
+            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Sum('workout__points'))
          #Filter for teams in list.
         else:
             # players = Player.objects.values('user__username').filter(team__name__in=teams)
             # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
-            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
+            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
         
         all_players = Player.objects.values('user__username', 'team__name')
         
