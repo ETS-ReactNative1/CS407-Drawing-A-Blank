@@ -64,7 +64,7 @@ class Player(models.Model):
             # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
             players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
         
-        all_players = User.objects.values('username', 'team')
+        all_players = User.objects.values('username', 'player__team__name')
 
         ret_val = []
         for p in all_players:
