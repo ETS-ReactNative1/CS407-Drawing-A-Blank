@@ -247,8 +247,6 @@ class Leaderboard(viewsets.ViewSet):
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
 
         results = Player.points(time, team_names)
-        
-
         ret_val = dict()
 
         for res in results:
