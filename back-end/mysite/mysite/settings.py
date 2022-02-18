@@ -60,6 +60,7 @@ TEMPLATES = [
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
+            'use_pure': True,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -151,3 +152,5 @@ REST_FRAMEWORK = {
 # '0 0 * * 0' will run the test function every sunday at 00:00
 # * * * * * will run every minute (useful for debugging)
 CRONJOBS = [('@daily', 'apifile.cron.event_check')]
+
+
