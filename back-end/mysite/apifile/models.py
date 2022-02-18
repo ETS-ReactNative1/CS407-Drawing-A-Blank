@@ -77,7 +77,7 @@ class Player(models.Model):
         
         for z in zero_players:
             res = {"name": z["user__username"],
-                "team": z["player__team__name"],
+                "team": z["team__name"],
                 "score": 0}
             ret_val.append(res)
 
