@@ -55,10 +55,25 @@ class Player(models.Model):
     def points(time, teams):
         
         if(teams==None or teams ==[]):
-            return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).distinct().annotate(points=Count('workout__points')).order_by('-points')
+            players = Player.objects.all()
+            workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
+            # return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).distinct().annotate(points=Count('workout__points')).order_by('-points')
          #Filter for teams in list.
         else:
-            return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points', default=0)).order_by('-points')
+            players = Player.objects.filter(team__name__in=teams)
+            workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
+            # return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points', default=0)).order_by('-points')
+
+        # initialize the dictionary/hashmap.
+        ret_val = {}
+        for player in players:
+            ret_val[player.user.username] = [0.0,player.team.name]
+
+        for workout in workouts:
+            ret_val[workout.player.user.username][0] += workout.points
+
+        # sort distance dictionary and return.
+        return {k: v for k, v in sorted(ret_val.items(), key=lambda item: item[1], reverse=True)}
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
