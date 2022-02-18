@@ -56,7 +56,7 @@ class Player(models.Model):
         
         if(teams==None or teams ==[]):
             players = Player.objects.values('user__username', 'team__name')
-            workouts = Workout.objects.values('player__user__username', 'points').filter(workoutpoint__time__gt=time).distinct()
+            workouts = Workout.objects.values('player__user__username', 'points').filter(workoutpoint__time__gt=time)
             # return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).distinct().annotate(points=Count('workout__points')).order_by('-points')
          #Filter for teams in list.
         else:
