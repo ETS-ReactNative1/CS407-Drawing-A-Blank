@@ -30,9 +30,9 @@ def user_total_distance(input_name):
 
 def user_total_points(input_name):
 
-    workouts = Workout.objects.filter(player__user__username=input_name).annotate(points=Count('points'))
+    workouts = Workout.objects.filter(player__user__username=input_name).annotate(score=Count('points'))
 
-    return workouts[0].points
+    return workouts[0].score
 
 
 def calc_workout_distance(input_workout):
