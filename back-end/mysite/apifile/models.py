@@ -76,7 +76,7 @@ class Player(models.Model):
                 if res["name"] == workout.player.user.username:
                     res["score"] += workout.points
 
-        return ret_val
+        return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
