@@ -55,12 +55,12 @@ class Player(models.Model):
     def points(time, teams):
         
         if(teams==None or teams ==[]):
-            players = Player.objects.values('user__username')
+            players = Player.objects.values('user__username', 'team__name')
             workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
             # players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points'))
          #Filter for teams in list.
         else:
-            players = Player.objects.values('user__username').filter(team__name__in=teams)
+            players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
             workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
             # players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
         
