@@ -268,13 +268,14 @@ class Leaderboard(viewsets.ViewSet):
 
     @action(methods=['put'], detail=False)
     def test_data(self, _):
-        workouts = Workout.objects.all().select_related("player")
+        workouts = Workout.objects.all()
+        all_points = Workout.objects.values('id').annotate(sum_points=Count('workout__workoutpoints')).order_by('-points')
 
         for w in workouts:
-            player = w.player
             # not correct, using number of gps points sent instead of grids (dummy data)
-            w.points = player.annotate(points=Count('workout__workoutpoints')).order_by(
-                '-points')
+            w.points = all_points[w.id].sum_points
+
+            w.save()
 
 
 def calc_calories(workout_type, dur):
