@@ -151,5 +151,3 @@ REST_FRAMEWORK = {
 # '0 0 * * 0' will run the test function every sunday at 00:00
 # * * * * * will run every minute (useful for debugging)
 CRONJOBS = [('@daily', 'apifile.cron.event_check')]
-
-
