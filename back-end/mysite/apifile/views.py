@@ -240,7 +240,7 @@ class Leaderboard(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def points(self, request):
         data = request.data
         team_names = data["teams"]
