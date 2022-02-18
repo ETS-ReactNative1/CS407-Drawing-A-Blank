@@ -51,11 +51,17 @@ class Player(models.Model):
     items = models.ManyToManyField(Item)
     coins = models.PositiveIntegerField(default=0)
 
-    @staticmethod
-    def points(time):
-        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(
-            points=Count('workout__points')).order_by('-points')
+     
+        
+   
 
+    @staticmethod
+    def points(time, teams):
+        if(teams==None or teams ==[]):
+            return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
+         #Filter for teams in list.
+        else:
+            return Player.objects.filter(team__name__in=teams).values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
