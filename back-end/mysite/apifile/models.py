@@ -64,22 +64,22 @@ class Player(models.Model):
             # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
             players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
         
-        all_players = User.objects.values('username', 'player__team__name')
+        all_players = Player.objects.values('user__username', 'team__name')
         
-        names = [x['user__username'] for x in players]
+        zero_players = all_players.difference(players)
 
         ret_val = []
-        for p in all_players:
-            if p["username"] in names:
-                res = {"name": players.user__username,
-                    "team": players["team__name"],
-                    "score": players["score"]}
-                ret_val.append(res)
-            else:
-                res = {"name": p["username"],
-                    "team": p["player__team__name"],
-                    "score": 0}
-                ret_val.append(res)
+        for p in players:
+            res = {"name": p["user__username"],
+                "team": p["team__name"],
+                "score": p["score"]}
+            ret_val.append(res)
+        
+        for z in zero_players:
+            res = {"name": z["username"],
+                "team": z["player__team__name"],
+                "score": 0}
+            ret_val.append(res)
 
         # ret_val = []
         # for player in players:
