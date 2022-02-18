@@ -52,10 +52,46 @@ class Player(models.Model):
     coins = models.PositiveIntegerField(default=0)
 
     @staticmethod
-    def points(time):
-        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(
-            points=Count('workout__points')).order_by('-points')
+    def points(time, teams):
+        
+        if(teams==None or teams ==[]):
+            # players = Player.objects.values('user__username')
+            # workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
+            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points'))
+         #Filter for teams in list.
+        else:
+            players = Player.objects.values('user__username').filter(team__name__in=teams)
+            # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
+            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
+        
+        all_players  = Player.objects.all().select_related("user")
 
+        ret_val = []
+        for p in all_players:
+            if p.username in players:
+                res = {"name": players["user__username"],
+                    "team": players["team__name"],
+                    "score": players["score"]}
+                ret_val.append(res)
+            else:
+                res = {"name": p.username,
+                    "team": p.team,
+                    "score": 0}
+                ret_val.append(res)
+
+        # ret_val = []
+        # for player in players:
+        #     res = {"name": player["user__username"],
+        #             "team": player["team__name"],
+        #             "score": 0}
+        #     ret_val.append(res)
+
+        # for workout in workouts:
+        #     for res in ret_val:
+        #         if res["name"] == workout.player.user.username:
+        #             res["score"] += workout.points
+
+        return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
@@ -212,7 +248,7 @@ class Workout(models.Model):
     duration = models.PositiveIntegerField()  # in seconds
     calories = models.PositiveIntegerField()
     type = models.CharField(max_length=10)  # e.g. walk, run
-    points = models.PositiveIntegerField(null=True)  # number of grids touched in that workout
+    points = models.PositiveIntegerField(default=0)  # number of grids touched in that workout
 
 
 class WorkoutPoint(models.Model):

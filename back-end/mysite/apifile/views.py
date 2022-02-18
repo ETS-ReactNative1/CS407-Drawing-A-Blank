@@ -9,8 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from . import leaderboards
-from . import grids
+from . import leaderboards,stats,grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 from django.db.models import Count
 
@@ -74,6 +73,14 @@ class EventView(viewsets.ViewSet):
 
 class UserProfile(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
+
+    @action(methods=['get'], detail=False)
+    def get_profile(self, request):
+        data = request.data
+        input_name = data["username"]
+        ret_val = stats.profile_info(input_name)
+        
+        return Response(ret_val, status=status.HTTP_200_OK)
 
     def get_permissions(self):
         if self.action == 'create':
@@ -140,6 +147,8 @@ class UserProfile(viewsets.ViewSet):
         user.set_password(data["new_password"])
 
         return Response("Password changed", status=status.HTTP_200_OK)
+
+
 
 
 class GridView(viewsets.ViewSet):
@@ -232,19 +241,11 @@ class Leaderboard(viewsets.ViewSet):
 
     @action(methods=['get'], detail=False)
     def points(self, request):
-        date = "22/02/2020"
-        time = datetime.datetime.strptime(date, "%d/%m/%Y").date()
+        data = request.data
+        team_names = data["teams"]
+        time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
 
-        results = Player.points(time)
-
-        ret_val = dict()
-
-        for res in results:
-            vals = {
-                "team": res["team"],
-                "points": res["points"]
-            }
-            ret_val[res["user__username"]] = vals
+        ret_val = Player.points(time, team_names)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
@@ -252,20 +253,23 @@ class Leaderboard(viewsets.ViewSet):
     def distance(self, request):
         data = request.data
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
-
-        ret_val = leaderboards.distance_leaderboard(time)
+        team_names = data["teams"]
+        ret_val = leaderboards.distance_leaderboard(time,team_names)
         return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['put'], detail=False)
     def test_data(self, _):
-        workouts = Workout.objects.all().select_related("player")
+        workouts = Workout.objects.all()
+        all_points = Workout.objects.values('id').annotate(sum_points=Count('workoutpoint')).order_by('-points')
 
         for w in workouts:
-            player = w.player
             # not correct, using number of gps points sent instead of grids (dummy data)
-            w.points = player.values('user__username').annotate(points=Count('workout__workoutpoints')).order_by(
-                '-points')
-
+            points = Workout.objects.filter(id=w.id).annotate(sum_points=Count('workoutpoint'))
+            for p in points:
+                w.points = p.sum_points
+                w.save()
+                break
+        return Response("test data added", status=status.HTTP_200_OK)
 
 def calc_calories(workout_type, dur):
     return 0
