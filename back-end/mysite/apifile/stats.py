@@ -33,7 +33,6 @@ def calc_workout_distance(input_workout):
     all_points = input_workout.workoutpoint_set.all()
 
     try:
-
         # calculate distance between each pair of adjacent points.
         cur_point = (all_points[0].easting, all_points[0].northing)
         dist = 0.0
