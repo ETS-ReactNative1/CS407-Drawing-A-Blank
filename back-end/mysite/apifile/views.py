@@ -45,7 +45,7 @@ class EventView(viewsets.ViewSet):
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def local(self, request):
         data = request.data
         centre = grids.latlong_to_grid(data['point'])
@@ -146,8 +146,7 @@ class GridView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @action(methods=['post'], detail=False)
-    def collect(self, request):
+    def list(self, request):
         data = request.data
         bl = data['bottom_left']
         tr = data['top_right']
