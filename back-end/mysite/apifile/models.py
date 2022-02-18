@@ -63,11 +63,6 @@ class Player(models.Model):
             players = Player.objects.filter(team__name__in=teams)
             workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
             # return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points', default=0)).order_by('-points')
-
-        # initialize the dictionary/hashmap.
-        [{"name":username,
-        "team":team,
-        "score":score}]
         
         ret_val = []
         for player in players:
