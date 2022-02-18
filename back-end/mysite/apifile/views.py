@@ -252,7 +252,7 @@ class Leaderboard(viewsets.ViewSet):
 
         for res in results:
             vals = {
-                "team": res["team"],
+                "team": Team.objects.filter(id=res["team"]).name,
                 "points": res["points"]
             }
             ret_val[res["user__username"]] = vals
