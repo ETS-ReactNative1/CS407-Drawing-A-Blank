@@ -67,7 +67,7 @@ class Player(models.Model):
         # initialize the dictionary/hashmap.
         ret_val = {}
         for player in players:
-            ret_val[player.user.username] = [0.0,player.team.name]
+            ret_val[player.user.username] = [0,player.team.name]
 
         for workout in workouts:
             ret_val[workout.player.user.username][0] += workout.points
