@@ -57,7 +57,7 @@ class Player(models.Model):
             return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
          #Filter for teams in list.
         else:
-            return Player.objects.select_related("team").filter(team__name__in=teams).values('user__username', 'name').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
+            return Player.objects.select_related('Team').filter(team__name__in=teams).values('user__username', 'name').filter(workout__workoutpoint__time__gte=time).annotate(points=Count('workout__points')).order_by('-points')
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
