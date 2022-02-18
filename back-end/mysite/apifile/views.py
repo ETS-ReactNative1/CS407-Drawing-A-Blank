@@ -11,7 +11,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 from . import leaderboards, stats, grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
-from django.db.models import Count
 
 
 class EventView(viewsets.ViewSet):
@@ -74,14 +73,6 @@ class EventView(viewsets.ViewSet):
 class UserProfile(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
 
-    @action(methods=['get'], detail=False)
-    def get_profile(self, request):
-        data = request.data
-        input_name = data["username"]
-        ret_val = stats.profile_info(input_name)
-
-        return Response(ret_val, status=status.HTTP_200_OK)
-
     def get_permissions(self):
         if self.action == 'create':
             permission_classes = [AllowAny]
@@ -89,12 +80,19 @@ class UserProfile(viewsets.ViewSet):
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
+    def list(self, request):
+        data = request.data
+        input_name = data["username"]
+        ret_val = stats.profile_info(input_name)
+
+        return Response(ret_val, status=status.HTTP_200_OK)
+
     def create(self, request):
         data = request.data
         username = data["username"]
         email = data["email"]
         password = data["password"]
-        team = data["team"]
+        team = data["team"].lower()
 
         if team != "terra" and team != "windy" and team != "ocean":
             return Response("Invalid team selected", status=status.HTTP_409_CONFLICT)
@@ -240,7 +238,7 @@ class Leaderboard(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def points(self, request):
         data = request.data
-        team_names = data["teams"]
+        team_names = [team.lower() for team in data["teams"]]
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
 
         ret_val = Player.points(time, team_names)
@@ -250,24 +248,12 @@ class Leaderboard(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def distance(self, request):
         data = request.data
+        team_names = [team.lower() for team in data["teams"]]
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
-        team_names = data["teams"]
+
         ret_val = leaderboards.distance_leaderboard(time, team_names)
+
         return Response(ret_val, status=status.HTTP_200_OK)
-
-    @action(methods=['put'], detail=False)
-    def test_data(self, _):
-        workouts = Workout.objects.all()
-        all_points = Workout.objects.values('id').annotate(sum_points=Count('workoutpoint')).order_by('-points')
-
-        for w in workouts:
-            # not correct, using number of gps points sent instead of grids (dummy data)
-            points = Workout.objects.filter(id=w.id).annotate(sum_points=Count('workoutpoint'))
-            for p in points:
-                w.points = p.sum_points
-                w.save()
-                break
-        return Response("test data added", status=status.HTTP_200_OK)
 
 
 def calc_calories(workout_type, dur):
