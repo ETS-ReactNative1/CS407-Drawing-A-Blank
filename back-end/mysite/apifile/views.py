@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from . import leaderboards,stats,grids
+from . import leaderboards, stats, grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 from django.db.models import Count
 
@@ -79,7 +79,7 @@ class UserProfile(viewsets.ViewSet):
         data = request.data
         input_name = data["username"]
         ret_val = stats.profile_info(input_name)
-        
+
         return Response(ret_val, status=status.HTTP_200_OK)
 
     def get_permissions(self):
@@ -147,8 +147,6 @@ class UserProfile(viewsets.ViewSet):
         user.set_password(data["new_password"])
 
         return Response("Password changed", status=status.HTTP_200_OK)
-
-
 
 
 class GridView(viewsets.ViewSet):
@@ -254,7 +252,7 @@ class Leaderboard(viewsets.ViewSet):
         data = request.data
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
         team_names = data["teams"]
-        ret_val = leaderboards.distance_leaderboard(time,team_names)
+        ret_val = leaderboards.distance_leaderboard(time, team_names)
         return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['put'], detail=False)
@@ -270,6 +268,7 @@ class Leaderboard(viewsets.ViewSet):
                 w.save()
                 break
         return Response("test data added", status=status.HTTP_200_OK)
+
 
 def calc_calories(workout_type, dur):
     return 0
