@@ -73,8 +73,8 @@ class Player(models.Model):
 
         for workout in workouts:
             for res in ret_val:
-                if res["name"] == workout.player.user.username:
-                    res["score"] += workout.points
+                if res["name"] == workout["player__user__username"]:
+                    res["score"] += workout["points"]
 
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
