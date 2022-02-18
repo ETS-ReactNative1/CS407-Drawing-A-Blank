@@ -4,7 +4,8 @@ from rest_framework.authtoken.admin import User
 import pytz
 from . import models
 from .models import Event, EventBounds, Player, Team, Workout, WorkoutPoint
-from . import leaderboards
+from . import leaderboards,stats
+
 
 
 class LeaderboardTests(TestCase):
@@ -19,7 +20,7 @@ class LeaderboardTests(TestCase):
         self.team_green = models.Team.objects.get(name="Green")
 
         self.user = User.objects.create_user(username='testuser', password='12345')
-        self.player = Player.objects.create(user=self.user, team=self.team_red)
+        self.player = Player.objects.create(user=self.user, team=self.team_red,gender="Male",height=180,weight=75)
 
         self.user2 = User.objects.create_user(username='testuser2', password='12345')
         self.player2 = Player.objects.create(user=self.user2, team=self.team_red)
@@ -69,26 +70,38 @@ class LeaderboardTests(TestCase):
 
 
         #Workout 4 - Player 3, Team Blue, 1/1/2022.
-        self.workout3 = Workout.objects.create(player=self.player3, duration=120, calories=0)
+        self.workout4 = Workout.objects.create(player=self.player3, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=50, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=100, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=100, northing=1000)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=50, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000)
 
         #Workout 5 - Player 4, Team Green, 1/1/2022.
-        self.workout3 = Workout.objects.create(player=self.player4, duration=120, calories=0)
+        self.workout5 = Workout.objects.create(player=self.player4, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=0, northing=1000)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=200, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=200, northing=1000)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=50, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=50, northing=1000)
+
+
+        #Workout 6 - Player 1, Team red, 1/1/2000
+        self.workout6 = Workout.objects.create(player=self.player, duration=120, calories=0)
+        time = datetime.datetime(2000, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
+        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=0)
+
+        time = datetime.datetime(2000, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
+        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=150)
+
+        time = datetime.datetime(2000, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
+        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=150, northing=0)
 
 
     def test_players(self):
@@ -101,6 +114,7 @@ class LeaderboardTests(TestCase):
         print("2019")
         print(leaderboards.distance_leaderboard(time,[]))
         print(leaderboards.distance_leaderboard(time,["Red"]))
+        print(stats.profile_info("testuser"))
 
 
 class EventBoundTests(TestCase):

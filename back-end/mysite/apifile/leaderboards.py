@@ -1,6 +1,9 @@
-from .models import Workout, Player
+from .models import Workout, Player,User
 from . import grids
 from django.db.models import Q
+
+
+
 
 def distance_leaderboard(time_range,teams):
 

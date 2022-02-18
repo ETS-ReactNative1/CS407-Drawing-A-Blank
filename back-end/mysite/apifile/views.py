@@ -9,8 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from . import leaderboards
-from . import grids
+from . import leaderboards,stats,grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 from django.db.models import Count
 
@@ -74,6 +73,14 @@ class EventView(viewsets.ViewSet):
 
 class UserProfile(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
+
+    @action(methods=['get'], detail=False)
+    def get_profile(self, request):
+        data = request.data
+        input_name = data["username"]
+        ret_val = stats.profile_info(input_name)
+        
+        return Response(ret_val, status=status.HTTP_200_OK)
 
     def get_permissions(self):
         if self.action == 'create':
@@ -140,6 +147,8 @@ class UserProfile(viewsets.ViewSet):
         user.set_password(data["new_password"])
 
         return Response("Password changed", status=status.HTTP_200_OK)
+
+
 
 
 class GridView(viewsets.ViewSet):
