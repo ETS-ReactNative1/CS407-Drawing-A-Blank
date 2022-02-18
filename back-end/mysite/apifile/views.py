@@ -240,10 +240,10 @@ class Leaderboard(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['post'], detail=False)
     def points(self, request):
-        date = "22/02/2020"
-        time = datetime.datetime.strptime(date, "%d/%m/%Y").date()
+        data = request.data
+        time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
 
         results = Player.points(time)
 
