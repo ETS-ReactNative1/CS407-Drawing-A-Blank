@@ -56,7 +56,7 @@ class Player(models.Model):
         
         if(teams==None or teams ==[]):
             players = Player.objects.values('user__username', 'team__name')
-            workouts = Workout.objects.values('player__user__username', 'points').filter(workoutpoint__time__gt=time)
+            workouts = Workout.objects.values.filter(workoutpoint__time__gt=time).distinct()
             # return Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).distinct().annotate(points=Count('workout__points')).order_by('-points')
          #Filter for teams in list.
         else:
@@ -73,8 +73,8 @@ class Player(models.Model):
 
         for workout in workouts:
             for res in ret_val:
-                if res["name"] == workout["player__user__username"]:
-                    res["score"] += workout["points"]
+                if res["name"] == workout.player.user.username:
+                    res["score"] += workout.points
 
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
