@@ -278,7 +278,7 @@ class Leaderboard(viewsets.ViewSet):
                 w.points = p.sum_points
                 w.save()
                 break
-
+        return Response("test data added", status=status.HTTP_200_OK)
 
 def calc_calories(workout_type, dur):
     return 0
