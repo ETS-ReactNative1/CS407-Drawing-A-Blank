@@ -68,7 +68,7 @@ class Player(models.Model):
         
         names = []
         for p in all_players:
-            names = p.username
+            names = p['username']
 
         ret_val = []
         for p in all_players:
