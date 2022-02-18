@@ -73,10 +73,8 @@ class Player(models.Model):
 
         for workout in workouts:
             for res in ret_val:
-                try:
-                    res[workout.player.user.username][0] += workout.points
-                except:
-                    pass
+                if res["name"] == workout.player.user.username:
+                    res["score"] += workout.points
 
         return ret_val
 
