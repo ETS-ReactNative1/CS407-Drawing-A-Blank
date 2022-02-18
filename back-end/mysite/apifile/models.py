@@ -66,7 +66,7 @@ class Player(models.Model):
         
         all_players = Player.objects.values('user__username', 'team__name')
         
-        zero_players = all_players.difference(players)
+        zero_players = all_players.exclude(id__in=players)
 
         ret_val = []
         for p in players:
