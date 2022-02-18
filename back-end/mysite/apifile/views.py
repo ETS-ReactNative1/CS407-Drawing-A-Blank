@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from . import leaderboards,stats,grids
+from . import leaderboards, stats, grids
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
 from django.db.models import Count
 
@@ -44,7 +44,7 @@ class EventView(viewsets.ViewSet):
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def local(self, request):
         data = request.data
         centre = grids.latlong_to_grid(data['point'])
@@ -79,7 +79,7 @@ class UserProfile(viewsets.ViewSet):
         data = request.data
         input_name = data["username"]
         ret_val = stats.profile_info(input_name)
-        
+
         return Response(ret_val, status=status.HTTP_200_OK)
 
     def get_permissions(self):
@@ -149,14 +149,11 @@ class UserProfile(viewsets.ViewSet):
         return Response("Password changed", status=status.HTTP_200_OK)
 
 
-
-
 class GridView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @action(methods=['post'], detail=False)
-    def collect(self, request):
+    def list(self, request):
         data = request.data
         bl = data['bottom_left']
         tr = data['top_right']
@@ -255,7 +252,7 @@ class Leaderboard(viewsets.ViewSet):
         data = request.data
         time = datetime.datetime.strptime(data["date"], "%d/%m/%Y").date()
         team_names = data["teams"]
-        ret_val = leaderboards.distance_leaderboard(time,team_names)
+        ret_val = leaderboards.distance_leaderboard(time, team_names)
         return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['put'], detail=False)
@@ -271,6 +268,7 @@ class Leaderboard(viewsets.ViewSet):
                 w.save()
                 break
         return Response("test data added", status=status.HTTP_200_OK)
+
 
 def calc_calories(workout_type, dur):
     return 0
