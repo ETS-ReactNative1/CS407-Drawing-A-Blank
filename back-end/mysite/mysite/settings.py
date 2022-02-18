@@ -95,7 +95,8 @@ DATABASES = {
         'USER': 'drawab',
         'PASSWORD': 'MX37mtd4m7nR',
         'HOST': 'mysql.dcs.warwick.ac.uk',
-    }
+    },
+    'OPTIONS': {'use_pure': True}
 }
 
 # Password validation
