@@ -273,7 +273,7 @@ class Leaderboard(viewsets.ViewSet):
 
         for w in workouts:
             # not correct, using number of gps points sent instead of grids (dummy data)
-            w.points = all_points[w.id].sum_points
+            w.points = all_points[w.id][1]
 
             w.save()
 
