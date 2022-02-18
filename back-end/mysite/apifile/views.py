@@ -273,8 +273,11 @@ class Leaderboard(viewsets.ViewSet):
 
         for w in workouts:
             # not correct, using number of gps points sent instead of grids (dummy data)
-            w.points = Workout.objects.filter(id=w.id).annotate(sum_points=Count('workoutpoint'))
-            w.save()
+            points = Workout.objects.filter(id=w.id).annotate(sum_points=Count('workoutpoint'))
+            for p in points:
+                w.points = p
+                w.save()
+                break
 
 
 def calc_calories(workout_type, dur):
