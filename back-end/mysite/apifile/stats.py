@@ -1,6 +1,6 @@
 from .models import Workout, Player,User
 from . import grids
-from django.db.models import Q, Count
+from django.db.models import Q, Sum
 
 
 def profile_info(input_name):
@@ -30,7 +30,7 @@ def user_total_distance(input_name):
 
 def user_total_points(input_name):
 
-    workouts = Workout.objects.filter(player__user__username=input_name).annotate(score=Count('points'))
+    workouts = Workout.objects.filter(player__user__username=input_name).annotate(score=Sum('points'))
 
     return workouts[0].score
 
