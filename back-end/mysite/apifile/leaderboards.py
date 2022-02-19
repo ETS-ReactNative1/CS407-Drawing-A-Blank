@@ -25,12 +25,13 @@ def distance_leaderboard(time_range,teams):
     # initialize the dictionary/hashmap.
     dist_leaderboard = {}
     for player in players:
-        dist_leaderboard[player.user.username] = [0.0,player.team.name]
+        dist_leaderboard[player.user.username] = {"team" : player.team.name, "score": 0.0}
 
+    #go through all workouts.
     for workout in workouts:
-        dist_leaderboard[workout.player.user.username][0] += stats.calc_workout_distance(workout)
+        dist_leaderboard[workout.player.user.username]["score"] += stats.calc_workout_distance(workout)
 
     # sort distance dictionary and return.
-    return {k: v for k, v in sorted(dist_leaderboard.items(), key=lambda item: item[1], reverse=True)}
+    return {k: v for k, v in sorted(dist_leaderboard.items(), key=lambda item: item[1]["score"], reverse=True)}
 
 
