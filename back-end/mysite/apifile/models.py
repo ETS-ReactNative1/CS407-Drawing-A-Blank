@@ -2,7 +2,7 @@ import math
 import operator
 from functools import reduce
 
-from django.db.models import Q, Count, F, Func
+from django.db.models import Q, Count, F, Func, Sum
 from django.db.models.functions import Cast
 from shapely.geometry import Point, Polygon
 
@@ -52,10 +52,48 @@ class Player(models.Model):
     coins = models.PositiveIntegerField(default=0)
 
     @staticmethod
-    def points(time):
-        return Player.objects.values('user__username', 'team').filter(workout__workoutpoint__time__gte=time).annotate(
-            points=Count('workout__points')).order_by('-points')
+    def points(time, teams):
+        
+        if(teams is None or teams ==[]):
+            players = Player.objects.values('user__username', 'team__name')
+            workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
+            # players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time).annotate(points=Sum('workout__points'))
+         #Filter for teams in list.
+        else:
+            players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
+            workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
+            # players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
 
+        # all_players = Player.objects.values('user__username', 'team__name')
+        
+        # zero_players = [all_players.exclude(user__username__in=players.values('user__username'))]
+
+        # ret_val = []
+        # for p in players:
+        #     res = {"name": p["user__username"],
+        #         "team": p["team__name"],
+        #         "score": p["points"]}
+        #     ret_val.append(res)
+
+        # for z in zero_players:
+        #     res = {"name": z.user__username,
+        #         "team": z.team__name,
+        #         "score": 0}
+        #     ret_val.append(res)
+
+        ret_val = []
+        for player in players:
+            res = {"name": player["user__username"],
+                    "team": player["team__name"],
+                    "score": 0}
+            ret_val.append(res)
+
+        for workout in workouts:
+            for res in ret_val:
+                if res["name"] == workout.player.user.username:
+                    res["score"] += workout.points
+
+        return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
@@ -212,7 +250,7 @@ class Workout(models.Model):
     duration = models.PositiveIntegerField()  # in seconds
     calories = models.PositiveIntegerField()
     type = models.CharField(max_length=10)  # e.g. walk, run
-    points = models.PositiveIntegerField(null=True)  # number of grids touched in that workout
+    points = models.PositiveIntegerField(default=0)  # number of grids touched in that workout
 
 
 class WorkoutPoint(models.Model):
