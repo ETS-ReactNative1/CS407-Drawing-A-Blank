@@ -67,6 +67,7 @@ class Player(models.Model):
             team = p["team__name"]
             
             score = 0
+            user=0
 
             try:
                 user = players.get(user__username=name)
