@@ -62,7 +62,7 @@ class Player(models.Model):
         else:
             # players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
             # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
-            players = Player.objects.values('user__username', 'team__name').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
+            players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name')
 
@@ -82,7 +82,7 @@ class Player(models.Model):
 
             res = {"name": name,
                 "team": team,
-                "score": user}
+                "score": score}
             ret_val.append(res)
 
 
@@ -98,8 +98,8 @@ class Player(models.Model):
         #     for res in ret_val:
         #         if res["name"] == workout.player.user.username:
         #             res["score"] += workout.points
-        # sorted(ret_val, key=lambda x: x["score"], reverse=True)
-        return ret_val
+        # 
+        return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
