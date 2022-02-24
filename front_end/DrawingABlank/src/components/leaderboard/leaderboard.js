@@ -10,6 +10,7 @@ import { getProfile } from '../../api/api_profile.js';
 
 import Overlay from '../../containers/Overlay';
 import PlayerProfile from './playerProfile';
+import { getUsername } from '../../api/api_networking.js';
 
 class Leaderboard extends Component{
     state={
@@ -51,6 +52,8 @@ class Leaderboard extends Component{
                 })
             });
         },
+        player_card_points:{},
+        player_card_distance:{}
     }
 
     getLeaderboards = () => {
@@ -60,8 +63,25 @@ class Leaderboard extends Component{
         getPointsLeaderboard(dateArgument, teamArgument)
         .then((points_res) => {
             console.log(points_res);
-            this.setState({leaderboard_points:points_res});
-            this.setState({collectedLeaderboards:true});
+            this.setState({leaderboard_points:points_res},() => {this.getPlayerCardPoints()});
+        });
+    }
+
+    getPlayerCardPoints = () => {
+        getUsername().then((username)=>{
+            console.log("OBTAINED USERNAME:"+username);
+            var details = this.state.leaderboard_points.find(user => user.name==username);
+            var index = this.state.leaderboard_points.findIndex(user => user.name==username);
+            if(details!=undefined){
+                this.setState({player_card_points:{
+                    name:username,
+                    picture:this.getDefaultPicture(details.team),
+                    score:details.score,
+                    rank:index
+                }},() => {this.setState({collectedLeaderboards:true})});
+            }else{
+                this.setState({player_card_points:{}},() => {this.setState({collectedLeaderboards:true})});
+            }
         });
     }
 
@@ -109,6 +129,27 @@ class Leaderboard extends Component{
 
     setReference = (ref) => {
         this.setState({scrollViewRef:ref});
+    }
+
+    getPlayerCard = () => {
+        if(!this.state.collectedLeaderboards || Object.keys(this.state.player_card_points).length==0){
+            return (<View></View>);
+        }
+        return (this.state.points_selected) ? 
+        <PlayerCard
+            rank={this.state.player_card_points.rank+1}
+            username={this.state.player_card_points.name}
+            picture={this.state.player_card_points.picture}
+            score={this.state.player_card_points.score}
+            onPress={() => this.scrollToIndex(this.state.player_card_points.rank)}
+        /> : 
+        <PlayerCard
+            rank={this.props.data.userDistanceIndex+1}
+            username={this.props.data.distance[this.props.data.userDistanceIndex].title}
+            picture={this.props.data.distance[this.props.data.userDistanceIndex].picture}
+            score={this.props.data.distance[this.props.data.userDistanceIndex].points}
+            onPress={() => this.scrollToIndex(this.props.data.userDistanceIndex)}
+        />
     }
 
     getOverlayContent = () => {
@@ -255,21 +296,7 @@ class Leaderboard extends Component{
                     <View style={{paddingBottom:20}}></View>
                 </ScrollView>
                 {/*Player card goes here*/}
-                {(this.state.points_selected) ? 
-                <PlayerCard
-                    rank={this.props.data.userPointsIndex+1}
-                    username={this.props.data.points[this.props.data.userPointsIndex].title}
-                    picture={this.props.data.points[this.props.data.userPointsIndex].picture}
-                    score={this.props.data.points[this.props.data.userPointsIndex].points}
-                    onPress={() => this.scrollToIndex(this.props.data.userPointsIndex)}
-                /> : 
-                <PlayerCard
-                    rank={this.props.data.userDistanceIndex+1}
-                    username={this.props.data.distance[this.props.data.userDistanceIndex].title}
-                    picture={this.props.data.distance[this.props.data.userDistanceIndex].picture}
-                    score={this.props.data.distance[this.props.data.userDistanceIndex].points}
-                    onPress={() => this.scrollToIndex(this.props.data.userDistanceIndex)}
-                />}
+                {this.getPlayerCard()}
                 <Overlay
                 visible={this.state.overlayVisible}
                 setVisible={this.state.setOverlayVisible}
