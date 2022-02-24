@@ -2,6 +2,8 @@ from .models import Workout, Player,User
 from . import grids
 from django.db.models import Q, Sum
 
+
+
 def all_user_workouts(input_name):
     workouts = Workout.objects.filter(player__user__username=input_name)
     ret_val = []
@@ -35,6 +37,7 @@ def workoutpoints_details(workout_id):
         cur_dict["time"] = point.time.strftime("%d/%m/%Y, %H:%M:%S")
         ret_val.append(cur_dict)
     return ret_val
+
 
 
 def profile_info(input_name):
@@ -72,7 +75,6 @@ def user_total_points(input_name):
 def calc_workout_distance(input_workout):
     #get all the workoutpoints in the workout
     all_points = input_workout.workoutpoint_set.all()
-
     try:
         # calculate distance between each pair of adjacent points.
         cur_point = (all_points[0].easting, all_points[0].northing)
