@@ -71,7 +71,9 @@ class Player(models.Model):
             name = p["user__username"]
             team = p["team__name"]
             try:
-                score = players.filter(user__username=name)
+                user = players.filter(user__username=name)
+                for u in user:
+                    score = u["points"]
             except:
                 score = 0
 
