@@ -70,10 +70,8 @@ class Player(models.Model):
         for p in all_players:
             name = p["user__username"]
             team = p["team__name"]
-            if players.filter(user__username=name) != []:
-                return players.filter(user__username=name)
             try:
-                score = players[name]
+                score = players.filter(user__username=name)
             except:
                 score = 0
 
