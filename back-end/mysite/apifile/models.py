@@ -70,7 +70,7 @@ class Player(models.Model):
         for p in all_players:
             name = p["user__username"]
             team = p["team__name"]
-            return players.name
+            return players.user__username
             try:
                 score = players[name]
             except:
