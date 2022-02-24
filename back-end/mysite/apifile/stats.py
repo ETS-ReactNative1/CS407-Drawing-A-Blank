@@ -2,6 +2,40 @@ from .models import Workout, Player,User
 from . import grids
 from django.db.models import Q, Sum
 
+def all_user_workouts(input_name):
+    workouts = Workout.objects.filter(player__user__username=input_name)
+    ret_val = []
+    for workout in workouts:
+        workout_points = workout.workoutpoint_set.all()
+        cur_dict = {}
+        cur_dict["id"] = workout.id
+        cur_dict["date"] = workout_points[0].time.strftime("%d/%m/%Y")
+        cur_dict["duration"] = workout.duration
+        cur_dict["calories"] = workout.calories
+        cur_dict["type"] = workout.type
+        cur_dict["distance"] = calc_workout_distance(workout)
+        cur_dict["points"] = workout.points
+
+
+        ret_val.append(cur_dict)
+
+    return ret_val
+
+
+def workoutpoints_details(workout_id):
+    workout =  Workout.objects.get(id=workout_id)
+    workout_points = workout.workoutpoint_set.all()
+
+    ret_val = []
+
+    for point in workout_points:
+        cur_dict = {}
+        cur_dict["easting"] = point.easting
+        cur_dict["northing"]=point.northing
+        cur_dict["time"] = point.time.strftime("%d/%m/%Y, %H:%M:%S")
+        ret_val.append(cur_dict)
+    return ret_val
+
 
 def profile_info(input_name):
     player = Player.objects.get(user__username=input_name)
