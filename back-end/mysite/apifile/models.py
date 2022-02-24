@@ -70,12 +70,15 @@ class Player(models.Model):
         for p in all_players:
             name = p["user__username"]
             team = p["team__name"]
+            
+            score = 0
+
             try:
                 user = players.filter(user__username=name)
                 for u in user:
                     score = u["points"]
             except:
-                score = 0
+                pass
 
             res = {"name": name,
                 "team": team,
