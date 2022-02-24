@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Text, View, TextInput, ScrollView, Image, ActivityIndicator} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { RotationGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 import PlayerCard from './playercard.js';
 import {styles} from './style.js';
 import MultiSelect from 'react-native-multiple-select';
@@ -32,7 +32,8 @@ class Leaderboard extends Component{
 
     getLeaderboards = () => {
         dateArgument = (this.state.dateChosen != "") ? this.state.dateChosen.toLocaleString('en-GB').split(',')[0] : "01/01/1970"
-        teamArgument = (this.state.selectedOptions!=[]) ? this.state.selectedOptions : ["ocean","windy","terra"]
+        teamArgument = this.state.selectedOptions;
+        console.log("SENDING REQUEST WITH DATE " + dateArgument + " TEAMS " + teamArgument);
         getPointsLeaderboard(dateArgument, teamArgument)
         .then((points_res) => {
             console.log(points_res);
@@ -49,15 +50,15 @@ class Leaderboard extends Component{
         this.setState({points_selected:false});
     }
 
-    setOptions = (selectedOptions) =>{
-        this.setState({selectedOptions:selectedOptions});
+    setOptions = (selectedOptions) => {
+        this.setState({collectedLeaderboards:false});
+        this.setState({selectedOptions:selectedOptions},()=>{this.getLeaderboards()});
     }
 
     setDate = (date) =>{
         this.setState({dateChosen:date});
         this.hideDatePicker();
-        this.setState({collectedLeaderboards:false});
-        this.getLeaderboards();
+        this.setState({collectedLeaderboards:false},()=>{this.getLeaderboards()});
     }
 
     showDatePicker = () =>{
@@ -160,8 +161,7 @@ class Leaderboard extends Component{
                     </View>
 
                     {!(this.state.collectedLeaderboards) && <ActivityIndicator size='large'/>}
-                    {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {
-                        if(this.state.selectedOptions.length == 0 || this.state.selectedOptions.includes(info.team)){
+                    {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {{
                         return (
                         <View style={styles.leaderboard_entry} key={index}>
                             <View style={styles.leaderboard_entry_rank}>
@@ -183,8 +183,7 @@ class Leaderboard extends Component{
                                 <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
                             </View>
                         </View>
-                    )}}) : this.props.data.distance.map((info,index) => {
-                        if(this.state.selectedOptions.length == 0 || this.state.selectedOptions.includes(info.team)){
+                    )}}) : this.props.data.distance.map((info,index) => {{
                         return (
                         <View style={styles.leaderboard_entry} key={index}>
                             <View style={styles.leaderboard_entry_rank}>
