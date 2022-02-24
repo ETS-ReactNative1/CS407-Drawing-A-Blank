@@ -69,9 +69,7 @@ class Player(models.Model):
             score = 0
 
             try:
-                user = players.get(user__username=name)
-                for u in user:
-                    score = u["points"]
+                score = players.get(user__username=name)["points"]
             except Player.DoesNotExist:
                 pass
 
