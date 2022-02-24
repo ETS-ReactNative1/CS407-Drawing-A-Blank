@@ -54,11 +54,10 @@ class Player(models.Model):
     @staticmethod
     def points(time, teams):
         
-        if(teams is None or teams == [] or len(teams) == 3):
-            players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time).annotate(points=Sum('workout__points'))
-         #Filter for teams in list.
-        else:
-            players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
+        if(teams is None or teams == []):
+            teams = ['terra', 'windy', 'ocean']
+            
+        players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name')
 
@@ -67,19 +66,21 @@ class Player(models.Model):
             name = p["user__username"]
             team = p["team__name"]
             
-            score = 0
+            if team in teams:
+                score = 0
 
-            try:
-                user = players.filter(user__username=name)
-                for u in user:
-                    score = u["points"]
-            except:
-                pass
+                try:
+                    user = players.filter(user__username=name)
+                    for u in user:
+                        score = u["points"]
+                except:
+                    pass
 
-            res = {"name": name,
-                "team": team,
-                "score": score}
-            ret_val.append(res)
+                res = {"name": name,
+                    "team": team,
+                    "score": score}
+                    
+                ret_val.append(res)
         
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
