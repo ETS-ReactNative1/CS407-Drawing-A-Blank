@@ -243,7 +243,7 @@ class Leaderboard(viewsets.ViewSet):
 
         ret_val = Player.points(time, team_names)
 
-        return Response(team_names, status=status.HTTP_200_OK)
+        return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=False)
     def distance(self, request):
