@@ -206,7 +206,7 @@ class WorkoutSubmission(viewsets.ViewSet):
             else:
                 tiles = []
 
-            workout.points = len(tiles)
+            workout.points += len(tiles)
             workout.save()
             checkedTiles = set()
 
