@@ -36,72 +36,72 @@ class LeaderboardTests(TestCase):
         #Workout 1 - Player 1, Team red, 1/1/2022
         self.workout1 = Workout.objects.create(player=self.player, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=100, northing=100)
+        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=100, northing=100,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=150, northing=150)
+        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=150, northing=150,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=300, northing=300)
+        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=300, northing=300,ghost=False)
 
 
         #Workout 2 - Player 2, Team red, 1/1/2020
         self.workout2 = Workout.objects.create(player=self.player2, duration=120, calories=0)
         time = datetime.datetime(2020, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=50)
+        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=50,ghost=False)
 
         time = datetime.datetime(2020, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=100, northing=100)
+        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=100, northing=100,ghost=False)
 
         time = datetime.datetime(2020, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=0)
+        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=0,ghost=False)
 
 
         #Workout 3 - Player 2, Team red, 1/1/2022.
         self.workout3 = Workout.objects.create(player=self.player2, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0)
+        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=100, northing=0)
+        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=100, northing=0,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0)
+        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0,ghost=False)
 
 
         #Workout 4 - Player 3, Team Blue, 1/1/2022.
         self.workout4 = Workout.objects.create(player=self.player3, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=100, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=100, northing=1000,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000,ghost=False)
 
         #Workout 5 - Player 4, Team Green, 1/1/2022.
         self.workout5 = Workout.objects.create(player=self.player4, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=0, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=0, northing=1000,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=200, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=200, northing=1000,ghost=False)
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=50, northing=1000)
+        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=50, northing=1000,ghost=False)
 
 
         #Workout 6 - Player 1, Team red, 1/1/2000
         self.workout6 = Workout.objects.create(player=self.player, duration=120, calories=0)
         time = datetime.datetime(2000, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=0)
+        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=0,ghost=False)
 
         time = datetime.datetime(2000, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=150)
+        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=150,ghost=False)
 
         time = datetime.datetime(2000, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=150, northing=0)
+        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=150, northing=0,ghost=False)
 
 
     def test_players(self):
