@@ -82,7 +82,7 @@ class Player(models.Model):
 
             res = {"name": name,
                 "team": team,
-                "score": score}
+                "score": user}
             ret_val.append(res)
 
 
