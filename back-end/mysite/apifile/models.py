@@ -59,28 +59,27 @@ class Player(models.Model):
             
         players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
 
-        all_players = Player.objects.values('user__username', 'team__name')
+        all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
         ret_val = []
         for p in all_players:
             name = p["user__username"]
             team = p["team__name"]
             
-            if team in teams:
-                score = 0
+            score = 0
 
-                try:
-                    user = players.filter(user__username=name)
-                    for u in user:
-                        score = u["points"]
-                except:
-                    pass
+            try:
+                user = players.get(user__username=name)
+                for u in user:
+                    score = u["points"]
+            except Player.DoesNotExist:
+                pass
 
-                res = {"name": name,
-                    "team": team,
-                    "score": score}
-                    
-                ret_val.append(res)
+            res = {"name": name,
+                "team": team,
+                "score": score}
+
+            ret_val.append(res)
         
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
