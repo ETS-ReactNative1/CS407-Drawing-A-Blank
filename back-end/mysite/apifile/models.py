@@ -77,7 +77,7 @@ class Player(models.Model):
 
             res = {"name": name,
                 "team": team,
-                "score": score}
+                "score": user}
 
             ret_val.append(res)
         # sorted(ret_val, key=lambda x: x["score"], reverse=True)
