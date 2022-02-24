@@ -26,7 +26,16 @@ def distance_leaderboard(time_range, teams):
     for workout in workouts:
         dist_leaderboard[workout.player.user.username]["score"] += stats.calc_workout_distance(workout)
 
-    # sort distance dictionary and return.
-    return {k: v for k, v in sorted(dist_leaderboard.items(), key=lambda item: item[1]["score"], reverse=True)}
+    # sort distance dictionary
+    sorted_dict = {k: v for k, v in sorted(dist_leaderboard.items(), key=lambda item: item[1]["score"], reverse=True)}
 
+    #update format to an array of dicts.
+    return_array = []
+    for key, value in sorted_dict.items():
+        dict_cur = {}
+        dict_cur["name"] = str(key)
+        dict_cur["team"] = value["team"]
+        dict_cur["score"] = value["score"]
+        return_array.append(dict_cur)
+    return return_array
 
