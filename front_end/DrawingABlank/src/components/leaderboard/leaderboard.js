@@ -45,6 +45,9 @@ class Leaderboard extends Component{
                     console.log("GOT RESPONSE:"+JSON.stringify(res));
                     this.setState({profileContent:res});
                     this.setState({obtainedProfileContent:true});
+                }).catch((err) => {
+                    this.setState({overlayVisible:false});
+                    alert(err);
                 })
             });
         },
