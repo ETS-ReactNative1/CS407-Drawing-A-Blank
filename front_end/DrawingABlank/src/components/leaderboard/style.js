@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
         borderBottomColor:"#979797",
         borderBottomWidth:1,
         flexDirection:'row',
-        paddingBottom:2
+        paddingBottom:2,
     },
     playercard:{
         borderColor:"#979797",
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
         alignContent:'flex-start',
         padding:10,
         width:64,
-        height:64
+        height:64,
     },
     leaderboard_entry_picture_params:{
         width:48,
@@ -46,11 +46,12 @@ export const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'flex-end',
         marginLeft:'auto',
-        paddingRight:10
+        paddingRight:10,
+        width:"20%"
     },
     leaderboard_entry_rank:{
         justifyContent:'center',
-        width:25
+        width:25,
     },  
     leaderboard_entry_rank_text:{
         fontSize:14,
@@ -58,17 +59,20 @@ export const styles = StyleSheet.create({
     },
     leaderboard_entry_team:{
         justifyContent:"center",
-        alignItems:'flex-end',
+        alignItems:'flex-start',
         marginLeft:'auto',
-        paddingRight:20
+        paddingRight:20,
+        width:"20%"
     },
     leaderboard_entry_team_text:{
         fontSize:14,
         color:"black",
+        position:'absolute'
     },
     leaderboard_entry_title:{
         alignContent:'space-around',
-        justifyContent:'center'
+        justifyContent:'center',
+        width:"30%"
     },
     leaderboard_entry_title_text:{
         fontSize:14,
