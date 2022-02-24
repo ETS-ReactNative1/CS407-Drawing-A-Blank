@@ -117,6 +117,14 @@ class LeaderboardTests(TestCase):
         print(stats.profile_info("testuser"))
 
 
+        print("workout history:")
+        print(stats.all_user_workouts(self.user))
+        print(stats.all_user_workouts(self.user2))
+
+
+        print(stats.workoutpoints_details(1))
+
+
 class EventBoundTests(TestCase):
     def setUp(self):
         # somewhat larger event to test performance
