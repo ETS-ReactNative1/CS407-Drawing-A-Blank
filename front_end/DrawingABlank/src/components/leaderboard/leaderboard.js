@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
-import {Text, View, TextInput, ScrollView, Image, ActivityIndicator} from 'react-native';
+import {Text, View, TextInput, ScrollView, Image, ActivityIndicator, Touchable} from 'react-native';
 import { RotationGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
 import PlayerCard from './playercard.js';
 import {styles} from './style.js';
 import MultiSelect from 'react-native-multiple-select';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {getDistanceLeaderboard,getPointsLeaderboard} from '../../api/api_leaderboard.js';
+
+import Overlay from '../../containers/Overlay';
+import PlayerProfile from './playerProfile';
 
 class Leaderboard extends Component{
     state={
@@ -27,7 +30,31 @@ class Leaderboard extends Component{
         collectedLeaderboards:false,
         leaderboard_points:[],
         leaderboard_distance:[],
-        default_pictures:{"ocean":require('../../assets/img/ocean.png'),"terra":require('../../assets/img/terra.png'),"windy":require('../../assets/img/windy.png')}
+        default_pictures:{"ocean":require('../../assets/img/ocean.png'),"terra":require('../../assets/img/terra.png'),"windy":require('../../assets/img/windy.png')},
+        api_to_label_teams:{"ocean":"Ocean","windy":"Windy","terra":"Terra"},
+        overlayVisible: false,
+        overlayContent: <View />,
+        setOverlayVisible: value => {
+            this.setState({overlayVisible: value});
+        },
+        setOverlayContent: info => {
+            this.setState({
+            overlayContent: (
+                <PlayerProfile
+                username={info.name}
+                email={'[USER.EMAIL]'}
+                country={'UK'}
+                totDist={'[USER.TOTDIST]'}
+                totPoints={'[USER.TOTPOINTS]'}
+                totGrids={'[USER.TOTGRIDS]'}
+                team={'[USER.TEAM]'}
+                bio={'[USER.BIO]'}
+                picture={info.picture}
+                gender={'[USER.GENDER]'}
+                />
+            ),
+            });
+        },
     }
 
     getLeaderboards = () => {
@@ -93,6 +120,10 @@ class Leaderboard extends Component{
     }
 
     render(){
+        const onPress = info => {
+            this.state.setOverlayContent(info);
+            this.state.setOverlayVisible(true);
+        };
         return(
             <View style={styles.leaderboard}>
                 <DateTimePicker
@@ -163,6 +194,28 @@ class Leaderboard extends Component{
                     {!(this.state.collectedLeaderboards) && <ActivityIndicator size='large'/>}
                     {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {{
                         return (
+                        <TouchableOpacity style={styles.leaderboard_entry} key={index} onPress={() => onPress(info)}>
+                            <View style={styles.leaderboard_entry_rank}>
+                                <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_picture}>
+                                <Image
+                                    source={this.getDefaultPicture(info.team)}
+                                    style={styles.leaderboard_entry_picture_params}
+                                />
+                            </View>
+                            <View style={styles.leaderboard_entry_title}>
+                                <Text style={styles.leaderboard_entry_title_text}>{info.name}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_team}>
+                                <Text style={styles.leaderboard_entry_team_text}>{this.state.api_to_label_teams[info.team]}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_score}>
+                                <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}}) : this.props.data.distance.map((info,index) => {{
+                        return (
                         <View style={styles.leaderboard_entry} key={index}>
                             <View style={styles.leaderboard_entry_rank}>
                                 <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
@@ -177,32 +230,10 @@ class Leaderboard extends Component{
                                 <Text style={styles.leaderboard_entry_title_text}>{info.name}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_team}>
-                                <Text style={styles.leaderboard_entry_team_text}>{info.team}</Text>
+                                <Text style={styles.leaderboard_entry_team_text}>{this.state.api_to_label_teams[info.team]}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_score}>
                                 <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
-                            </View>
-                        </View>
-                    )}}) : this.props.data.distance.map((info,index) => {{
-                        return (
-                        <View style={styles.leaderboard_entry} key={index}>
-                            <View style={styles.leaderboard_entry_rank}>
-                                <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
-                            </View>
-                            <View style={styles.leaderboard_entry_picture}>
-                                <Image
-                                    source={this.getDefaultPicture(info.team)}
-                                    style={styles.leaderboard_entry_picture_params}
-                                />
-                            </View>
-                            <View style={styles.leaderboard_entry_title}>
-                                <Text style={styles.leaderboard_entry_title_text}>{info.title}</Text>
-                            </View>
-                            <View style={styles.leaderboard_entry_team}>
-                                <Text style={styles.leaderboard_entry_team_text}>{info.team}</Text>
-                            </View>
-                            <View style={styles.leaderboard_entry_score}>
-                                <Text style={styles.leaderboard_entry_score_text}>{info.points}</Text>
                             </View>
                         </View>
                     )}}))}
@@ -224,6 +255,11 @@ class Leaderboard extends Component{
                     score={this.props.data.distance[this.props.data.userDistanceIndex].points}
                     onPress={() => this.scrollToIndex(this.props.data.userDistanceIndex)}
                 />}
+                <Overlay
+                visible={this.state.overlayVisible}
+                setVisible={this.state.setOverlayVisible}
+                children={this.state.overlayContent}
+                />
             </View>
         );
     }

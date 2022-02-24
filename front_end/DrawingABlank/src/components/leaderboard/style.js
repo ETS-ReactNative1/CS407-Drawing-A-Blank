@@ -151,5 +151,67 @@ export const styles = StyleSheet.create({
     filter_text:{
         color:"black",
         fontSize:14
-    }
+    },
+
+  container: {
+    width: '100%',
+    flexDirection: 'column',
+  },
+
+  header: {},
+  headerContent: {
+    padding: 30,
+    paddingBottom: -20,
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 130,
+    height: 130,
+    borderRadius: 63,
+    borderWidth: 4,
+    borderColor: 'white',
+    marginBottom: 10,
+  },
+  name: {
+    fontSize: 22,
+    color: '#000000',
+    fontWeight: '600',
+  },
+  userInfo: {
+    fontSize: 16,
+    color: '#778899',
+    fontWeight: '600',
+  },
+
+  profileBody: {
+    height: 500,
+  },
+  profileItem: {
+    flexDirection: 'row',
+  },
+  profileInfoContent: {
+    flex: 2,
+    marginLeft: -120,
+  },
+  profileIconContent: {
+    flex: 1,
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+  },
+  profileIcon: {
+    width: 30,
+    height: 30,
+    marginTop: 20,
+  },
+  profileInfo: {
+    fontSize: 18,
+    marginTop: 20,
+    color: '#000000',
+  },
+
+  profileSubInfo: {
+    fontSize: 15,
+    marginTop: 5,
+    color: '#1a1a1a',
+  },
 });
