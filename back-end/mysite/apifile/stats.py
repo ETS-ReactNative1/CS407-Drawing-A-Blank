@@ -11,7 +11,7 @@ def all_user_workouts(input_name):
         workout_points = workout.workoutpoint_set.all()
         cur_dict = {}
         cur_dict["id"] = workout.id
-        cur_dict["date"] = workout_points[0].time.strftime("%d/%m/%Y")
+        cur_dict["date"] = workout_points[0].time.strftime("%Y-%m-%d")
         cur_dict["duration"] = workout.duration
         cur_dict["calories"] = workout.calories
         cur_dict["type"] = workout.type
@@ -34,7 +34,7 @@ def workoutpoints_details(workout_id):
         cur_dict = {}
         cur_dict["easting"] = point.easting
         cur_dict["northing"]=point.northing
-        cur_dict["time"] = point.time.strftime("%d/%m/%Y, %H:%M:%S")
+        cur_dict["time"] = point.time.strftime("%Y-%m-%dT%H:%M:%S")
         ret_val.append(cur_dict)
     return ret_val
 
