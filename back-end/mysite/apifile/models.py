@@ -71,7 +71,7 @@ class Player(models.Model):
             try:
                 user = players.get(user__username=name)
                 for u in user:
-                    score = u["points"]
+                    score = u
             except Player.DoesNotExist:
                 pass
 
@@ -80,8 +80,8 @@ class Player(models.Model):
                 "score": score}
 
             ret_val.append(res)
-        
-        return sorted(ret_val, key=lambda x: x["score"], reverse=True)
+        # sorted(ret_val, key=lambda x: x["score"], reverse=True)
+        return ret_val
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
