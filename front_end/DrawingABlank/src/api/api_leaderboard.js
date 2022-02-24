@@ -1,7 +1,11 @@
 import { request, getToken } from "./api_networking.js";
 
-export const getPointsLeaderboard = () =>{
-    return getToken().then(token => request('GET','/leaderboards/points','','',token)).then(response => {
+export const getPointsLeaderboard = (date, teams) =>{
+    var query = "/?date="+date;
+    for(const team of teams){
+        query+="&teams="+team;
+    }
+    return getToken().then(token => request('GET','leaderboard/points',query,'',token)).then(response => {
         if(response.status != 200){
             throw new Error('Could not obtain points leaderboard.');
         }
@@ -9,11 +13,12 @@ export const getPointsLeaderboard = () =>{
     });
 }
 
-export const getDistanceLeaderboard = (date) =>{
-    body = {
-        "date":date
-    };
-    return getToken().then(token => request('POST','/leaderboard/distance/','','',token)).then(response => {
+export const getDistanceLeaderboard = (date, teams) =>{
+    var query = "/?date="+date;
+    for(const team of teams){
+        query+="&teams="+team;
+    }
+    return getToken().then(token => request('GET','leaderboard/distance/',query,'',token)).then(response => {
         if(response.status != 200){
             throw new Error('Could not obtain distance leaderboard.');
         }

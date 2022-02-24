@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import {Text, View, TextInput, ScrollView, Image} from 'react-native';
+import {Text, View, TextInput, ScrollView, Image, ActivityIndicator} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PlayerCard from './playercard.js';
 import {styles} from './style.js';
 import MultiSelect from 'react-native-multiple-select';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import {getDistanceLeaderboard,getPointsLeaderboard} from '../../api/api_leaderboard.js';
 
 class Leaderboard extends Component{
     state={
@@ -23,8 +24,23 @@ class Leaderboard extends Component{
         dateChosen:"",
         showDatePicker:false,
         open:false,
+        collectedLeaderboards:false,
+        leaderboard_points:[],
+        leaderboard_distance:[],
+        default_pictures:{"ocean":require('../../assets/img/ocean.png'),"terra":require('../../assets/img/terra.png'),"windy":require('../../assets/img/windy.png')}
     }
-    
+
+    getLeaderboards = () => {
+        dateArgument = (this.state.dateChosen != "") ? this.state.dateChosen : "01/01/1970"
+        teamArgument = (this.state.selectedOptions!=[]) ? this.state.selectedOptions : ["ocean","windy","terra"]
+        getPointsLeaderboard(dateArgument, teamArgument)
+        .then((points_res) => {
+            console.log(points_res);
+            this.setState({leaderboard_points:points_res});
+            this.setState({collectedLeaderboards:true});
+        });
+    }
+
     setPoints = () =>{
         this.setState({points_selected:true});
     }
@@ -61,8 +77,16 @@ class Leaderboard extends Component{
         }
     }
 
+    getDefaultPicture = (teamName) => {
+        return this.state.default_pictures[teamName];
+    }
+
     setReference = (ref) => {
         this.setState({scrollViewRef:ref});
+    }
+
+    componentDidMount(){
+        this.getLeaderboards();
     }
 
     render(){
@@ -105,13 +129,11 @@ class Leaderboard extends Component{
                         hideSubmitButton={true}
                         />
                     </View>
-                    { !this.state.points_selected &&
                     <View style={styles.filter}>
                         <TouchableOpacity onPress={this.showDatePicker}>
                             <Text style={styles.filter_text}>Filter by date</Text>
                         </TouchableOpacity>
                     </View>
-                    }
                 </View>
                 <ScrollView style={styles.leaderboard_entries}
                             showsVerticalScrollIndicator={false} 
@@ -134,7 +156,9 @@ class Leaderboard extends Component{
                             <Text style={styles.leaderboard_entry_score_text}>{this.state.points_selected ? "Score" : "Distance"}</Text>
                         </View>
                     </View>
-                    {(this.state.points_selected) ? this.props.data.points.map((info,index) => {
+
+                    {!(this.state.collectedLeaderboards) && <ActivityIndicator size='large'/>}
+                    {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {
                         if(this.state.selectedOptions.length == 0 || this.state.selectedOptions.includes(info.team)){
                         return (
                         <View style={styles.leaderboard_entry} key={index}>
@@ -143,18 +167,18 @@ class Leaderboard extends Component{
                             </View>
                             <View style={styles.leaderboard_entry_picture}>
                                 <Image
-                                    source={info.picture}
+                                    source={this.getDefaultPicture(info.team)}
                                     style={styles.leaderboard_entry_picture_params}
                                 />
                             </View>
                             <View style={styles.leaderboard_entry_title}>
-                                <Text style={styles.leaderboard_entry_title_text}>{info.title}</Text>
+                                <Text style={styles.leaderboard_entry_title_text}>{info.name}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_team}>
                                 <Text style={styles.leaderboard_entry_team_text}>{info.team}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_score}>
-                                <Text style={styles.leaderboard_entry_score_text}>{info.points}</Text>
+                                <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
                             </View>
                         </View>
                     )}}) : this.props.data.distance.map((info,index) => {
@@ -166,7 +190,7 @@ class Leaderboard extends Component{
                             </View>
                             <View style={styles.leaderboard_entry_picture}>
                                 <Image
-                                    source={info.picture}
+                                    source={this.getDefaultPicture(info.team)}
                                     style={styles.leaderboard_entry_picture_params}
                                 />
                             </View>
@@ -180,7 +204,7 @@ class Leaderboard extends Component{
                                 <Text style={styles.leaderboard_entry_score_text}>{info.points}</Text>
                             </View>
                         </View>
-                    )}})}
+                    )}}))}
                     <View style={{paddingBottom:20}}></View>
                 </ScrollView>
                 {/*Player card goes here*/}
