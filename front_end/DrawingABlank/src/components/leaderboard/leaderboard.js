@@ -6,6 +6,7 @@ import {styles} from './style.js';
 import MultiSelect from 'react-native-multiple-select';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import {getDistanceLeaderboard,getPointsLeaderboard} from '../../api/api_leaderboard.js';
+import { getProfile } from '../../api/api_profile.js';
 
 import Overlay from '../../containers/Overlay';
 import PlayerProfile from './playerProfile';
@@ -33,26 +34,18 @@ class Leaderboard extends Component{
         default_pictures:{"ocean":require('../../assets/img/ocean.png'),"terra":require('../../assets/img/terra.png'),"windy":require('../../assets/img/windy.png')},
         api_to_label_teams:{"ocean":"Ocean","windy":"Windy","terra":"Terra"},
         overlayVisible: false,
-        overlayContent: <View />,
         setOverlayVisible: value => {
             this.setState({overlayVisible: value});
         },
+        obtainedProfileContent:false,
+        profileContent:{},
         setOverlayContent: info => {
-            this.setState({
-            overlayContent: (
-                <PlayerProfile
-                username={info.name}
-                email={'[USER.EMAIL]'}
-                country={'UK'}
-                totDist={'[USER.TOTDIST]'}
-                totPoints={'[USER.TOTPOINTS]'}
-                totGrids={'[USER.TOTGRIDS]'}
-                team={'[USER.TEAM]'}
-                bio={'[USER.BIO]'}
-                picture={info.picture}
-                gender={'[USER.GENDER]'}
-                />
-            ),
+            this.setState({obtainedProfileContent:false},() => {
+                getProfile(info.name).then((res) => {
+                    console.log("GOT RESPONSE:"+JSON.stringify(res));
+                    this.setState({profileContent:res});
+                    this.setState({obtainedProfileContent:true});
+                })
             });
         },
     }
@@ -115,12 +108,31 @@ class Leaderboard extends Component{
         this.setState({scrollViewRef:ref});
     }
 
+    getOverlayContent = () => {
+        return (
+            (this.state.obtainedProfileContent) ?
+            <PlayerProfile
+            username={this.state.profileContent["username"]}
+            email={'[USER.EMAIL]'}
+            country={'UK'}
+            totDist={this.state.profileContent["total_distance"]}
+            totPoints={this.state.profileContent["total_points"]}
+            totGrids={'[USER.TOTGRIDS]'}
+            team={this.state.api_to_label_teams[this.state.profileContent["team"]]}
+            bio={'[USER.BIO]'}
+            picture={this.getDefaultPicture(this.state.profileContent["team"])}
+            gender={this.state.profileContent["gender"]}
+            /> : <ActivityIndicator/> //Maybe make this a more pretty loading screen later.
+        );
+    }
+
     componentDidMount(){
         this.getLeaderboards();
     }
 
     render(){
         const onPress = info => {
+            this.setState({obtainedProfileContent:false});
             this.state.setOverlayContent(info);
             this.state.setOverlayVisible(true);
         };
@@ -258,7 +270,7 @@ class Leaderboard extends Component{
                 <Overlay
                 visible={this.state.overlayVisible}
                 setVisible={this.state.setOverlayVisible}
-                children={this.state.overlayContent}
+                children={this.getOverlayContent()}
                 />
             </View>
         );
