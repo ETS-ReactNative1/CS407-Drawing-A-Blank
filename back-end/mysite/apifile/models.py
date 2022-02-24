@@ -54,15 +54,11 @@ class Player(models.Model):
     @staticmethod
     def points(time, teams):
         
-        if(teams is None or teams ==[]):
-            # players = Player.objects.values('user__username', 'team__name')
-            # workouts = Workout.objects.filter(workoutpoint__time__gt=time).distinct()
+        if(teams is None or teams == [] or len(teams) == 3):
             players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time).annotate(points=Sum('workout__points'))
          #Filter for teams in list.
         else:
-            # players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
-            # workouts = Workout.objects.filter(Q(workoutpoint__time__gt=time) & Q(player__team__name__in=teams)).distinct()
-            players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Count('workout__points'))
+            players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name')
 
@@ -84,21 +80,7 @@ class Player(models.Model):
                 "team": team,
                 "score": score}
             ret_val.append(res)
-
-
-
-        # ret_val = []
-        # for player in players:
-        #     res = {"name": player["user__username"],
-        #             "team": player["team__name"],
-        #             "score": 0}
-        #     ret_val.append(res)
-
-        # for workout in workouts:
-        #     for res in ret_val:
-        #         if res["name"] == workout.player.user.username:
-        #             res["score"] += workout.points
-        # 
+        
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
 class Grid(models.Model):
