@@ -53,7 +53,8 @@ class Leaderboard extends Component{
             });
         },
         player_card_points:{},
-        player_card_distance:{}
+        player_card_distance:{},
+        username_search:"",
     }
 
     getLeaderboards = () => {
@@ -170,9 +171,15 @@ class Leaderboard extends Component{
         );
     }
 
+    handleUserSearch = (text) =>{
+        this.setState({username_search:text});
+    }
+
     componentDidMount(){
         this.getLeaderboards();
     }
+
+    
 
     render(){
         const onPress = info => {
@@ -225,6 +232,15 @@ class Leaderboard extends Component{
                         </TouchableOpacity>
                     </View>
                 </View>
+                <View style={styles.search_bar}>
+                    <TextInput style={styles.search_bar_input}
+                        placeholder="Search user"
+                        placeholderTextColor="black"
+                        ref="usersearch"
+                        onChangeText={this.handleUserSearch}    
+                    />
+
+                </View>
                 <ScrollView style={styles.leaderboard_entries}
                             showsVerticalScrollIndicator={false} 
                             ref={(ref) => this.setReference(ref)}
@@ -249,6 +265,7 @@ class Leaderboard extends Component{
 
                     {!(this.state.collectedLeaderboards) && <ActivityIndicator size='large'/>}
                     {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {{
+                        if(info.name.includes(this.state.username_search)){
                         return (
                         <TouchableOpacity style={styles.leaderboard_entry} key={index} onPress={() => onPress(info)}>
                             <View style={styles.leaderboard_entry_rank}>
@@ -270,7 +287,8 @@ class Leaderboard extends Component{
                                 <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
                             </View>
                         </TouchableOpacity>
-                    )}}) : this.props.data.distance.map((info,index) => {{
+                    )}
+                }}) : this.props.data.distance.map((info,index) => {{
                         return (
                         <View style={styles.leaderboard_entry} key={index}>
                             <View style={styles.leaderboard_entry_rank}>

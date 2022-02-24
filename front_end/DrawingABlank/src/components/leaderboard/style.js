@@ -17,7 +17,9 @@ export const styles = StyleSheet.create({
     },
     leaderboard_entries:{
         paddingTop:15,
-        height:"70%",
+        height:"60%",
+        borderTopColor:"#979797",
+        borderTopWidth:1,
     },
     leaderboard_entry:{
         borderBottomColor:"#979797",
@@ -140,7 +142,7 @@ export const styles = StyleSheet.create({
     filters:{
         paddingTop:10,
         marginLeft:10,
-        paddingBottom:20,
+        paddingBottom:10,
         flexDirection:'row',
     },
     filter:{
@@ -214,4 +216,16 @@ export const styles = StyleSheet.create({
     marginTop: 5,
     color: '#1a1a1a',
   },
+
+  search_bar:{
+  },
+
+  search_bar_input:{
+    borderColor:"#e8e1df",
+    borderWidth:1,
+    borderRadius:10,
+    width:"95%",
+    marginBottom:"5%",
+    color:"black",
+  }
 });
