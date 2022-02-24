@@ -244,6 +244,7 @@ class WorkoutPoint(models.Model):
     time = models.DateTimeField()
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
+    ghost = models.BooleanField()
 
 
 class EventPerformance(models.Model):

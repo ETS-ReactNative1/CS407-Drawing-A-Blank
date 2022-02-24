@@ -46,7 +46,7 @@ class EventView(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def local(self, request):
         data = request.GET
-        
+
         point = [data["lat"], data["long"]]
         centre = grids.latlong_to_grid(point)
         dist = data["distance"]
@@ -187,10 +187,11 @@ class WorkoutSubmission(viewsets.ViewSet):
         workout = Workout.objects.create(player=player, duration=dur.total_seconds(), calories=cals, type=workout_type)
 
         for entry in waypoints:
-            latlong = (entry["latitude"], entry["longitude"])
-            easting, northing = grids.latlong_to_grid(latlong)
+            ghost = not entry["isTracking"]
+            easting, northing = grids.latlong_to_grid((entry["latitude"], entry["longitude"]))
             timestamp = datetime.datetime.strptime(entry["timestamp"][:-1], '%Y-%m-%dT%H:%M:%S.%f')
-            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing)
+            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing,
+                                        ghost=ghost)
 
         bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
         for i in range(len(bounds) - 1, 0, -1):
@@ -208,18 +209,20 @@ class WorkoutSubmission(viewsets.ViewSet):
 
             workout.points += len(tiles)
             workout.save()
-            checkedTiles = set()
 
-            for tile in tiles:
-                checkedTiles.add((tile.easting, tile.northing))
-                if tile.check_tile_override(bounds[i].time):
-                    tile.player = player
-                    tile.time = bounds[i].time
-                    tile.save()
-                    WorkoutSubmission.add_participation(player, (tile.easting, tile.northing))
-            for tile in allGrids - checkedTiles:
-                Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
-                WorkoutSubmission.add_participation(player, tile)
+            if not bounds[i].ghost and not bounds[i-1].ghost:
+                checkedTiles = set()
+
+                for tile in tiles:
+                    checkedTiles.add((tile.easting, tile.northing))
+                    if tile.check_tile_override(bounds[i].time):
+                        tile.player = player
+                        tile.time = bounds[i].time
+                        tile.save()
+                        WorkoutSubmission.add_participation(player, (tile.easting, tile.northing))
+                for tile in allGrids - checkedTiles:
+                    Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
+                    WorkoutSubmission.add_participation(player, tile)
 
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
