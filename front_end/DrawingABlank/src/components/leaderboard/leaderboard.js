@@ -31,7 +31,7 @@ class Leaderboard extends Component{
     }
 
     getLeaderboards = () => {
-        dateArgument = (this.state.dateChosen != "") ? this.state.dateChosen : "01/01/1970"
+        dateArgument = (this.state.dateChosen != "") ? this.state.dateChosen.toLocaleString('en-GB').split(',')[0] : "01/01/1970"
         teamArgument = (this.state.selectedOptions!=[]) ? this.state.selectedOptions : ["ocean","windy","terra"]
         getPointsLeaderboard(dateArgument, teamArgument)
         .then((points_res) => {
@@ -56,6 +56,8 @@ class Leaderboard extends Component{
     setDate = (date) =>{
         this.setState({dateChosen:date});
         this.hideDatePicker();
+        this.setState({collectedLeaderboards:false});
+        this.getLeaderboards();
     }
 
     showDatePicker = () =>{
