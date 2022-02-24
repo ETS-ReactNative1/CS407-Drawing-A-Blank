@@ -1,3 +1,4 @@
+
 back-end/mysite/apifile/__pycache__/__init__.cpython-39.pyc
 back-end/mysite/apifile/__pycache__/admin.cpython-39.pyc
 back-end/mysite/apifile/__pycache__/apps.cpython-39.pyc
@@ -22,3 +23,6 @@ back-end/mysite/apifile/__pycache__/models.cpython-38.pyc
 back-end/mysite/db.sqlite3
 back-end/mysite/db.sqlite3
 back-end/mysite/mysite/__pycache__/settings.cpython-38.pyc
+
+
+.DS_Store
