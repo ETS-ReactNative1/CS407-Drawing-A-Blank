@@ -68,8 +68,8 @@ class Player(models.Model):
 
         ret_val = []
         for p in all_players:
-            name = p["user_username"]
-            team = p["team__name"]
+            name = p.user_username
+            team = p.team__name
             try:
                 score = players[name]
             except:
