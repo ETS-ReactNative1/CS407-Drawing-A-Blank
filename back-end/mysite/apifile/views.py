@@ -45,9 +45,11 @@ class EventView(viewsets.ViewSet):
 
     @action(methods=['get'], detail=False)
     def local(self, request):
-        data = request.data
-        centre = grids.latlong_to_grid(data['point'])
-        dist = data['distance']
+        data = request.GET
+        
+        point = [data["lat"], data["long"]]
+        centre = grids.latlong_to_grid(point)
+        dist = data["distance"]
 
         events = Event.get_events_within_distance(centre, dist)
         ret_val = EventView.event_list_to_json(events)
@@ -81,7 +83,7 @@ class UserProfile(viewsets.ViewSet):
         return [permission() for permission in permission_classes]
 
     def list(self, request):
-        data = request.data
+        data = request.GET
         input_name = data["username"]
         ret_val = stats.profile_info(input_name)
 
@@ -152,7 +154,7 @@ class GridView(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
-        data = request.data
+        data = request.GET
         bl = data['bottom_left']
         tr = data['top_right']
         zoom = data['zoom']
