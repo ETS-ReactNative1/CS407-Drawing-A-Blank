@@ -148,6 +148,20 @@ class UserProfile(viewsets.ViewSet):
 
         return Response("Password changed", status=status.HTTP_200_OK)
 
+    @action(methods=['post'], detail=False)
+    def workout_history(self, request):
+        data = request.data
+        request_user = request.user
+
+        return stats.all_user_workouts(request_user.username)
+
+    @action(methods=['post'], detail=False)
+    def specific_workout(self, request):
+        data = request.data
+        workout_id = data["id"]
+
+        return stats.workoutpoints_details(workout_id)
+
 
 class GridView(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
