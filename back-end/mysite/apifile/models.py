@@ -53,11 +53,12 @@ class Player(models.Model):
 
     @staticmethod
     def points(time, teams):
-        
-        if(teams is None or teams == []):
+
+        if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
-            
-        players = Player.objects.values('user__username').filter(workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
+
+        players = Player.objects.values('user__username').filter(
+            workout__workoutpoint__time__gte=time, team__name__in=teams).annotate(points=Sum('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
@@ -65,7 +66,7 @@ class Player(models.Model):
         for p in all_players:
             name = p["user__username"]
             team = p["team__name"]
-            
+
             score = 0
 
             try:
@@ -74,12 +75,13 @@ class Player(models.Model):
                 pass
 
             res = {"name": name,
-                "team": team,
-                "score": score}
+                   "team": team,
+                   "score": score}
 
             ret_val.append(res)
-        
+
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
+
 
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
