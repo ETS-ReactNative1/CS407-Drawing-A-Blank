@@ -65,7 +65,14 @@ class Leaderboard extends Component{
         .then((points_res) => {
             console.log(points_res);
             this.setState({leaderboard_points:points_res},() => {this.getPlayerCardPoints()});
+        }).then(() => {
+            getDistanceLeaderboard(dateArgument,teamArgument)
+            .then((distance_res) => {
+                this.setState({leaderboard_distance:distance_res},() => {this.getPlayerCardDistance()});
+            });
         });
+
+        
     }
 
     getPlayerCardPoints = () => {
@@ -79,11 +86,29 @@ class Leaderboard extends Component{
                     picture:this.getDefaultPicture(details.team),
                     score:details.score,
                     rank:index
-                }},() => {this.setState({collectedLeaderboards:true})});
+                }});
             }else{
-                this.setState({player_card_points:{}},() => {this.setState({collectedLeaderboards:true})});
+                this.setState({player_card_points:{}});
             }
         });
+    }
+
+    getPlayerCardDistance = () => {
+        getUsername().then((username) => {
+            console.log("OBTAINED USERNAME:"+username);
+            var details = this.state.leaderboard_distance.find(user => user.name==username);
+            var index = this.state.leaderboard_distance.findIndex(user => user.name==username);
+            if(details!=undefined){
+                this.setState({player_card_distance:{
+                    name:username,
+                    picture:this.getDefaultPicture(details.team),
+                    score:details.score,
+                    rank:index
+                }},() => {this.setState({collectedLeaderboards:true})});
+            }else{
+                this.setState({player_card_distance:{}}, () => {this.setState({collectedLeaderboards:true})});
+            }
+        })
     }
 
     setPoints = () =>{
@@ -145,11 +170,11 @@ class Leaderboard extends Component{
             onPress={() => this.scrollToIndex(this.state.player_card_points.rank)}
         /> : 
         <PlayerCard
-            rank={this.props.data.userDistanceIndex+1}
-            username={this.props.data.distance[this.props.data.userDistanceIndex].title}
-            picture={this.props.data.distance[this.props.data.userDistanceIndex].picture}
-            score={this.props.data.distance[this.props.data.userDistanceIndex].points}
-            onPress={() => this.scrollToIndex(this.props.data.userDistanceIndex)}
+            rank={this.state.player_card_distance.rank+1}
+            username={this.state.player_card_distance.name}
+            picture={this.state.player_card_distance.picture}
+            score={this.state.player_card_distance.score.toFixed(1)+"m"}
+            onPress={() => this.scrollToIndex(this.state.player_card_distance.rank)}
         />
     }
 
@@ -288,9 +313,10 @@ class Leaderboard extends Component{
                             </View>
                         </TouchableOpacity>
                     )}
-                }}) : this.props.data.distance.map((info,index) => {{
+                }}) : this.state.leaderboard_distance.map((info,index) => {{
+                    if(info.name.includes(this.state.username_search)){
                         return (
-                        <View style={styles.leaderboard_entry} key={index}>
+                        <TouchableOpacity style={styles.leaderboard_entry} key={index} onPress={() => onPress(info)}>
                             <View style={styles.leaderboard_entry_rank}>
                                 <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
                             </View>
@@ -307,10 +333,10 @@ class Leaderboard extends Component{
                                 <Text style={styles.leaderboard_entry_team_text}>{this.state.api_to_label_teams[info.team]}</Text>
                             </View>
                             <View style={styles.leaderboard_entry_score}>
-                                <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
+                                <Text style={styles.leaderboard_entry_score_text}>{info.score.toFixed(1)+"m"}</Text>
                             </View>
-                        </View>
-                    )}}))}
+                        </TouchableOpacity>
+                    )}}}))}
                     <View style={{paddingBottom:20}}></View>
                 </ScrollView>
                 {/*Player card goes here*/}
