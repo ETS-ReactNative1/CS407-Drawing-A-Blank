@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from .models import Event, Team, EventStandings, EventPerformance
+from .models import Event, Team, EventStandings, EventPerformance, Player
 
 
 def event_check():
@@ -63,6 +63,12 @@ def event_check():
 
         # clear area
         event.clear_area()
+
+
+def test_cron():
+    p = Player.objects.get(id=1)
+    p.coins += 1
+    p.save()
 
 
 # placeholder to empty token table of very expired tokens
