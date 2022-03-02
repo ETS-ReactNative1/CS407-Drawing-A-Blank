@@ -1,8 +1,11 @@
-import {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useCallback, useMemo} from 'react';
+import {Polygon} from 'react-native-maps';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 import useGeoLocation from './useGeoLocation';
 import {debounce, getCorners} from './utils';
-
+import useLocalGrids from './useLocalGrids';
+import useLocalEvents from './useLocalEvents';
+import regionTools from './regionUtils';
 // issue perhaps of region not being set for first load
 // due to geolocation async update
 
@@ -11,183 +14,124 @@ import {debounce, getCorners} from './utils';
 // export a single "region" for the map
 // with all the tiles on it
 
-// will need to do mercator projection to make same size window globlly
-const BUFFER_ZOOM_LEVEL = {
-  // must be wider than fursther zoom level
-  latitudeDelta: 5,
-  longitudeDelta: 5,
-};
+const RENDER_REGION_SCALING_FACTOR = 1.5;
 
 const INIT_ZOOM = {
   latitudeDelta: 0.6039001489487674,
   longitudeDelta: 0.5393288657069206,
 };
 
+// const buildRenderRegion = region => {
+//   const r = {
+//     ...region,
+//     latitudeDelta: region.latitudeDelta * RENDER_REGION_FACTOR,
+//     longitudeDelta: region.longitudeDelta * RENDER_REGION_FACTOR,
+//   };
+//   return r;
+// };
+
 // "What is the user looking at"
 export default function useRegion() {
-  const deviceLocation = useGeoLocation();
-  // const [zoomLevel, tileSize] = useZoomLevel();
-
-  const [region, setRegion] = useState({
+  // basic region object
+  const initRegion = {
     latitude: 0,
     longitude: 0,
     ...INIT_ZOOM,
-  });
-  const [bufferedRegion, setBufferedRegion] = useState(region); // detaches map render zone from map view zone (probbaly only need one as state)
+  };
+
+  const deviceLocation = useGeoLocation();
   const [zoomLayer, setZoomLayer] = useState(1);
+  // render region - am just upscaling to expanded region when needed
+
+  // const [region, setRegion] = useState({
+  //   latitude: 0,
+  //   longitude: 0,
+  //   ...INIT_ZOOM,
+  // });
+  // camera focus region - need to detach from renderRegion
+  //    prevents map feature loading whilst panning within a renderRegion
+  // state to trigger re render on demand
+  // ref to rememeber map location for otherwise triggered re render e.g. looking outside the render region
+  const [renderRegion, setRenderRegion] = useState(
+    regionTools.buildRegion(initRegion, RENDER_REGION_SCALING_FACTOR),
+  );
+  const [focusRegion, _setFocusRegion] = useState(initRegion); // technically jsut a render trigger for below ref
+  const focusRegionRef = useRef(focusRegion); // tracks current user view
+
+  // revert the above state+ref to just state, then only apply e.g 25% of the re renders
+  // i.e. want to ignore 75% of the devive locatino changes
+  // WHY? : current rapid device movement causes rapid re render if left as state and applying every render change
+  // map is too complex to be rendered that rapidly, so causes slow down
+  // to avoid, reduce re renders, e.g. only 25% or only when strictly necceassry (ref solution)
+
+  const setFocusRegion = region => {
+    focusRegionRef.current = region;
+    _setFocusRegion(region);
+    console.log('focus', region);
+  };
+
+  const [DrawGrids, localGrids] = useLocalGrids(
+    [],
+    {renderRegion, zoomLayer},
+    {useCache: 1},
+  );
+  const [DrawEvents, events] = useLocalEvents(
+    [],
+    {renderRegion, zoomLayer},
+    {useCache: 1},
+  );
+
+  const regionFeatures = {localGrids, events};
+  const isTrackingEnabled = false;
+
+  // const buildRegion = (location, zoomlevel) => {
+  //   return {
+  //     latitude: location.latitude,
+  //     longitude: location.longitude,
+  //     ...INIT_ZOOM,
+  //   };
+  // };
+
+  // compare region to render region i.e. scale up by factor e.g. 1.5
+
+  // renderRegion as state, controls camera position/ what is seen
+  // can then derive the actual camera region bounds from that
+  //    as will always want to show what is being rendered
 
   // Set region to device location
   // should be predifined zoom level here
   // "first load zoom level"
   // should now be unneesary - why?
 
+  // tracks device location, sets maps focus region to device location if tracking enabled
+  // useEffect(() => {
+  //   if (isTrackingEnabled) setFocusRegion(buildRegion(deviceLocation.current));
+  // }, [deviceLocation.current]);
+  //ref - want to avoid spam re renders, so should one do like 1 per sec if convering to state
+  // otherwise location updates only reflected to user when someting else causes state to change e.g. grids update, render region update, userpath update,
+
   useDidUpdateEffect(() => {
     uLoc = deviceLocation.current;
 
-    r = buildRegion(deviceLocation.current);
-    // updateRegion(r);
+    r = regionTools.buildRegion({...INIT_ZOOM, ...deviceLocation.current});
+    // updateRergion(r);
     console.log('set region', r);
 
-    setRegion(r);
+    setFocusRegion(r);
   }, [deviceLocation.current]);
 
-  const buildRegion = (location, zoomlevel) => {
-    return {
-      latitude: location.latitude,
-      longitude: location.longitude,
-      ...INIT_ZOOM,
-    };
+  const DrawRenderRegionOutline = () => {
+    coordinates = regionTools.getRegionCorners(renderRegion);
+    return (
+      <Polygon
+        coordinates={coordinates}
+        fillColor={'#000000'}
+        key={-1}></Polygon>
+    );
   };
 
-  // const [regionZoom, setRegionZoom] = useState();
-  // const [regionLocation, setRegionLocation] = useState();
-
-  // use debounce when being called to reduce spam on big pans
-  // updateRegion - accepts a region and checks to see if its out of current cache bounds
-  // if it is, need to get new map data, re render .
-  const updateRegion = r => {
-    const zoom = {
-      latitudeDelta: r.latitudeDelta,
-      longitudeDelta: r.longitudeDelta,
-    };
-    const location = {latitude: r.latitude, longitude: r.longitude};
-
-    // only if zoom changed by more than cache entry size
-    //    useLocalZoom conditions
-
-    // only if location changed by more than the current cache width/height for this zoom level
-
-    // all caches will be synced to zoom level and location change
-    // if they choose to be useffect, and usecallback - stops pointless reprocessing on not-lisyened to state change
-
-    // Limiting map re renders to
-    //    when map zoom changes
-    //    when map pan is wider than current region +- some range
-    // To be used ultimatly in causing map content to be re drawn
-    // depending on the two above conditions
-    //    which can be ignored or not in the relevant hook (useEffect) to reduce re renders
-    //      - but still causes at least 1 re render per state change in this file
-
-    // should probably try to find existing regions first
-    const getBestBufferRegion = (viewWindow, viewZoom) => {
-      // const getCorners = (lat, long, dLat, dLong) => {
-      //   dLat = dLat;
-      //   dLong = dLong;
-      //   const bottomLeft = {
-      //     latitude: lat - dLat / 2,
-      //     longitude: long - dLong / 2,
-      //   };
-
-      //   const topRight = {
-      //     latitude: lat + dLat / 2,
-      //     longitude: long + dLong / 2,
-      //   };
-
-      //   return [bottomLeft, topRight];
-      // };
-
-      // change to same area per grid cache entry
-      // from getting grids at distance away from user dependent on zoom level
-      //    i.e. if they were zoomed in, collect fewer grids than if zoomed out
-      //    now, both zoom levels have same number of grids
-      // done to make bound checking easier
-
-      // Check if pannned to region "window" is outside the current (buffered) render window
-
-      // Buffere render window - the latlng area of the current region
-      //    will need "bufferdRegion" and "viewRegion" to differentiate
-
-      // if bottom left point past buffered bottom left point (lat and lng)
-      //    is out of bounds - set bufferedLocation state
-
-      const {latitude, longitude} = viewWindow;
-      const {latitudeDelta, longitudeDelta} = viewZoom;
-
-      const {
-        latitude: latBuf,
-        longitude: longBuf,
-        latitudeDelta: dLatBuff,
-        longitudeDelta: dLongBuff,
-      } = bufferedRegion;
-
-      // buffered deltas can be used if want to have a buffer region size per zoom
-      // for now just constant width bufferRegion regardless of zoom
-
-      const [bottomLeft, topRight] = getCorners(bufferedRegion);
-
-      // if outside the buffered region
-      //  - considers only view position, not field of view
-      //      when determining is outside the buffered region
-
-      if (
-        latitude > topRight.latitude ||
-        latitude < bottomLeft.latitude ||
-        longitude > topRight.longitude ||
-        longitude < bottomLeft.longitude
-      ) {
-        // return new bounded region centre point
-        // could make renderRegion zoom proportional to user zoom for performance gain when zoomed
-        // e.g. bufferLatDelta = 2*latitudeDelta (2 is the proportion)
-        return [{...viewWindow, ...BUFFER_ZOOM_LEVEL}, 1];
-      }
-      return [bufferedRegion, 0]; // might still cause re render - react probably doesnt deep compare
-    };
-
-    // key in cahce needs changing so i know to refersh cache on pan
-
-    // this is required otherwise refresh will set map view location to default on re render
-    // dont want it always being ran - will kill perforamnce on pan
-    // setRegionLocation(location);
-
-    // find if the user is looking outside the "rendered region box" - for loading in events around the user window
-
-    console.log('getting renderregion', location, zoom);
-    const [bufRegion, isNewRegion] = getBestBufferRegion(location, zoom);
-
-    console.log('New RenderRegion: ', isNewRegion, bufRegion);
-
-    // find if the user has change zoom layer - for listenting to zoom changes
-    const [zLayer, isNewZoomLayer] = convertDeltaToZLayer(zoom);
-
-    // only actually re renders when a state changes - workaround to react shallow state comparison
-    if (isNewRegion || isNewZoomLayer) {
-      // "backup" the currently viewed region
-      //    so it doesnt snap back on re render
-      setRegion(r);
-
-      if (isNewZoomLayer) {
-        setZoomLayer(zLayer);
-      }
-
-      // update buffer area if userview is outside it
-      if (isNewRegion) {
-        setBufferedRegion(bufRegion);
-      }
-    }
-  };
-
-  const convertDeltaToZLayer = latlng => {
-    dLat = latlng['latitudeDelta'];
+  const getNewZoomLayer = zoom => {
+    dLat = zoom['latitudeDelta'];
 
     layer = 1;
 
@@ -205,23 +149,91 @@ export default function useRegion() {
       layer = 6;
     }
 
-    if (layer == zoomLayer) {
-      return [layer, 0];
-    } else {
-      return [layer, 1];
-    }
+    if (zoomLayer !== layer) return layer;
   };
 
-  // trying to set region when tile size changes (OLD)
-  // useEffect(() => {
-  //   console.log('setting region', zoomLevel.current);
-  //   setRegion(buildRegion(userLocation.current, zoomLevel.current));
-  // }, [tileSize]);
+  const DrawRenderRegionFeatures = ({showRegionOutline}) => {
+    console.log('TESTING PROP TYPE: ', showRegionOutline, ' expected: bool');
 
-  const debouncedUpdateRegion = debounce(
-    newRegion => updateRegion(newRegion),
-    1000,
-  );
+    const Draw = []; // [DrawEvents({key: 1}), DrawGrids({key: 2})];
+    if (showRegionOutline) Draw.push(DrawRenderRegionOutline({key: 3}));
+    console.log(Draw);
+    return Draw;
+  };
 
-  return [region, debouncedUpdateRegion, bufferedRegion, zoomLayer];
+  // want set region
+  // set ref
+
+  // if "inside renderRegion"
+  //    update viewregion state
+  // else
+  //    just update ref (state is unnessary)
+  //    do update region check
+
+  // const [regionZoom, setRegionZoom] = useState();
+  // const [regionLocation, setRegionLocation] = useState();
+
+  // use debounce when being called to reduce spam on big pans
+  // updateRegion - accepts a region and checks to see if its out of current cache bounds
+  // if it is, need to get new map data, re render .
+  const updateRegion = (displayRegion, isFocusJob = 0) => {
+    focusRegionRef.current = displayRegion;
+    console.log('update', displayRegion);
+    if (isFocusJob) {
+      setFocusRegion(displayRegion);
+      return; // dont need to compute new render region if we are still inside "best" one
+    }
+
+    const displayZoom = {
+      latitudeDelta: displayRegion.latitudeDelta,
+      longitudeDelta: displayRegion.longitudeDelta,
+    };
+    const displayLocation = {
+      latitude: displayRegion.latitude,
+      longitude: displayRegion.longitude,
+    };
+
+    // async ref
+    // update region ref here
+    // pass to children which need to confirm action is still required
+    // on async action
+    // e.g. pan, pause1 => load1, pan, pause2 => load2
+    // ==> render1, render2
+    //    to
+    // pan, pause1 => load1, pan, pause2 => load2
+    // ==> ignore render1 (out of date), render2
+    console.log('updateing Regin', displayLocation);
+    const new_zoomLayer = getNewZoomLayer(displayZoom);
+    const new_renderRegion = regionTools.buildRegion(
+      displayRegion, // have managed to completly disregard zoomlevel when picking render region zoom level
+      RENDER_REGION_SCALING_FACTOR,
+    );
+    const cur_renderRegion = renderRegion;
+
+    // zooming out wont make render region bigger
+    // on zoom level change maybe - but should just be linar with zoom or could have missed bits
+
+    // should do location check earlier for better performance
+
+    // focusregion.setstate  = uloc
+    // then dont need ref
+    //    still need ref as wont be able to set prvious state
+    if (new_zoomLayer) setZoomLayer(new_zoomLayer);
+    if (
+      !regionTools.checkPointInRegion(cur_renderRegion, displayLocation) ||
+      false
+      // !regionTools.checkRegionZoomCoverage(cur_renderRegion, displayZoom) // can just use zoom, then point already works
+    )
+      // check if looking outside current
+      setRenderRegion(new_renderRegion);
+    console.log('update end');
+  };
+
+  return [
+    focusRegionRef.current, // left as ref for now, to be made state
+    updateRegion,
+    regionFeatures,
+    DrawRenderRegionFeatures,
+    // useMemo(DrawRenderRegionFeatures(), [DrawEvents, DrawGrids]),
+  ];
 }

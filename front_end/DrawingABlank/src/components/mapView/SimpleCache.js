@@ -1,3 +1,6 @@
+import {Value} from 'react-native-reanimated';
+import TouchHistoryMath from 'react-native/Libraries/Interaction/TouchHistoryMath';
+
 export default function SimpleCache(initContent = {}) {
   this.content = initContent;
 
@@ -39,17 +42,33 @@ export default function SimpleCache(initContent = {}) {
     // this.
   };
 
-  this.getEntry = (key, getLatestFlag) => {
+  this.getEntry = (key, getLatestFlag, filter) => {
+    // dont need key to filter
+    if (filter) {
+      entries = Object.entries(this.content);
+      entry;
+      for (let i = 0; i < values.length; i++) {
+        [key, value] = entries[i];
+        JSON.parse(key);
+        filteredFound = filter(key, value); //expects return entry when filter condition is true
+
+        if (filteredFound) {
+          entry = filteredFound;
+          break;
+        }
+      }
+    }
+
     key = JSON.stringify(key);
     entry = this.content[key];
-    console.log('cahce', this.content);
-    console.log('e', this.content[key]);
+
     if (!entry) return [false];
 
-    const [content, refreshContent, expiry_date] = this.content[key];
+    let [content, refreshContent, expiry_date] = entry;
 
     if (expiry_date >= Date.now() || getLatestFlag) {
-      updatedElement = [refreshContent(), ...this.content[key]];
+      expiry_date += 10000; //10sec placeholder
+      updatedElement = [refreshContent(), refreshContent, expiry_date];
       this.content[key] = updatedElement;
       return updatedElement;
     } else {
@@ -57,3 +76,6 @@ export default function SimpleCache(initContent = {}) {
     }
   };
 }
+
+// need to make n dimensional
+// take order to infer depth into hashmap - hashmap of hashmaps

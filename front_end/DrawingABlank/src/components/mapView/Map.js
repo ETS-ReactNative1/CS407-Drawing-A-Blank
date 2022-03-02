@@ -19,9 +19,8 @@ import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
-import useLocalGrids from './useLocalGrids';
 import useGeoLocation from './useGeoLocation';
-import useEvents from './useEvents';
+
 import useUserPath from './useUserPath';
 import useRegion from './useRegion';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
@@ -45,19 +44,9 @@ const DEBUG_ZOOM_LEVEL = {
 };
 
 function Map({setOverlayVisible, setOverlayContent}) {
-  const [viewRegion, updateViewRegion, renderRegion, zoomLayer] = useRegion();
-  const [DrawGrids, grids, DrawRenderRegion] = useLocalGrids(
-    [],
-    {renderRegion, zoomLayer},
-    {
-      useCache: 1,
-    },
-  );
-  const [DrawEvents, events] = useEvents(
-    [],
-    {renderRegion, zoomLayer},
-    {useCache: 1},
-  );
+  const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
+    useRegion();
+  console.log('Regions Setup');
   const [DrawUserPath, userPath] = useUserPath();
 
   // const [region, setRegion] = useState(getInitialState().region);
@@ -80,6 +69,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
   // refs are always "paused", must be manually listened to using useEffect
   const userLocation = useGeoLocation();
 
+  // if regionref == init region set ref to geolocation
+
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc
     setOverlayContent(
@@ -96,6 +87,13 @@ function Map({setOverlayVisible, setOverlayContent}) {
   function changeToStats() {
     navigation.navigate('post_workout_stats', {recorder: recorder});
   }
+
+  const debouncedsetRegion = debounce(
+    // set ref renderRegion
+    // only update state of updateRegion if old region is "far away enough" from old point
+    newRegion => setRegion(newRegion),
+    1000,
+  );
 
   // useEffect(() => {
   //   addPathPoint(userLocation.current);
@@ -141,7 +139,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   // }, [userLocation.current]);
 
   function handleRegionChange(newRegion) {
-    updateViewRegion(newRegion);
+    debouncedsetRegion(newRegion);
     return;
 
     const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
@@ -161,13 +159,13 @@ function Map({setOverlayVisible, setOverlayContent}) {
       const {longitudeDelta, latitudeDelta} = RNM_Zoom;
     }
   }
-  console.log('Moving Map to Region ', viewRegion);
+  console.log('showing location', region);
   return (
     <View style={styles.mapContainer}>
       <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        region={viewRegion}
+        region={region}
         // initialRegion={viewRegion}
         mapType={'standard'}
         showsUserLocation={true}
@@ -175,10 +173,10 @@ function Map({setOverlayVisible, setOverlayContent}) {
         // minZoomLevel={5}
         // maxZoomLevel={10}
       >
-        <DrawGrids />
-        <DrawEvents />
+        {/* Region features now memoized */}
+        <DrawRenderRegionFeatures showRegionOutline={true} />
+
         <DrawUserPath />
-        <DrawRenderRegion />
       </Animated>
 
       <MapControls
@@ -205,7 +203,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       />
       <Sheet
         ref={bottomSheetRef}
-        localEvents={events}
+        localEvents={regionFeatures.events}
         onEventClick={eventRegion =>
           setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
         }

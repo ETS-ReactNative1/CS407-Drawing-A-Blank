@@ -27,7 +27,11 @@ export default function useUserPath() {
     setUserPath(userPath.push(latLngPoint));
 
     // add point to workout recorder / exercise computer
-    recorder.addCoordinate(latLngPoint.latitude, latLngPoint.longitude);
+    recorder.addCoordinate(
+      latLngPoint.latitude,
+      latLngPoint.longitude,
+      (isTracking = true),
+    );
   }
 
   function toggleWorkoutActive() {

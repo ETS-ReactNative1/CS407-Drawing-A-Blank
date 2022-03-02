@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {getEvents} from '../../api/api_events';
 import useGeoLocation from './useGeoLocation';
 import {Marker, Polygon, Circle} from 'react-native-maps';
@@ -80,6 +80,6 @@ export default function useEvents(
     const draw = [...DrawEventsBounds(), ...DrawEventsMarkers()];
     return draw;
   }
-
   return [DrawEvents, events];
+  // return [useCallback(DrawEvents, [events]), events];
 }

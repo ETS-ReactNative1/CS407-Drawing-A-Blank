@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {getGrids} from '../../api/api_grids';
 import useGeoLocation from './useGeoLocation';
 import Cache from './SimpleCache';
-import useRegion from './useRegion';
+
 import {Polygon} from 'react-native-maps';
 import {getCorners} from './utils';
 import {createEmptyStatement} from 'typescript';
@@ -107,7 +107,19 @@ export default function useLocalGrids(
 
       // get grids or set it in cache
       console.log('Getting from cache, key:', key);
-      grids = await gridZoomCache.getEntryContent(key); // flag overrides expiry_date to now
+      grids = await gridZoomCache.getEntryContent(key, 0, (key, entry) => {
+        const renderRegionCentre = {
+          latitude: renderRegion[latitude],
+          longitude: renderRegion[latitude],
+        };
+        if (pointInBounds(renderRegionCentre, key)) {
+          return true;
+        } else {
+          return false;
+        }
+
+        // key is centre point of a region
+      }); // flag overrides expiry_date to now
       console.log('Retrieved possible grids:', grids[0]);
       // if no cache entry for latlng + zoom
       // make it and save it to cache
@@ -117,6 +129,8 @@ export default function useLocalGrids(
         console.log('Entry Built, adding to cache');
         entry[0] = key;
         console.log('entry', entry);
+
+        //
         gridZoomCache.addEntry(entry);
         console.log('Successfully added to cache');
         grids = entry[1];
@@ -135,9 +149,9 @@ export default function useLocalGrids(
     //skip
 
     requestsInFlight.current -= 1;
-
-    if (requestsInFlight.current > 0) return; // dont update if there is a future update expected
-    console.log('setting grids');
+    console.log('rif', requestsInFlight.current);
+    //if (requestsInFlight.current > 0) return; // dont update if there is a future update expected
+    console.log('setting grids', grids);
     setLocalGrids(grids);
   };
 
@@ -167,11 +181,6 @@ export default function useLocalGrids(
     });
   };
 
-  const DrawRenderRegion = () => {
-    coordinates = getCorners(renderRegion);
-    return <Polygon coordinates={coordinates} fillColor={'#000000'}></Polygon>;
-  };
-
   const DrawGrids = () => {
     return localGrids.map((grid, i) => {
       if (grid.bounds.length > 0) {
@@ -186,8 +195,8 @@ export default function useLocalGrids(
       }
     });
   };
-
-  return [DrawGrids, localGrids, DrawRenderRegion];
+  return [DrawGrids, localGrids];
+  // return [useCallback(DrawGrids, [localGrids]), localGrids];
 }
 
 // const loadLoDs = () => {
