@@ -21,7 +21,6 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -34,7 +33,5 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
       </Stack.Navigator>
     </NavigationContainer>
-    */
-    <EventHistory/>
   );
 }
