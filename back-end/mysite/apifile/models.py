@@ -2,18 +2,16 @@ import math
 import operator
 from functools import reduce
 
-from django.db.models import Q, Count, F, Func, Sum
+import mahotas
+import numpy as np
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models import F, Q, Count, Sum
 from django.db.models.functions import Cast
+from django.utils import timezone
 from shapely.geometry import Point, Polygon
 
 from .constants import UNIT_TILE_SIZE
-import mahotas
-import numpy as np
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils import timezone
-
-from django.db.models import F
 
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
@@ -104,6 +102,7 @@ class Event(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     players = models.ManyToManyField(Player, through='EventPerformance')
+    active = models.BooleanField(default=False)
 
     @staticmethod
     def get_closest_active_event(point):
@@ -138,6 +137,73 @@ class Event(models.Model):
         curr_events = Event.objects.filter(start__lte=today, end__gte=today)
 
         return curr_events
+
+    @staticmethod
+    def open_events(date):
+        to_start = Event.object.filter(start__lte=date, end__gt=date, active=False)
+        for event in to_start:
+            # clear area
+            event.clear_area()
+
+            # switch flag
+            event.active = True
+            event.save()
+
+    @staticmethod
+    def close_events(date):
+        to_end = Event.object.filter(end__lte=date, active=True)
+        for event in to_end:
+            # get winners
+            winners = event.winners()
+            unseen_teams = {"terra", "ocean", "windy"}
+            teams = {"terra": Team.objects.get(name="terra"),
+                     "ocean": Team.objects.get(name="ocean"),
+                     "windy": Team.objects.get(name="windy")}
+
+            if len(winners) == 3:
+                first = teams[winners[0].name]
+                second = teams[winners[1].name]
+                third = teams[winners[2].name]
+            elif len(winners) == 2:
+                first = teams[winners[0].name]
+                unseen_teams.remove(winners[0].name)
+                second = teams[winners[1].name]
+                unseen_teams.remove(winners[1].name)
+                third = teams[unseen_teams.pop()]
+            elif len(winners) == 1:
+                first = teams[winners[0].name]
+                unseen_teams.remove(winners[0].name)
+                second = teams[unseen_teams.pop()]
+                third = teams[unseen_teams.pop()]
+            else:
+                first = teams[unseen_teams.pop()]
+                second = teams[unseen_teams.pop()]
+                third = teams[unseen_teams.pop()]
+
+            EventStandings.objects.create(event=event, team=first, place=1)
+            EventStandings.objects.create(event=event, team=second, place=2)
+            EventStandings.objects.create(event=event, team=third, place=3)
+
+            # rewards
+            players = EventPerformance.objects.filter(event=event, player__team=first)
+            for playerPerf in players:
+                playerPerf.player.coins += 3 * playerPerf.contribution
+                playerPerf.player.save()
+            players = EventPerformance.objects.filter(event=event, player__team=second)
+            for playerPerf in players:
+                playerPerf.player.coins += 2 * playerPerf.contribution
+                playerPerf.player.save()
+            players = EventPerformance.objects.filter(event=event, player__team=third)
+            for playerPerf in players:
+                playerPerf.player.coins += playerPerf.contribution
+                playerPerf.player.save()
+
+            # clear area
+            event.clear_area()
+
+            # switch flag
+            event.active = False
+            event.save()
 
     def check_within(self, point):
         """
@@ -230,7 +296,7 @@ class EventBounds(models.Model):
 class EventStandings(models.Model):
     event = models.OneToOneField(Event, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    place = models.IntegerField()
+    place = models.PositiveIntegerField()
 
 
 class Workout(models.Model):
