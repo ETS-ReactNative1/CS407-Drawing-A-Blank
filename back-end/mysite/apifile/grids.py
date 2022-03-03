@@ -91,7 +91,7 @@ def bounds_of_grid(location, size=1):
     converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
 
-    dist = size * UNIT_TILE_SIZE
+    dist = int(size) * UNIT_TILE_SIZE
 
     easting, northing = location
 
