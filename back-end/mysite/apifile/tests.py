@@ -271,60 +271,42 @@ class EventOpenCloseTests(TestCase):
         Grid.objects.create(easting=12, northing=51, player=self.p_windy, time=test_time)
         Grid.objects.create(easting=13, northing=56, player=self.p_terra, time=test_time)
 
-        # Store grid counts for each event before tests
-        self.old_grids_before = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.old_event.all_grids()))).count()
-        self.close_grids_before = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.close_event.all_grids()))).count()
-        self.open_grids_before = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.open_event.all_grids()))).count()
-        self.future_grids_before = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.future_event.all_grids()))).count()
-
     def test_open(self):
         print(self.open_grids_before, self.close_grids_before, self.open_grids_before, self.future_grids_before)
 
         Event.open_events(self.test_date)
 
         # Retrieve updated event tile counts
-        old_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.old_event.all_grids()))).count()
-        close_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.close_event.all_grids()))).count()
-        open_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.open_event.all_grids()))).count()
-        future_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.future_event.all_grids()))).count()
+        old_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(10, 20)).count()
+        close_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(50, 60)).count()
+        open_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(10, 20)).count()
+        future_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(50, 60)).count()
 
         # Check counts match
-        self.assertEqual(self.old_grids_before, old_grids_after, "Event grids changed that should not have been.")
-        self.assertEqual(self.close_grids_before, close_grids_after, "Event grids changed that should not have been.")
-        self.assertEqual(self.future_grids_before, future_grids_after, "Event grids changed that should not have been.")
+        self.assertEqual(4, old_grids_after, "Event grids changed that should not have been.")
+        self.assertEqual(6, close_grids_after, "Event grids changed that should not have been.")
+        self.assertEqual(6, future_grids_after, "Event grids changed that should not have been.")
 
         # Check the event to open was wiped
-        self.assertNotEqual(self.open_grids_before, open_grids_after, "Event grids not changed.")
+        self.assertNotEqual(6, open_grids_after, "Event grids not changed.")
         self.assertEqual(open_grids_after, 0, "Event grids not cleared.")
 
     def test_close(self):
         Event.close_events(self.test_date)
 
         # Retrieve updated event tile counts
-        old_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.old_event.all_grids()))).count()
-        close_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.close_event.all_grids()))).count()
-        open_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.open_event.all_grids()))).count()
-        future_grids_after = Grid.objects.filter(
-            reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.future_event.all_grids()))).count()
+        old_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(10, 20)).count()
+        close_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(50, 60)).count()
+        open_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(10, 20)).count()
+        future_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(50, 60)).count()
 
         # Check counts match
-        self.assertEqual(self.old_grids_before, old_grids_after, "Event grids changed that should not have been.")
-        self.assertEqual(self.open_grids_before, open_grids_after, "Event grids changed that should not have been.")
-        self.assertEqual(self.future_grids_before, future_grids_after, "Event grids changed that should not have been.")
+        self.assertEqual(4, old_grids_after, "Event grids changed that should not have been.")
+        self.assertEqual(6, open_grids_after, "Event grids changed that should not have been.")
+        self.assertEqual(6, future_grids_after, "Event grids changed that should not have been.")
 
         # Check the event to close was wiped
-        self.assertNotEqual(self.close_grids_before, close_grids_after, "Event grids not changed.")
+        self.assertNotEqual(6, close_grids_after, "Event grids not changed.")
         self.assertEqual(close_grids_after, 0, "Event grids not cleared.")
 
         # Get team positions for closed event
