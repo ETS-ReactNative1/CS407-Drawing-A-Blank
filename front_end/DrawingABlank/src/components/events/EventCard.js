@@ -9,28 +9,51 @@ class EventCard extends Component{
     getDefaultPicture = (teamName) => {
         return this.state.default_pictures[teamName];
     }
+    
+    getWinnerTeamName = () => {
+        if(this.props.points_terra > this.props.points_ocean && this.props.points_terra > this.props.points_windy){
+            return 'terra';
+        }
+        else if(this.props.points_ocean > this.props.points_windy && this.props.points_ocean > this.props.points_terra){
+            return 'ocean';
+        }
+        else if(this.props.points_windy > this.props.points_ocean && this.props.points_windy > this.props.points_terra){
+            return 'windy';
+        }else{
+            //Draw, handle later
+            return ''
+        }
+    }
+    getWinnerImage = () => {
+        return this.getDefaultPicture(this.getWinnerTeamName());
+    }
     render(){
         return(
             <TouchableOpacity style={styles.event_card}>
                 <View style={styles.winning_team}>
                     <Image
-                        source={this.getDefaultPicture('ocean')}
+                        source={this.getWinnerImage()}
                         style={styles.winning_team_picture}
                     />
                 </View>
                 <View style={styles.event_details}>
                     <View style={styles.event_scores}>
-                        <Text style={styles.event_result_text}>Victory</Text>
-                        <Text style={styles.event_score_text_sep}>  (</Text>
-                        <Text style={styles.event_score_text_terra}>123</Text>
+                        {   (this.props.team_user==this.getWinnerTeamName()) ?
+                            <Text style={styles.event_result_text_victory}>Victory</Text>
+                            : <Text style={styles.event_result_text_defeat}>Defeat</Text>
+                        }
+                        <Text style={styles.event_score_text_sep}> (</Text>
+                        <Text style={styles.event_score_text_terra}>{this.props.points_terra}</Text>
                         <Text style={styles.event_score_text_sep}>|</Text>
-                        <Text style={styles.event_score_text_ocean}>23</Text>
+                        <Text style={styles.event_score_text_ocean}>{this.props.points_ocean}</Text>
                         <Text style={styles.event_score_text_sep}>|</Text>
-                        <Text style={styles.event_score_text_windy}>152</Text>
+                        <Text style={styles.event_score_text_windy}>{this.props.points_windy}</Text>
+                        <Text style={styles.event_score_text_sep}>|</Text>
+                        <Text style={styles.event_score_text_user}>{this.props.points_user}</Text>
                         <Text style={styles.event_score_text_sep}>)</Text>
                     </View>
                     <View style={styles.event_date}>
-                        <Text style={styles.event_date_text}>21st February 2022 13:42 - 23rd February 2022 13:42</Text>
+                        <Text style={styles.event_date_text}>{this.props.date}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

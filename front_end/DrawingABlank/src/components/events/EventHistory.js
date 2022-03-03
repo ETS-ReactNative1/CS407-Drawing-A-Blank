@@ -17,14 +17,13 @@ class EventHistory extends Component{
                     <Text style={styles.score_points}>123 points</Text>
                 </View>
                 <ScrollView style={styles.event_board}>
-                    <EventCard/>
-                    <EventCard/>
-                    <EventCard/>
-                    <EventCard/>
-                    <EventCard/>
-                    <EventCard/>
-                    <EventCard/>
-                    <EventCard/>
+                    {/**Later the user_team prop can be replaced with getting it directly from storage. */}
+                    <EventCard points_terra={23} points_ocean={42} points_windy={32} points_user={3} team_user='ocean' date="21st February 2022 13:42 - 23rd February 2022 13:42"/>
+                    <EventCard points_terra={12} points_ocean={42} points_windy={5} points_user={6} team_user='ocean' date="21st February 2022 13:42 - 23rd February 2022 13:42"/>
+                    <EventCard points_terra={45} points_ocean={23} points_windy={455} points_user={7} team_user='ocean' date="21st February 2022 13:42 - 23rd February 2022 13:42"/>
+                    <EventCard points_terra={1} points_ocean={132} points_windy={1} points_user={1} team_user='ocean' date="21st February 2022 13:42 - 23rd February 2022 13:42"/>
+                    <EventCard points_terra={233} points_ocean={45} points_windy={1} points_user={12} team_user='ocean' date="21st February 2022 13:42 - 23rd February 2022 13:42"/>
+                    <EventCard points_terra={34} points_ocean={32} points_windy={2} points_user={5} team_user='ocean' date="21st February 2022 13:42 - 23rd February 2022 13:42"/>
                 </ScrollView>
             </View>
         )

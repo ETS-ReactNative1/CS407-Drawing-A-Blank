@@ -72,10 +72,15 @@ export const styles = StyleSheet.create({
     winning_team:{
         flex:0.25
     },
-    event_result_text:{
+    event_result_text_victory:{
         fontSize:24,
         fontFamily:'Ubuntu-Light',
         color:'#0fd945'
+    },
+    event_result_text_defeat:{
+        fontSize:24,
+        fontFamily:'Ubuntu-Light',
+        color:'#de1610'
     },
     event_scores:{
         flexDirection:'row',
@@ -97,12 +102,17 @@ export const styles = StyleSheet.create({
     event_score_text_ocean:{
         fontSize:24,
         fontFamily:'Ubuntu-Light',
-        color:'#82FF8A'
+        color:'#47C4FF'
     },
     event_score_text_windy:{
         fontSize:24,
         fontFamily:'Ubuntu-Light',
-        color:'#47C4FF'
+        color:'#82FF8A'
+    },
+    event_score_text_user:{
+        fontSize:24,
+        fontFamily:'Ubuntu-Light',
+        color:'#d1c308'
     },
     event_score_text_sep:{
         fontSize:24,
