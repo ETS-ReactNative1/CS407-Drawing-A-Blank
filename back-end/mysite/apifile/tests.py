@@ -245,8 +245,8 @@ class EventOpenCloseTests(TestCase):
         Grid.objects.create(easting=65, northing=55, player=self.p_windy, time=test_time)
         Grid.objects.create(easting=65, northing=50, player=self.p_terra, time=test_time)
         EventPerformance.objects.create(player=self.p_terra, event=self.close_event, contribution=2)
-        EventPerformance.objects.create(player=self.p_ocean, event=self.close_event, contribution=1)
         EventPerformance.objects.create(player=self.p_windy, event=self.close_event, contribution=2)
+        EventPerformance.objects.create(player=self.p_ocean, event=self.close_event, contribution=1)
         EventPerformance.objects.create(player=self.p_windy_2, event=self.close_event, contribution=1)
 
         # Add event that needs to be opened
@@ -329,8 +329,7 @@ class EventOpenCloseTests(TestCase):
         p_windy = Player.objects.get(user__username="u2")
         p_ocean = Player.objects.get(user__username="u3")
         p_windy_2 = Player.objects.get(user__username="u4")
-        self.assertEqual(6, p_windy.coins, "Windy player 1 did not get correct rewards")
-        self.assertEqual(3, p_windy_2.coins, "Windy player 2 did not get correct rewards")
         self.assertEqual(4, p_terra.coins, "Terra player did not get correct rewards")
+        self.assertEqual(6, p_windy.coins, "Windy player 1 did not get correct rewards")
         self.assertEqual(1, p_ocean.coins, "Ocean player did not get correct rewards")
-
+        self.assertEqual(3, p_windy_2.coins, "Windy player 2 did not get correct rewards")
