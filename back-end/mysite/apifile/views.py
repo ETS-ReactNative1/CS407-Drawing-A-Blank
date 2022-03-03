@@ -173,7 +173,8 @@ class GridView(viewsets.ViewSet):
         tr = data['top_right']
         zoom = data['zoom']
         b, l = bl.split(',')
-        bl = [b, l]
+        l = l.strip('"')
+        bl = [float(b), l]
         t, r = tr.split(',')
         tr = [t, r]
 
