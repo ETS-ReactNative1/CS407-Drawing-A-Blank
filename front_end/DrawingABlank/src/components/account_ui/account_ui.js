@@ -9,19 +9,21 @@ import ProfileWelcome from './create_profile_forms/profile_welcome.js';
 import ProfileAvatar from './create_profile_forms/profile_avatar.js';
 import ProfileBiography from './create_profile_forms/profile_biography.js';
 import ProfileTeamSelection from './create_profile_forms/profile_team_selection.js';
+import LoadingScreen from './loading_screen/loading_screen.js';
 
 const Stack = createStackNavigator();
 
 class AccountAuthUI extends Component{
     render(){
         return(
-            <Stack.Navigator initialRouteName="login_screen" screenOptions={{headerShown:false}}>
+            <Stack.Navigator initialRouteName="loading_screen" screenOptions={{headerShown:false}}>
                 <Stack.Screen name="login_screen" component={LoginScreen}/>
                 <Stack.Screen name="create_account_screen" component={CreateAccountScreen}/>
                 <Stack.Screen name="ProfileWelcome" component={ProfileWelcome} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileBiography" component={ProfileBiography} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileAvatar" component={ProfileAvatar} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileTeam" component={ProfileTeamSelection} options={{headerLeft:()=>null}}/>
+                <Stack.Screen name="loading_screen" component={LoadingScreen} options={{headerLeft:()=>null}}/>
             </Stack.Navigator>
         );
     }
