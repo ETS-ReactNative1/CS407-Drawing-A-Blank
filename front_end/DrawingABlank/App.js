@@ -14,6 +14,7 @@ import EventPodium from './src/components/events/EventPodium.js';
 import EventSummary from './src/components/events/EventSummary.js';
 import LoadingScreen from './src/components/account_ui/loading_screen/loading_screen.js';
 import EventHistory from './src/components/profile/personal_stats/event_history.js';
+import LoadingScreen from './src/components/account_ui/loading_screen/loading_screen.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
