@@ -187,10 +187,10 @@ class Event(models.Model):
             # rewards
             players = EventPerformance.objects.filter(event=event, player__team=first)
             for playerPerf in players:
-                Player.objects.filter(id=playerPerf.id).update(coins=F('coins') + 3 * playerPerf.contribution)
+                Player.objects.filter(id=playerPerf.id).update(coins=F('coins') + (3 * playerPerf.contribution))
             players = EventPerformance.objects.filter(event=event, player__team=second)
             for playerPerf in players:
-                Player.objects.filter(id=playerPerf.id).update(coins=F('coins') + 2 * playerPerf.contribution)
+                Player.objects.filter(id=playerPerf.id).update(coins=F('coins') + (2 * playerPerf.contribution))
             players = EventPerformance.objects.filter(event=event, player__team=third)
             for playerPerf in players:
                 Player.objects.filter(id=playerPerf.id).update(coins=F('coins') + playerPerf.contribution)
