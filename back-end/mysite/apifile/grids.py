@@ -199,7 +199,7 @@ def sub_sample(coords, sub_dimension=1):
     if sub_dimension == 1:
         return grids_visible(coords)
 
-    zoom_level = sub_dimension * UNIT_TILE_SIZE
+    zoom_level = int(sub_dimension) * UNIT_TILE_SIZE
 
     bottom_left = coords[0]
     top_right = coords[1]
