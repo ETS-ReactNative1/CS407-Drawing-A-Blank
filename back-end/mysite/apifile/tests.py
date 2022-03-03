@@ -220,65 +220,65 @@ class EventOpenCloseTests(TestCase):
         self.old_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=30),
                                               end=self.test_date - datetime.timedelta(days=5))
         EventBounds.objects.create(event=self.old_event, easting=10, northing=10)
-        EventBounds.objects.create(event=self.old_event, easting=10, northing=20)
-        EventBounds.objects.create(event=self.old_event, easting=20, northing=20)
-        EventBounds.objects.create(event=self.old_event, easting=20, northing=10)
-        Grid.objects.create(easting=14, northing=12, player=self.p_terra, time=test_time)
-        Grid.objects.create(easting=14, northing=11, player=self.p_terra, time=test_time)
-        Grid.objects.create(easting=12, northing=12, player=self.p_terra, time=test_time)
-        Grid.objects.create(easting=19, northing=12, player=self.p_ocean, time=test_time)
+        EventBounds.objects.create(event=self.old_event, easting=10, northing=30)
+        EventBounds.objects.create(event=self.old_event, easting=30, northing=30)
+        EventBounds.objects.create(event=self.old_event, easting=30, northing=10)
+        Grid.objects.create(easting=15, northing=10, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=10, northing=15, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=15, northing=25, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=25, northing=20, player=self.p_ocean, time=test_time)
 
         # Add event that needs to be closed
         self.close_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=50),
                                                 end=self.test_date - datetime.timedelta(days=1),
                                                 active=True)
         EventBounds.objects.create(event=self.close_event, easting=50, northing=50)
-        EventBounds.objects.create(event=self.close_event, easting=50, northing=60)
-        EventBounds.objects.create(event=self.close_event, easting=60, northing=60)
-        EventBounds.objects.create(event=self.close_event, easting=60, northing=50)
-        Grid.objects.create(easting=54, northing=52, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=54, northing=51, player=self.p_ocean, time=test_time)
-        Grid.objects.create(easting=52, northing=52, player=self.p_windy_2, time=test_time)
-        Grid.objects.create(easting=59, northing=52, player=self.p_terra, time=test_time)
-        Grid.objects.create(easting=58, northing=52, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=56, northing=52, player=self.p_terra, time=test_time)
+        EventBounds.objects.create(event=self.close_event, easting=50, northing=70)
+        EventBounds.objects.create(event=self.close_event, easting=70, northing=70)
+        EventBounds.objects.create(event=self.close_event, easting=70, northing=50)
+        Grid.objects.create(easting=50, northing=55, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=55, northing=60, player=self.p_ocean, time=test_time)
+        Grid.objects.create(easting=50, northing=50, player=self.p_windy_2, time=test_time)
+        Grid.objects.create(easting=60, northing=65, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=65, northing=55, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=65, northing=50, player=self.p_terra, time=test_time)
 
         # Add event that needs to be opened
         self.open_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=1),
                                                end=self.test_date + datetime.timedelta(days=25))
         EventBounds.objects.create(event=self.open_event, easting=50, northing=10)
-        EventBounds.objects.create(event=self.open_event, easting=50, northing=20)
-        EventBounds.objects.create(event=self.open_event, easting=60, northing=20)
-        EventBounds.objects.create(event=self.open_event, easting=60, northing=10)
-        Grid.objects.create(easting=54, northing=12, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=54, northing=11, player=self.p_ocean, time=test_time)
-        Grid.objects.create(easting=52, northing=12, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=59, northing=12, player=self.p_terra, time=test_time)
-        Grid.objects.create(easting=58, northing=12, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=56, northing=12, player=self.p_terra, time=test_time)
+        EventBounds.objects.create(event=self.open_event, easting=50, northing=30)
+        EventBounds.objects.create(event=self.open_event, easting=70, northing=30)
+        EventBounds.objects.create(event=self.open_event, easting=70, northing=10)
+        Grid.objects.create(easting=55, northing=10, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=55, northing=15, player=self.p_ocean, time=test_time)
+        Grid.objects.create(easting=50, northing=25, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=60, northing=20, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=60, northing=15, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=65, northing=10, player=self.p_terra, time=test_time)
 
         # Add event that should not be opened yet
         self.future_event = Event.objects.create(start=self.test_date + datetime.timedelta(days=1),
                                                  end=self.test_date + datetime.timedelta(days=25))
         EventBounds.objects.create(event=self.future_event, easting=10, northing=50)
-        EventBounds.objects.create(event=self.future_event, easting=10, northing=60)
-        EventBounds.objects.create(event=self.future_event, easting=20, northing=60)
-        EventBounds.objects.create(event=self.future_event, easting=20, northing=50)
-        Grid.objects.create(easting=11, northing=54, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=18, northing=52, player=self.p_ocean, time=test_time)
-        Grid.objects.create(easting=16, northing=55, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=14, northing=57, player=self.p_terra, time=test_time)
-        Grid.objects.create(easting=12, northing=51, player=self.p_windy, time=test_time)
-        Grid.objects.create(easting=13, northing=56, player=self.p_terra, time=test_time)
+        EventBounds.objects.create(event=self.future_event, easting=10, northing=70)
+        EventBounds.objects.create(event=self.future_event, easting=30, northing=70)
+        EventBounds.objects.create(event=self.future_event, easting=30, northing=50)
+        Grid.objects.create(easting=10, northing=55, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=25, northing=60, player=self.p_ocean, time=test_time)
+        Grid.objects.create(easting=20, northing=55, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=15, northing=55, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=10, northing=65, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=15, northing=50, player=self.p_terra, time=test_time)
 
     def test_open(self):
         Event.open_events(self.test_date)
 
         # Retrieve updated event tile counts
-        old_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(10, 20)).count()
-        close_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(50, 60)).count()
-        open_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(10, 20)).count()
-        future_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(50, 60)).count()
+        old_grids_after = Grid.objects.filter(easting__range=(10, 30), northing__range=(10, 30)).count()
+        close_grids_after = Grid.objects.filter(easting__range=(50, 70), northing__range=(50, 70)).count()
+        open_grids_after = Grid.objects.filter(easting__range=(50, 70), northing__range=(10, 30)).count()
+        future_grids_after = Grid.objects.filter(easting__range=(10, 30), northing__range=(50, 70)).count()
 
         # Check counts match
         self.assertEqual(4, old_grids_after, "Event grids changed that should not have been.")
@@ -293,10 +293,10 @@ class EventOpenCloseTests(TestCase):
         Event.close_events(self.test_date)
 
         # Retrieve updated event tile counts
-        old_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(10, 20)).count()
-        close_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(50, 60)).count()
-        open_grids_after = Grid.objects.filter(easting__range=(50, 60), northing__range=(10, 20)).count()
-        future_grids_after = Grid.objects.filter(easting__range=(10, 20), northing__range=(50, 60)).count()
+        old_grids_after = Grid.objects.filter(easting__range=(10, 30), northing__range=(10, 30)).count()
+        close_grids_after = Grid.objects.filter(easting__range=(50, 70), northing__range=(50, 70)).count()
+        open_grids_after = Grid.objects.filter(easting__range=(50, 70), northing__range=(10, 30)).count()
+        future_grids_after = Grid.objects.filter(easting__range=(10, 30), northing__range=(50, 70)).count()
 
         # Check counts match
         self.assertEqual(4, old_grids_after, "Event grids changed that should not have been.")
