@@ -141,6 +141,7 @@ class Event(models.Model):
     @staticmethod
     def open_events(date):
         to_start = Event.objects.filter(start__lte=date, end__gt=date, active=False)
+        print(date, to_start)
         for event in to_start:
             # clear area
             event.clear_area()
@@ -152,6 +153,7 @@ class Event(models.Model):
     @staticmethod
     def close_events(date):
         to_end = Event.objects.filter(end__lte=date, active=True)
+        print(date, to_end)
         for event in to_end:
             # get winners
             winners = event.winner()
@@ -264,7 +266,6 @@ class Event(models.Model):
         all_grids = self.all_grids()
         if all_grids is not None:
             Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids))).delete()
-        return None
 
     def winner(self):
         """
