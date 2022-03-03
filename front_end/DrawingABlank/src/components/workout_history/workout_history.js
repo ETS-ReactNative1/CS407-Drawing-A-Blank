@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Text,
   View,
@@ -9,46 +9,29 @@ import {
 } from 'react-native';
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
+import {getUserWorkouts} from '../../api/api_profile';
 
 const WorkoutHistory = () => {
   const navigation = useNavigation();
+
   const recorder = new Workout();
+  // // setup a dummy workout
+  // recorder.startWorkout();
+  // recorder.addCoordinate(52.3764, -1.5612);
+  // recorder.addCoordinateDelay(52.374, -1.5536, 1);
+  // recorder.addCoordinateDelay(52.3726, -1.5516, 2);
+  // recorder.addCoordinateDelay(52.3707, -1.5501, 3);
+  // recorder.stopWorkout();
+  // const workoutTime_mins = 3;
+  // recorder.setWorkoutEndDate(
+  //   new Date(recorder.getWorkoutEndDate().getTime() + workoutTime_mins * 60000),
+  // );
 
-  // setup a dummy workout
-  recorder.startWorkout();
-  recorder.addCoordinate(52.3764, -1.5612);
-  recorder.addCoordinateDelay(52.374, -1.5536, 1);
-  recorder.addCoordinateDelay(52.3726, -1.5516, 2);
-  recorder.addCoordinateDelay(52.3707, -1.5501, 3);
-  recorder.stopWorkout();
-  const workoutTime_mins = 3;
-  recorder.setWorkoutEndDate(
-    new Date(recorder.getWorkoutEndDate().getTime() + workoutTime_mins * 60000),
-  );
+  const [workouts, setWorkouts] = useState([]);
 
-  // setup dummy workouts
-  const workouts = [
-    {date: '01/03/22', points: 500},
-    {date: '20/02/22', points: 234},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-    {date: '01/03/22', points: 500},
-  ];
+  useEffect(() => {
+    getUserWorkouts().then(result => setWorkouts(result));
+  }, []);
 
   const prev_workouts = workouts.map((workout, index) => {
     return (
@@ -59,7 +42,9 @@ const WorkoutHistory = () => {
           onPress();
         }}>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
-        <Text style={{fontSize: 20}}>{workout.date} Run</Text>
+        <Text style={{fontSize: 20}}>
+          {workout.date} {workout.type}
+        </Text>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontWeight: 'bold'}}>
           Total Distance {workout.points}
@@ -68,7 +53,6 @@ const WorkoutHistory = () => {
       </TouchableOpacity>
     );
   });
-
   const onPress = () => {
     navigation.navigate('post_workout_stats', {recorder: recorder});
   };
@@ -144,7 +128,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    height: '3.5%',
+    height: '2.3%',
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
