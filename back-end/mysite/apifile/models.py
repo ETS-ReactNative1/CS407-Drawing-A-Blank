@@ -155,6 +155,7 @@ class Event(models.Model):
         for event in to_end:
             # get winners
             winners = event.winner()
+            print(winners)
             unseen_teams = {"terra", "ocean", "windy"}
             teams = {"terra": Team.objects.get(name="terra"),
                      "ocean": Team.objects.get(name="ocean"),
