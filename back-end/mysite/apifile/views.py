@@ -159,9 +159,9 @@ class GridView(viewsets.ViewSet):
         tr = data['top_right']
         zoom = data['zoom']
         b, l = bl.split(',')
-        bl = [float(b), float(l)]
+        bl = [b, l]
         t, r = tr.split(',')
-        tr = [float(t), float(r)]
+        tr = [t, r]
 
         allGrids = grids.sub_sample((bl, tr), zoom)
         return Response(allGrids, status=status.HTTP_200_OK)
