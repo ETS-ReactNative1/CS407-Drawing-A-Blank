@@ -148,19 +148,19 @@ class UserProfile(viewsets.ViewSet):
 
         return Response("Password changed", status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
     def workout_history(self, request):
-        data = request.data
-        request_user = request.user
+        data = request.GET
+        request_user = data["username"]
+        ret_val = stats.all_user_workouts(request_user)
 
-        return stats.all_user_workouts(request_user.username)
+        return Response(ret_val, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
     def specific_workout(self, request):
-        data = request.data
+        data = request.GET
         workout_id = data["id"]
+        ret_val = stats.workoutpoints_details(workout_id)
 
-        return stats.workoutpoints_details(workout_id)
+        return Response(ret_val, status=status.HTTP_200_OK)
 
 
 class GridView(viewsets.ViewSet):
@@ -172,6 +172,10 @@ class GridView(viewsets.ViewSet):
         bl = data['bottom_left']
         tr = data['top_right']
         zoom = data['zoom']
+        b, l = bl.split(',')
+        bl = [float(b), float(l)]
+        t, r = tr.split(',')
+        tr = [float(t), float(r)]
 
         allGrids = grids.sub_sample((bl, tr), zoom)
         return Response(allGrids, status=status.HTTP_200_OK)
