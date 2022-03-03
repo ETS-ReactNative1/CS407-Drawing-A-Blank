@@ -26,3 +26,5 @@ back-end/mysite/mysite/__pycache__/settings.cpython-38.pyc
 
 
 .DS_Store
+*.pyc
+*.sqlite3

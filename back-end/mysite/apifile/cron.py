@@ -1,5 +1,6 @@
 from datetime import date, timedelta
-from .models import Event, Team, EventStandings, EventPerformance
+from .models import Event, Team, EventStandings, EventPerformance, User
+import random
 
 
 def event_check():
@@ -71,3 +72,19 @@ def purge_tokens():
     # if token.created is older than x
     # delete
     pass
+
+# testing case, cron job adds a user to db
+def test():
+    username = "crontest" + str(random.randint(0,10000000))
+    password = "crontest"
+    email = "cron@test.com"
+    team = 'terra'
+
+    user = User.objects.create_user(username, email, password)
+
+    # default_team_colours = {'terra': 'FF8C91', 'windy': '82FF8A', 'ocean': '47C4FF'}
+    # team, _ = Team.objects.get_or_create(name=team, defaults={'colour': default_team_colours[team]})
+
+    # Player.objects.create(user=user, team=team)
+
+    # token, _ = Token.objects.get_or_create(user=user)
