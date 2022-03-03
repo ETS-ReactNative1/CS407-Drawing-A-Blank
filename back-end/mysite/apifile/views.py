@@ -148,6 +148,7 @@ class UserProfile(viewsets.ViewSet):
 
         return Response("Password changed", status=status.HTTP_200_OK)
 
+    @action(methods=['get'], detail=False)
     def workout_history(self, request):
         data = request.GET
         request_user = data["username"]
@@ -155,6 +156,7 @@ class UserProfile(viewsets.ViewSet):
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
+    @action(methods=['get'], detail=False)
     def specific_workout(self, request):
         data = request.GET
         workout_id = data["id"]
