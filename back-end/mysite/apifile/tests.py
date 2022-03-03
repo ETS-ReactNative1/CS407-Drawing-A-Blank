@@ -7,7 +7,7 @@ from django.test import TestCase
 from rest_framework.authtoken.admin import User
 import pytz
 from . import models
-from .models import Event, EventBounds, Player, Team, Workout, WorkoutPoint, Grid, EventStandings
+from .models import Event, EventBounds, Player, Team, Workout, WorkoutPoint, Grid, EventStandings, EventPerformance
 from . import leaderboards, stats
 
 
@@ -227,6 +227,8 @@ class EventOpenCloseTests(TestCase):
         Grid.objects.create(easting=10, northing=15, player=self.p_terra, time=test_time)
         Grid.objects.create(easting=15, northing=25, player=self.p_terra, time=test_time)
         Grid.objects.create(easting=25, northing=20, player=self.p_ocean, time=test_time)
+        EventPerformance.objects.create(player=self.p_terra, event=self.old_event, contribution=3)
+        EventPerformance.objects.create(player=self.p_ocean, event=self.old_event, contribution=1)
 
         # Add event that needs to be closed
         self.close_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=50),
@@ -242,6 +244,10 @@ class EventOpenCloseTests(TestCase):
         Grid.objects.create(easting=60, northing=65, player=self.p_terra, time=test_time)
         Grid.objects.create(easting=65, northing=55, player=self.p_windy, time=test_time)
         Grid.objects.create(easting=65, northing=50, player=self.p_terra, time=test_time)
+        EventPerformance.objects.create(player=self.p_terra, event=self.close_event, contribution=2)
+        EventPerformance.objects.create(player=self.p_ocean, event=self.close_event, contribution=1)
+        EventPerformance.objects.create(player=self.p_windy, event=self.close_event, contribution=2)
+        EventPerformance.objects.create(player=self.p_windy_2, event=self.close_event, contribution=1)
 
         # Add event that needs to be opened
         self.open_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=1),
