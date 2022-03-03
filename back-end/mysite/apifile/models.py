@@ -140,7 +140,7 @@ class Event(models.Model):
 
     @staticmethod
     def open_events(date):
-        to_start = Event.object.filter(start__lte=date, end__gt=date, active=False)
+        to_start = Event.objects.filter(start__lte=date, end__gt=date, active=False)
         for event in to_start:
             # clear area
             event.clear_area()
@@ -151,7 +151,7 @@ class Event(models.Model):
 
     @staticmethod
     def close_events(date):
-        to_end = Event.object.filter(end__lte=date, active=True)
+        to_end = Event.objects.filter(end__lte=date, active=True)
         for event in to_end:
             # get winners
             winners = event.winners()
