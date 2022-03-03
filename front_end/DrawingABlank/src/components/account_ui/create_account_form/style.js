@@ -56,7 +56,7 @@ const buttons = StyleSheet.create({
         borderRadius:5,
         borderColor:"white",
         borderWidth:1,
-        backgroundColor:"#6db0f6",
+        backgroundColor:"#2796e6",
     },
     loading:{
         width:"40%",
