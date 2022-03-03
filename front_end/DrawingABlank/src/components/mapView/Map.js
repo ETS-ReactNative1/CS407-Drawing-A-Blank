@@ -185,6 +185,29 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
     });*/
     setGrids(mapRetrieved);
   }
+  
+  function collectEventScores(){
+    console.log("CALCULATING SCORES");
+    console.log("HAVE EVENTS:" + events);
+    result = {};
+    events.forEach((event) => {
+      console.log("GOT EVENT:" + JSON.stringify(event));
+      var eventScore = getEventScores(grids,event["bounds"]["coordinates"]);
+      if(eventScore.length != 0){
+        converted_result = []
+        eventScore.forEach(score => {
+          converted_result.push({
+            title:score["details"]["team"],
+            picture:score["details"]["picture"],
+            points:score["count"]
+          });
+        });
+        result[event.id] = converted_result;
+      }
+    }); 
+    setEventScores(result);
+    console.log(result);
+  }
 
   useEffect(() => {
     console.log("INTIIAL REGION:"+JSON.stringify(initialLocation))

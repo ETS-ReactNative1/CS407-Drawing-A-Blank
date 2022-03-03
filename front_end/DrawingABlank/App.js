@@ -12,8 +12,7 @@ import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteCo
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
 import EventPodium from './src/components/events/EventPodium.js';
 import EventSummary from './src/components/events/EventSummary.js';
-import LoadingScreen from './src/components/account_ui/loading_screen/loading_screen.js';
-import EventHistory from './src/components/profile/personal_stats/event_history.js';
+import EventHistory from './src/components/events/EventHistory.js';
 import LoadingScreen from './src/components/account_ui/loading_screen/loading_screen.js';
 const Stack = createStackNavigator();
 
@@ -21,6 +20,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
+    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -33,5 +33,7 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
       </Stack.Navigator>
     </NavigationContainer>
+    */
+   <EventHistory/>
   );
 }
