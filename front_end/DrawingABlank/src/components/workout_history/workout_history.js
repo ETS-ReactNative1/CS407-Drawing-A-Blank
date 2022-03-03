@@ -50,24 +50,14 @@ const WorkoutHistory = () => {
 
     // setup a recorder for the current selected workout
     const recorder = new Workout();
-    recorder.startWorkout();
+    recorder.recording = true;
     recorder.setWorkoutStartDate(workout[0].time);
     workout.forEach(point => {
       recorder.addCoordinateAtTime(point.latitude, point.longitude, point.time);
     });
-    recorder.stopWorkout();
     recorder.setWorkoutEndDate(workout[workout.length - 1].time);
+    recorder.recording = false;
     console.log(recorder.toJSON());
-    // recorder.startWorkout();
-    // recorder.addCoordinate(52.3764, -1.5612);
-    // recorder.addCoordinateDelay(52.374, -1.5536, 1);
-    // recorder.addCoordinateDelay(52.3726, -1.5516, 2);
-    // recorder.addCoordinateDelay(52.3707, -1.5501, 3);
-    // recorder.stopWorkout();
-    // const workoutTime_mins = 3;
-    // recorder.setWorkoutEndDate(
-    //   new Date(recorder.getWorkoutEndDate().getTime() + workoutTime_mins * 60000),
-    // );
     navigation.navigate('post_workout_stats', {recorder: recorder});
   };
 
