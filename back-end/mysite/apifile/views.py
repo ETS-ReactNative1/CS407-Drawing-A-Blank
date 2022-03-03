@@ -173,13 +173,12 @@ class GridView(viewsets.ViewSet):
         tr = data['top_right']
         zoom = data['zoom']
         b, l = bl.split(',')
-        l = l.strip('"')
-        bl = [float(b), l]
+        bl = [float(b), float(l)]
         t, r = tr.split(',')
-        tr = [t, r]
+        tr = [float(t), float(r)]
 
-        # allGrids = grids.sub_sample((bl, tr), zoom)
-        return Response((bl, tr), status=status.HTTP_200_OK)
+        allGrids = grids.sub_sample((bl, tr), zoom)
+        return Response(allGrids, status=status.HTTP_200_OK)
 
 
 class WorkoutSubmission(viewsets.ViewSet):
