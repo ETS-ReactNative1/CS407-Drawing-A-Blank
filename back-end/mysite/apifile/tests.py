@@ -210,7 +210,7 @@ class EventOpenCloseTests(TestCase):
         u3 = User.objects.create_user(username="u3", password="u3")
         self.p_ocean = Player.objects.create(user=u3, team=ocean)
         u4 = User.objects.create_user(username="u4", password="u4")
-        self.p_windy_2 = Player.objects.create(user=u4, team=ocean)
+        self.p_windy_2 = Player.objects.create(user=u4, team=windy)
 
         # Create date to test around
         self.test_date = datetime.date.today()
