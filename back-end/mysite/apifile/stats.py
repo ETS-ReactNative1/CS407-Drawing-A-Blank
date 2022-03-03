@@ -1,4 +1,4 @@
-from .models import Workout, Player, User
+from .models import Workout, Player, User, CoordsConvert
 from . import grids
 from django.db.models import Q, Sum
 
@@ -24,8 +24,14 @@ def workoutpoints_details(workout_id):
     ret_val = []
 
     for point in workout_points:
-        ret_val.append({"easting": point.easting, "northing": point.northing,
-                        "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
+        try:
+            convert = CoordsConvert.objects.get(easting=point.easting, northing=point.northing)
+            ret_val.append({"latitude": convert.latitude, "longitude": convert.longitude,
+                            "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
+        except CoordsConvert.DoesNotExist:
+            lat, long = grids.grid_to_latlong((point.easting, point.northing))
+            ret_val.append({"latitude": lat, "longitude": long,
+                            "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
     return ret_val
 
 
