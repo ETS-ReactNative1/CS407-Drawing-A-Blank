@@ -282,6 +282,8 @@ class EventOpenCloseTests(TestCase):
             reduce(operator.or_, (Q(easting=i, northing=j) for i, j in self.future_event.all_grids()))).count()
 
     def test_open(self):
+        print(self.open_grids_before, self.close_grids_before, self.open_grids_before, self.future_grids_before)
+
         Event.open_events(self.test_date)
 
         # Retrieve updated event tile counts
