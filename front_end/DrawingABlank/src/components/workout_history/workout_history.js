@@ -9,27 +9,19 @@ import {
 } from 'react-native';
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
-import {getUserWorkouts} from '../../api/api_profile';
+import {getUserWorkout, getUserWorkouts} from '../../api/api_profile';
+import {authenticateUser} from '../../api/api_authentication';
 
 const WorkoutHistory = () => {
   const navigation = useNavigation();
 
-  const recorder = new Workout();
-  // // setup a dummy workout
-  // recorder.startWorkout();
-  // recorder.addCoordinate(52.3764, -1.5612);
-  // recorder.addCoordinateDelay(52.374, -1.5536, 1);
-  // recorder.addCoordinateDelay(52.3726, -1.5516, 2);
-  // recorder.addCoordinateDelay(52.3707, -1.5501, 3);
-  // recorder.stopWorkout();
-  // const workoutTime_mins = 3;
-  // recorder.setWorkoutEndDate(
-  //   new Date(recorder.getWorkoutEndDate().getTime() + workoutTime_mins * 60000),
-  // );
-
   const [workouts, setWorkouts] = useState([]);
+  const [workout, setWorkout] = useState([]);
 
   useEffect(() => {
+    // TODO: REMOVE BEFORE PRODUCTION
+    // for debug authentice the user here to avoid logging in each reload
+    authenticateUser('cheese', 'cheese').then();
     getUserWorkouts().then(result => setWorkouts(result));
   }, []);
 
@@ -39,7 +31,7 @@ const WorkoutHistory = () => {
         key={index}
         style={styles.buttonContainer}
         onPress={() => {
-          onPress();
+          onPress(workout.id);
         }}>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontSize: 20}}>
@@ -53,7 +45,29 @@ const WorkoutHistory = () => {
       </TouchableOpacity>
     );
   });
-  const onPress = () => {
+  const onPress = async id => {
+    await getUserWorkout(id).then(result => setWorkout(result));
+
+    // setup a recorder for the current selected workout
+    const recorder = new Workout();
+    recorder.startWorkout();
+    recorder.setWorkoutStartDate(workout[0].time);
+    workout.forEach(point => {
+      recorder.addCoordinateAtTime(point.latitude, point.longitude, point.time);
+    });
+    recorder.stopWorkout();
+    recorder.setWorkoutEndDate(workout[workout.length - 1].time);
+    console.log(recorder.toJSON());
+    // recorder.startWorkout();
+    // recorder.addCoordinate(52.3764, -1.5612);
+    // recorder.addCoordinateDelay(52.374, -1.5536, 1);
+    // recorder.addCoordinateDelay(52.3726, -1.5516, 2);
+    // recorder.addCoordinateDelay(52.3707, -1.5501, 3);
+    // recorder.stopWorkout();
+    // const workoutTime_mins = 3;
+    // recorder.setWorkoutEndDate(
+    //   new Date(recorder.getWorkoutEndDate().getTime() + workoutTime_mins * 60000),
+    // );
     navigation.navigate('post_workout_stats', {recorder: recorder});
   };
 

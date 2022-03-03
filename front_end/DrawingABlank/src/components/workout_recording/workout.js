@@ -36,11 +36,11 @@ export class Workout {
     }
   }
 
-  // Debug function for workout_history.js
+
   setWorkoutEndDate(endDate) {
     this.date_end = endDate;
   }
-  // Debug function for workout_history.js
+
   setWorkoutStartDate(startDate) {
     this.date_start = startDate;
   }
@@ -61,6 +61,16 @@ export class Workout {
         latitude: latitude,
         longitude: longitude,
         timestamp: delayTime,
+      });
+    }
+  }
+
+  addCoordinateAtTime(latitude, longitude, timestamp) {
+    if (this.recording) {
+      this.coordinates.push({
+        latitude: latitude,
+        longitude: longitude,
+        timestamp: timestamp,
       });
     }
   }

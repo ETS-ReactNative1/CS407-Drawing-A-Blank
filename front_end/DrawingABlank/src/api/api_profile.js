@@ -56,7 +56,26 @@ export const getUserWorkouts = () => {
     })
     .then(data => {
       if (data) {
-        console.log('workout_history Got:' + JSON.stringify(data));
+        // console.log('workout_history Got:' + JSON.stringify(data));
+      }
+      return data;
+    });
+};
+
+export const getUserWorkout = id => {
+  return getToken()
+    .then(token =>
+      request('GET', 'user/specific_workout/?id=', `${id}`, '', token),
+    )
+    .then(response => {
+      if (response.status != 200) {
+        throw new Error(`Could not obtain workout. ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data) {
+        // console.log('workout Got:' + JSON.stringify(data));
       }
       return data;
     });
