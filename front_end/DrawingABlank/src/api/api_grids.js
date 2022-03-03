@@ -33,9 +33,9 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
           'GET',
           'map/',
           '?bottom_left=' +
-            JSON.stringify(Object.values(corners[0])) +
+            Object.values(corners[0]) +
             '&top_right=' +
-            JSON.stringify(Object.values(corners[1])) +
+            Object.values(corners[1]) +
             '&zoom=' +
             zoom +
             '',

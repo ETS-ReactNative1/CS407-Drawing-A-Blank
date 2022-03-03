@@ -174,7 +174,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         // maxZoomLevel={10}
       >
         {/* Region features now memoized */}
-        <DrawRenderRegionFeatures showRegionOutline={true} />
+        {/* {<DrawRenderRegionFeatures showRegionOutline={true} />} */}
 
         <DrawUserPath />
       </Animated>
@@ -201,6 +201,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         drawGridsFunction={() => {}}
         // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}
       />
+
       <Sheet
         ref={bottomSheetRef}
         localEvents={regionFeatures.events}
