@@ -154,7 +154,7 @@ class Event(models.Model):
         to_end = Event.objects.filter(end__lte=date, active=True)
         for event in to_end:
             # get winners
-            winners = event.winners()
+            winners = event.winner()
             unseen_teams = {"terra", "ocean", "windy"}
             teams = {"terra": Team.objects.get(name="terra"),
                      "ocean": Team.objects.get(name="ocean"),
