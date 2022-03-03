@@ -214,6 +214,7 @@ class EventOpenCloseTests(TestCase):
 
         # Create date to test around
         self.test_date = datetime.date.today()
+        test_time = datetime.datetime.now()
 
         # Add event that is already closed
         self.old_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=30),
@@ -222,10 +223,10 @@ class EventOpenCloseTests(TestCase):
         EventBounds.objects.create(event=self.old_event, easting=1000, northing=2000)
         EventBounds.objects.create(event=self.old_event, easting=2000, northing=2000)
         EventBounds.objects.create(event=self.old_event, easting=2000, northing=1000)
-        Grid.objects.create(easting=1453, northing=1245, player=self.p_terra)
-        Grid.objects.create(easting=1451, northing=1125, player=self.p_terra)
-        Grid.objects.create(easting=1254, northing=1245, player=self.p_terra)
-        Grid.objects.create(easting=1968, northing=1235, player=self.p_ocean)
+        Grid.objects.create(easting=1453, northing=1245, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=1451, northing=1125, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=1254, northing=1245, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=1968, northing=1235, player=self.p_ocean, time=test_time)
 
         # Add event that needs to be closed
         self.close_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=50),
@@ -235,12 +236,12 @@ class EventOpenCloseTests(TestCase):
         EventBounds.objects.create(event=self.close_event, easting=5000, northing=6000)
         EventBounds.objects.create(event=self.close_event, easting=6000, northing=6000)
         EventBounds.objects.create(event=self.close_event, easting=6000, northing=5000)
-        Grid.objects.create(easting=5453, northing=5245, player=self.p_windy)
-        Grid.objects.create(easting=5451, northing=5125, player=self.p_ocean)
-        Grid.objects.create(easting=5254, northing=5245, player=self.p_windy_2)
-        Grid.objects.create(easting=5968, northing=5235, player=self.p_terra)
-        Grid.objects.create(easting=5854, northing=5275, player=self.p_windy)
-        Grid.objects.create(easting=5648, northing=5285, player=self.p_terra)
+        Grid.objects.create(easting=5453, northing=5245, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5451, northing=5125, player=self.p_ocean, time=test_time)
+        Grid.objects.create(easting=5254, northing=5245, player=self.p_windy_2, time=test_time)
+        Grid.objects.create(easting=5968, northing=5235, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=5854, northing=5275, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5648, northing=5285, player=self.p_terra, time=test_time)
 
         # Add event that needs to be opened
         self.open_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=1),
@@ -249,12 +250,12 @@ class EventOpenCloseTests(TestCase):
         EventBounds.objects.create(event=self.open_event, easting=5000, northing=2000)
         EventBounds.objects.create(event=self.open_event, easting=6000, northing=2000)
         EventBounds.objects.create(event=self.open_event, easting=6000, northing=1000)
-        Grid.objects.create(easting=5453, northing=1245, player=self.p_windy)
-        Grid.objects.create(easting=5451, northing=1125, player=self.p_ocean)
-        Grid.objects.create(easting=5254, northing=1245, player=self.p_windy)
-        Grid.objects.create(easting=5968, northing=1235, player=self.p_terra)
-        Grid.objects.create(easting=5854, northing=1275, player=self.p_windy)
-        Grid.objects.create(easting=5648, northing=1285, player=self.p_terra)
+        Grid.objects.create(easting=5453, northing=1245, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5451, northing=1125, player=self.p_ocean, time=test_time)
+        Grid.objects.create(easting=5254, northing=1245, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5968, northing=1235, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=5854, northing=1275, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5648, northing=1285, player=self.p_terra, time=test_time)
 
         # Add event that should not be opened yet
         self.future_event = Event.objects.create(start=self.test_date + datetime.timedelta(days=1),
@@ -263,12 +264,12 @@ class EventOpenCloseTests(TestCase):
         EventBounds.objects.create(event=self.future_event, easting=5000, northing=20000)
         EventBounds.objects.create(event=self.future_event, easting=6000, northing=20000)
         EventBounds.objects.create(event=self.future_event, easting=6000, northing=10000)
-        Grid.objects.create(easting=5453, northing=10245, player=self.p_windy)
-        Grid.objects.create(easting=5451, northing=11025, player=self.p_ocean)
-        Grid.objects.create(easting=5254, northing=12405, player=self.p_windy)
-        Grid.objects.create(easting=5968, northing=12350, player=self.p_terra)
-        Grid.objects.create(easting=5854, northing=12075, player=self.p_windy)
-        Grid.objects.create(easting=5648, northing=12805, player=self.p_terra)
+        Grid.objects.create(easting=5453, northing=10245, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5451, northing=11025, player=self.p_ocean, time=test_time)
+        Grid.objects.create(easting=5254, northing=12405, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5968, northing=12350, player=self.p_terra, time=test_time)
+        Grid.objects.create(easting=5854, northing=12075, player=self.p_windy, time=test_time)
+        Grid.objects.create(easting=5648, northing=12805, player=self.p_terra, time=test_time)
 
         # Store grid counts for each event before tests
         self.old_grids_before = Grid.objects.filter(
