@@ -294,7 +294,7 @@ class EventBounds(models.Model):
 
 
 class EventStandings(models.Model):
-    event = models.OneToOneField(Event, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     place = models.PositiveIntegerField()
 
