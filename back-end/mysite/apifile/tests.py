@@ -325,8 +325,12 @@ class EventOpenCloseTests(TestCase):
         self.assertEqual("ocean", third_place.team.name, "Team Océan was not third")
 
         # Check coins distributed correctly
-        self.assertEqual(6, self.p_windy.coins, "Windy player 1 did not get correct rewards")
-        self.assertEqual(3, self.p_windy_2.coins, "Windy player 2 did not get correct rewards")
-        self.assertEqual(4, self.p_terra.coins, "Terra player did not get correct rewards")
-        self.assertEqual(1, self.p_ocean.coins, "Ocean player did not get correct rewards")
+        p_terra = Player.objects.get(user__username="u1")
+        p_windy = Player.objects.get(user__username="u2")
+        p_ocean = Player.objects.get(user__username="u3")
+        p_windy_2 = Player.objects.get(user__username="u4")
+        self.assertEqual(6, p_windy.coins, "Windy player 1 did not get correct rewards")
+        self.assertEqual(3, p_windy_2.coins, "Windy player 2 did not get correct rewards")
+        self.assertEqual(4, p_terra.coins, "Terra player did not get correct rewards")
+        self.assertEqual(1, p_ocean.coins, "Ocean player did not get correct rewards")
 
