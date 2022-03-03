@@ -177,7 +177,7 @@ class GridView(viewsets.ViewSet):
         t, r = tr.split(',')
         tr = [t, r]
 
-        allGrids = grids.sub_sample((bl, tr), zoom)
+        # allGrids = grids.sub_sample((bl, tr), zoom)
         return Response((bl, tr), status=status.HTTP_200_OK)
 
 
