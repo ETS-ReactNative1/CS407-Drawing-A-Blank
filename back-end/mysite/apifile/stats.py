@@ -8,10 +8,11 @@ def all_user_workouts(input_name):
     ret_val = []
     for workout in workouts:
         workout_points = workout.workoutpoint_set.all()
-        ret_val.append(
-            {"id": workout.id, "date": workout_points[0].time.strftime("%Y-%m-%d"), "duration": workout.duration,
-             "calories": workout.calories, "type": workout.type, "distance": calc_workout_distance(workout),
-             "points": workout.points})
+        if len(workout_points) > 0:
+            ret_val.append(
+                {"id": workout.id, "date": workout_points[0].time.strftime("%Y-%m-%d"), "duration": workout.duration,
+                 "calories": workout.calories, "type": workout.type, "distance": calc_workout_distance(workout),
+                 "points": workout.points})
 
     return ret_val
 
