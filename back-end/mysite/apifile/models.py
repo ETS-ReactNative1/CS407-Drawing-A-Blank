@@ -161,18 +161,18 @@ class Event(models.Model):
                      "windy": Team.objects.get(name="windy")}
 
             if len(winners) == 3:
-                first = teams[winners[0].name]
-                second = teams[winners[1].name]
-                third = teams[winners[2].name]
+                first = teams[winners[0]['name']]
+                second = teams[winners[1]['name']]
+                third = teams[winners[2]['name']]
             elif len(winners) == 2:
-                first = teams[winners[0].name]
-                unseen_teams.remove(winners[0].name)
-                second = teams[winners[1].name]
-                unseen_teams.remove(winners[1].name)
+                first = teams[winners[0]['name']]
+                unseen_teams.remove(winners[0]['name'])
+                second = teams[winners[1]['name']]
+                unseen_teams.remove(winners[1]['name'])
                 third = teams[unseen_teams.pop()]
             elif len(winners) == 1:
-                first = teams[winners[0].name]
-                unseen_teams.remove(winners[0].name)
+                first = teams[winners[0]['name']]
+                unseen_teams.remove(winners[0]['name'])
                 second = teams[unseen_teams.pop()]
                 third = teams[unseen_teams.pop()]
             else:
@@ -262,7 +262,6 @@ class Event(models.Model):
         Output: None, deletes grids within event.
         """
         all_grids = self.all_grids()
-        print(all_grids)
         if all_grids is not None:
             Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids))).delete()
 
