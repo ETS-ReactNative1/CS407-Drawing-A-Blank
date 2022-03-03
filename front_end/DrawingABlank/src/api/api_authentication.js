@@ -1,6 +1,12 @@
 import { RecyclerViewBackedScrollViewBase } from "react-native";
 import { request, setToken } from "./api_networking.js";
 
+/*
+    USER ACCOUNT LOGIN DETAILS FOR TESTING:
+    newtestuser
+    abc123
+*/
+
 export const createUser = (username, email, password, team) => {
     body = {
         "username":username,
@@ -11,7 +17,7 @@ export const createUser = (username, email, password, team) => {
     console.log("Sending create user request with " + JSON.stringify(body));
     return request('POST','user/','',JSON.stringify(body))
     .then(response=>{
-        if(response.status != 200){
+        if(response.status != 201){
             throw new Error(JSON.stringify(response.json()));
         }
         return response.json()

@@ -10,6 +10,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
 import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
+import EventPodium from './src/components/events/EventPodium.js';
+import EventSummary from './src/components/events/EventSummary.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
@@ -28,5 +30,15 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
       </Stack.Navigator>
     </NavigationContainer>
+   /*
+    <EventSummary
+      eventId={3}
+      teams={["Windy","Terra","Ocean"]}
+      points={[300,200,100]}
+      personal_score={20}
+      personal_team={"Windy"}
+      score_history={[[100,125,200,300],[50,125,150,200],[25,50,75,100]]}
+    />
+    */
   );
 }
