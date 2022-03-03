@@ -262,6 +262,7 @@ class Event(models.Model):
         Output: None, deletes grids within event.
         """
         all_grids = self.all_grids()
+        print(all_grids)
         if all_grids is not None:
             Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids))).delete()
 
