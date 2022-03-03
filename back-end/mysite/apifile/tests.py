@@ -319,9 +319,6 @@ class EventOpenCloseTests(TestCase):
         second_place = positions[1]
         third_place = positions[2]
 
-        for i in EventPerformance.objects.filter(event=self.close_event):
-            print(i.player.user.username, i.player.team.name, i.contribution)
-
         # Check winners calculated correctly
         self.assertEqual("windy", first_place.team.name, "Team Windy was not first")
         self.assertEqual("terra", second_place.team.name, "Team Terra was not second")
