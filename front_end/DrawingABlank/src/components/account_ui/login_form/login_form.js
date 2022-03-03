@@ -1,6 +1,6 @@
 import { NavigationRouteContext } from '@react-navigation/core';
 import React, {Component} from 'react';
-import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator} from 'react-native';
+import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
@@ -32,15 +32,15 @@ class LoginScreen extends Component{
         var verification = this.detailsComplete();
         if(!verification[0]){
             //Doing an alert for now, will change to UI later.
-            alert(verification[1]);
+            Alert.alert("Login Error",verification[1]);
             return;
         }
         this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
-            this.props.navigation.navigate('map_view_complete');
+            this.props.navigation.navigate('loading_screen',{username:this.state.email});
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);
-            alert(err);
+            Alert.alert("Login Error",err.toString());
             this.setState({loggingIn:false});
         });
     }

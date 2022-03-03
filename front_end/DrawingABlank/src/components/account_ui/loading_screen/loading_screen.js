@@ -37,7 +37,7 @@ class LoadingScreen extends Component{
         return(
             <View style={styles.mainContainer}>
                 <View style={styles.loading_box}>
-                    <Text style={styles.loading_text_title}>Welcome {this.props.username}</Text>
+                    <Text style={styles.loading_text_title}>Welcome {this.props.route.params.username}</Text>
                     <View style={styles.loading_icon}>
                         <ActivityIndicator color='#6db0f6' size='large'/>
                     </View>

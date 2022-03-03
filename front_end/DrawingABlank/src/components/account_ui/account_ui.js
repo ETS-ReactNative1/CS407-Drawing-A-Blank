@@ -16,7 +16,7 @@ const Stack = createStackNavigator();
 class AccountAuthUI extends Component{
     render(){
         return(
-            <Stack.Navigator initialRouteName="loading_screen" screenOptions={{headerShown:false}}>
+            <Stack.Navigator initialRouteName="login_screen" screenOptions={{headerShown:false}}>
                 <Stack.Screen name="login_screen" component={LoginScreen}/>
                 <Stack.Screen name="create_account_screen" component={CreateAccountScreen}/>
                 <Stack.Screen name="ProfileWelcome" component={ProfileWelcome} options={{headerLeft:()=>null}}/>
