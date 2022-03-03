@@ -329,7 +329,7 @@ class EventOpenCloseTests(TestCase):
         p_windy = Player.objects.get(user__username="u2")
         p_ocean = Player.objects.get(user__username="u3")
         p_windy_2 = Player.objects.get(user__username="u4")
-        print(p_terra.coints, p_windy.coins, p_ocean.coins, p_windy_2.coins)
+        print(p_terra.coins, p_windy.coins, p_ocean.coins, p_windy_2.coins)
         self.assertEqual(4, p_terra.coins, "Terra player did not get correct rewards")
         self.assertEqual(6, p_windy.coins, "Windy player 1 did not get correct rewards")
         self.assertEqual(1, p_ocean.coins, "Ocean player did not get correct rewards")
