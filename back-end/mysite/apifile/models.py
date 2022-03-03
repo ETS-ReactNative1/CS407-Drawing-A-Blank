@@ -187,19 +187,16 @@ class Event(models.Model):
             # rewards
             players = EventPerformance.objects.filter(event=event, player__team=first)
             for playerPerf in players:
-                print(playerPerf.player.user.username, playerPerf.contribution)
                 playerPerf.player.coins += 3 * playerPerf.contribution
-                playerPerf.player.save()
+                playerPerf.save()
             players = EventPerformance.objects.filter(event=event, player__team=second)
             for playerPerf in players:
-                print(playerPerf.player.user.username, playerPerf.contribution)
                 playerPerf.player.coins += 2 * playerPerf.contribution
-                playerPerf.player.save()
+                playerPerf.save()
             players = EventPerformance.objects.filter(event=event, player__team=third)
             for playerPerf in players:
-                print(playerPerf.player.user.username, playerPerf.contribution)
                 playerPerf.player.coins += playerPerf.contribution
-                playerPerf.player.save()
+                playerPerf.save()
 
             # clear area
             event.clear_area()
