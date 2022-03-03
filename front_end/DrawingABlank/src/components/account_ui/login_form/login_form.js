@@ -54,7 +54,7 @@ class LoginScreen extends Component{
         return(
             <View style={styles.mainContainer}>
                 <View style={styles.titleBox}>
-                    <Text style={styles.title}>Fresgo!</Text>
+                    <Text style={styles.title}>Fresgo</Text>
                 </View>
                 <View style={styles.description}>
                     <Text style={styles.title}>Login</Text>
