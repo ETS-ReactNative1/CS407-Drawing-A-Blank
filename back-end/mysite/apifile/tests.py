@@ -272,8 +272,6 @@ class EventOpenCloseTests(TestCase):
         Grid.objects.create(easting=13, northing=56, player=self.p_terra, time=test_time)
 
     def test_open(self):
-        print(self.open_grids_before, self.close_grids_before, self.open_grids_before, self.future_grids_before)
-
         Event.open_events(self.test_date)
 
         # Retrieve updated event tile counts
