@@ -54,6 +54,10 @@ const buttons = StyleSheet.create({
         borderWidth:1,
         backgroundColor:"#6db0f6",
     },
+    loading:{
+        width:"40%",
+        left:"55%",
+    },
     buttonText:{
         textAlign:"center",
         fontFamily:'Ubuntu-Light',

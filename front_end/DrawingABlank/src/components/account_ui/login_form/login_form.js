@@ -1,6 +1,6 @@
 import { NavigationRouteContext } from '@react-navigation/core';
 import React, {Component} from 'react';
-import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-native';
+import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
@@ -9,7 +9,8 @@ import * as Authentication from '../../../api/api_authentication.js';
 class LoginScreen extends Component{
     state = {
         email:"",
-        password:""
+        password:"",
+        loggingIn:false,
     }
 
     handleEmail = (text) => {
@@ -34,11 +35,13 @@ class LoginScreen extends Component{
             alert(verification[1]);
             return;
         }
+        this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
             this.props.navigation.navigate('map_view_complete');
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);
             alert(err);
+            this.setState({loggingIn:false});
         });
     }
 
@@ -72,9 +75,11 @@ class LoginScreen extends Component{
                         textContentType="password"
                         onChangeText={this.handlePassword}/>
                     </View>
+                    {!this.state.loggingIn ? 
                     <TouchableOpacity style={buttons.loginFormButton}>
                         <Text style={buttons.buttonText} onPress={this.processLogin}>Login</Text>
                     </TouchableOpacity>
+                    : <ActivityIndicator style={buttons.loading} size='large' color='#6db0f6'/>}
                 </View>
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
