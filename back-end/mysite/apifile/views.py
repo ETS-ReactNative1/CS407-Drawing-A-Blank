@@ -154,6 +154,8 @@ class GridView(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
+        return Response("here", status=status.HTTP_200_OK)
+
         data = request.GET
         bl = data['bottom_left']
         tr = data['top_right']
