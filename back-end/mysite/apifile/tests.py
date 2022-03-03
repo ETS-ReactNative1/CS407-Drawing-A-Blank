@@ -116,7 +116,7 @@ class LeaderboardTests(TestCase):
         print(stats.all_user_workouts(self.user))
         print(stats.all_user_workouts(self.user2))
 
-        print(stats.workoutpoints_details(1))
+        print(stats.workoutpoints_details(1, self.player))
 
 
 class EventBoundTests(TestCase):

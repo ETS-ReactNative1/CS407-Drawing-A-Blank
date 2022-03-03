@@ -159,8 +159,10 @@ class UserProfile(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def specific_workout(self, request):
         data = request.GET
+        user = request.user
+
         workout_id = data["id"]
-        ret_val = stats.workoutpoints_details(workout_id)
+        ret_val = stats.workoutpoints_details(workout_id, user.player)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 

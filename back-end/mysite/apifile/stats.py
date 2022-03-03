@@ -17,8 +17,8 @@ def all_user_workouts(input_name):
     return ret_val
 
 
-def workoutpoints_details(workout_id):
-    workout = Workout.objects.get(id=workout_id)
+def workoutpoints_details(workout_id, player):
+    workout = Workout.objects.get(id=workout_id, player=player)
     workout_points = workout.workoutpoint_set.all()
 
     ret_val = []
