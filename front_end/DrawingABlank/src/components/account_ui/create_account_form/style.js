@@ -15,15 +15,18 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize:36,
-        color:"black"
+        color:"black",
+        fontFamily:'Ubuntu-Light',
     },
     descriptionText:{
         fontSize:18,
+        fontFamily:'Ubuntu-Light',
         color:"black"
     },
     credentialsInput:{
         borderColor:"#e8e1df",
         borderWidth:1,
+        fontFamily:'Ubuntu-Light',
         borderRadius:10,
         width:"95%",
         marginBottom:"2%",
@@ -40,6 +43,7 @@ const styles = StyleSheet.create({
     },
     footerText:{
         fontSize:18,
+        fontFamily:'Ubuntu-Light',
         color:"black"
     }
 })
@@ -55,6 +59,8 @@ const buttons = StyleSheet.create({
     },
     buttonText:{
         textAlign:"center",
+        fontFamily:'Ubuntu-Light',
+        color:'black',
         fontSize:24
     },
 })
