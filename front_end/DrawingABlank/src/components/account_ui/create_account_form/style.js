@@ -1,27 +1,26 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-    Text:{
-        //Font goes here
-    },
     mainContainer:{
         paddingTop:"10%",
         padding:15,
-        color:"#000000"
+        color:"#000000",
+        backgroundColor:'#2179b8',
+        height:'100%'
     },
     titleBox:{
         alignItems:"center",
-        paddingBottom:"20%"
+        paddingBottom:"30%"
     },
     title:{
         fontSize:36,
-        color:"black",
+        color:"#fafafa",
         fontFamily:'Ubuntu-Light',
     },
     descriptionText:{
         fontSize:18,
+        color:"#fafafa",
         fontFamily:'Ubuntu-Light',
-        color:"black"
     },
     credentialsInput:{
         borderColor:"#e8e1df",
@@ -30,6 +29,8 @@ const styles = StyleSheet.create({
         borderRadius:10,
         width:"95%",
         marginBottom:"2%",
+        color:"#fafafa",
+        backgroundColor:"white",
         color:"black"
     },
     loginForm:{
@@ -37,14 +38,14 @@ const styles = StyleSheet.create({
     },
     loginFormInputs:{
         paddingTop:10,
-        color:"black",
+        color:"#fafafa",
     },
     footer:{
     },
     footerText:{
         fontSize:18,
         fontFamily:'Ubuntu-Light',
-        color:"black"
+        color:"#fafafa"
     }
 })
 
@@ -53,16 +54,21 @@ const buttons = StyleSheet.create({
         width:"40%",
         left:"55%",
         borderRadius:5,
-        borderColor:"black",
+        borderColor:"white",
         borderWidth:1,
         backgroundColor:"#6db0f6",
+    },
+    loading:{
+        width:"40%",
+        left:"55%",
     },
     buttonText:{
         textAlign:"center",
         fontFamily:'Ubuntu-Light',
-        color:'black',
-        fontSize:24
-    },
+        fontSize:24,
+        color:'#fafafa',
+        marginBottom:5
+    }
 })
 
 export {styles,buttons}
