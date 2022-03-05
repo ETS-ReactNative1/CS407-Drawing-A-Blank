@@ -174,7 +174,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         // maxZoomLevel={10}
       >
         {/* Region features now memoized */}
-        {/* {<DrawRenderRegionFeatures showRegionOutline={true} />} */}
+        {<DrawRenderRegionFeatures showRegionOutline={true} />}
 
         <DrawUserPath />
       </Animated>

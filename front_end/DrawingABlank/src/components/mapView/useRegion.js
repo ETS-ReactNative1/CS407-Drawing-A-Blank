@@ -141,23 +141,23 @@ export default function useRegion() {
       layer = 2;
     } else if (dLat < 0.0089) {
       layer = 3;
-    } else if (dLat < 0.4) {
+    } else if (dLat < 0.04) {
       layer = 4;
     } else if (dLat < 0.3) {
       layer = 5;
     } else {
       layer = 6;
     }
-
-    if (zoomLayer !== layer) return layer;
+    console.log('layer', layer);
+    if (zoomLayer != layer) return layer;
   };
 
   const DrawRenderRegionFeatures = ({showRegionOutline}) => {
     console.log('TESTING PROP TYPE: ', showRegionOutline, ' expected: bool');
 
-    const Draw = []; // [DrawEvents({key: 1}), DrawGrids({key: 2})];
+    const Draw = [DrawEvents({key: 1}), DrawGrids({key: 2})];
     if (showRegionOutline) Draw.push(DrawRenderRegionOutline({key: 3}));
-    console.log(Draw);
+    console.log('Draw', Draw);
     return Draw;
   };
 
