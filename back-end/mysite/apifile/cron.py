@@ -1,5 +1,6 @@
 from datetime import date
-from .models import Event, Player
+from .models import Event, Player, User
+import random
 
 
 def event_check_today():
@@ -17,6 +18,15 @@ def test_cron():
     p = Player.objects.get(id=1)
     p.coins += 1
     p.save()
+
+# testing case, cron job adds a user to db
+def test():
+    username = "crontest" + str(random.randint(0,10000000))
+    password = "crontest"
+    email = "cron@test.com"
+    team = 'terra'
+
+    user = User.objects.create_user(username, email, password)
 
 
 # placeholder to empty token table of very expired tokens
