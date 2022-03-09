@@ -22,7 +22,8 @@ def test_cron():
     p = Player.objects.get(id=1)
     p.coins += 1
     p.save()
-# placeholder to empty token table of very expired tokens
+
+# empty token table of very expired tokens
 def purge_tokens():
     # get all tokens in token table
     # if token.created is older than x
