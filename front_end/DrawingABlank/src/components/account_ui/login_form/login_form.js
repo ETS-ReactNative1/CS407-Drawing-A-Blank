@@ -11,6 +11,7 @@ class LoginScreen extends Component{
         email:"",
         password:"",
         loggingIn:false,
+        checkedToken:false,
     }
 
     handleEmail = (text) => {
@@ -37,7 +38,7 @@ class LoginScreen extends Component{
                     }
                 });
             }
-        });
+        }).then(_ => this.setState({checkedToken:true}));
     }
 
     processLogin = () =>{
@@ -70,6 +71,7 @@ class LoginScreen extends Component{
     render(){
         return(
             <View style={styles.mainContainer}>
+                {this.state.checkedToken ? <View>
                 <View style={styles.titleBox}>
                     <Text style={styles.title}>Fresgo</Text>
                 </View>
@@ -101,7 +103,7 @@ class LoginScreen extends Component{
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
                     <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerText} onPress={this.changeToRegister}>Sign up!</Text></Text>
-                </View>
+                </View></View> : <ActivityIndicator/>}
             </View>
         );
     }

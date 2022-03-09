@@ -30,7 +30,7 @@ export const authenticateUser = (username,password) => {
         "password":password
     };
     console.log('Sending authentication request with ' + JSON.stringify(body));
-    return request('POST','api-token-auth/','',JSON.stringify(body))
+    return request('POST','auth/','',JSON.stringify(body))
     .then(response=>{
         if(response.status != 200){
             console.log(response);
@@ -42,17 +42,20 @@ export const authenticateUser = (username,password) => {
 }
 
 export const verifyToken = () => {
-    return getToken().then(tok => {console.log("Token:"+tok); return request('PATCH','token/verify_token','','',tok);})
+    return getToken().then(tok => {console.log("Token:"+tok); return request('PATCH','token/verify_token/','','',tok);})
     .then(resp=>{
+        console.log(resp.status)
         if(resp.status == 200){
+            console.log("Returning true")
             return true;
         }
+        console.log("Returning false")
         return false;
     });
 }
 
 export const logout = () => {
-    return getToken().then(tok => request('DELETE','token/log_out','','',tok))
+    return getToken().then(tok => request('DELETE','token/log_out/','','',tok))
     .then(response =>{
         if(response.status == 200){
             return true;
