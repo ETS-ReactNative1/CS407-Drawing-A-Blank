@@ -4,7 +4,7 @@ import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndi
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
-import { setUsername } from '../../../api/api_networking.js';
+import { getUsername, setUsername } from '../../../api/api_networking.js';
 
 class LoginScreen extends Component{
     state = {
@@ -28,6 +28,18 @@ class LoginScreen extends Component{
         return [true, ""];
     }
 
+    verifyTokenOnStart = () =>{
+        Authentication.verifyToken().then(res => {
+            if(res==true){
+                getUsername().then(username => {
+                    if(username){
+                        this.props.navigation.navigate('loading_screen',{username:username});
+                    }
+                });
+            }
+        });
+    }
+
     processLogin = () =>{
         var verification = this.detailsComplete();
         if(!verification[0]){
@@ -37,6 +49,7 @@ class LoginScreen extends Component{
         }
         this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
+            setUsername(this.state.email);
             this.props.navigation.navigate('loading_screen',{username:this.state.email});
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);
@@ -50,6 +63,10 @@ class LoginScreen extends Component{
         this.props.navigation.navigate('create_account_screen');
     }
     
+    componentDidMount(){
+        this.verifyTokenOnStart();
+    }
+
     render(){
         return(
             <View style={styles.mainContainer}>

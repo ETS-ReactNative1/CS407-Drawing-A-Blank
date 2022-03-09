@@ -42,17 +42,13 @@ export const authenticateUser = (username,password) => {
 }
 
 export const verifyToken = () => {
-    return getToken().then(tok => request('PATCH','token/verify_token','','',tok))
+    return getToken().then(tok => {console.log("Token:"+tok); return request('PATCH','token/verify_token','','',tok);})
     .then(resp=>{
-        var json_response = resp.json()
-        console.log("Got verification response:")
-        console.log(json_response);
-        if(json_response == "Token valid and refreshed"){
+        if(resp.status == 200){
             return true;
-        }else{
-            return false;
         }
-    })
+        return false;
+    });
 }
 
 export const logout = () => {
