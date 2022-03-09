@@ -1,5 +1,5 @@
 import { RecyclerViewBackedScrollViewBase } from "react-native";
-import { request, setToken } from "./api_networking.js";
+import { request, setToken, getToken } from "./api_networking.js";
 
 /*
     USER ACCOUNT LOGIN DETAILS FOR TESTING:
@@ -39,4 +39,29 @@ export const authenticateUser = (username,password) => {
         }
         return response.json();
     }).then(res => setToken(res.token));
+}
+
+export const verifyToken = () => {
+    return getToken().then(tok => request('PATCH','token/verify_token','','',tok))
+    .then(resp=>{
+        var json_response = resp.json()
+        console.log("Got verification response:")
+        console.log(json_response);
+        if(json_response == "Token valid and refreshed"){
+            return true;
+        }else{
+            return false;
+        }
+    })
+}
+
+export const logout = () => {
+    return getToken().then(tok => request('DELETE','token/log_out','','',tok))
+    .then(response =>{
+        if(response.status == 200){
+            return true;
+        }
+
+        return false;
+    })
 }
