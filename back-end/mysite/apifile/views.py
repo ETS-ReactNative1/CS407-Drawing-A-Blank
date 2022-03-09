@@ -333,7 +333,10 @@ class VerifyToken(viewsets.ViewSet):
     @action(methods = ['delete'], detail=False)
     def log_out(self, request):
         user = request.user
-        token = Token.objects.get(user=user)
+        try:
+            token = Token.objects.get(user=user)
+        except:
+            return Response("User wasn't logged in", status=status.HTTP_400_BAD_REQUEST)
         token.delete()
         token.save()
 
