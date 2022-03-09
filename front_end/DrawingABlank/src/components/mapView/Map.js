@@ -15,7 +15,7 @@ import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 
 import {getInitialStateAnimated as getInitialState} from './testData';
-import {getEvents} from '../../api/api_events';
+import {getEvents, getEventScores} from '../../api/api_events';
 
 import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
@@ -58,6 +58,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
   const [events, setEvents] = useState([]);
 
   const [grids, setGrids] = useState([]);
+
+  const [eventScores, setEventScores] = useState({});
 
   function onRegionChange(region) {
     setRegion(region);
@@ -138,14 +140,16 @@ function Map({setOverlayVisible, setOverlayContent}) {
           var time_left = event_date - current_date;
           console.log(current_date);
           console.log(event.date_end);
-          var hours = Math.floor(time_left / (1000 * 3600));
+          var days = Math.floor(time_left / (1000 * 3600 * 3600));
+          var hours = Math.floor(time_left / (1000 * 3600)) % 24;
           var minutes = Math.floor(time_left / (1000 * 60)) % 60;
           var seconds = Math.floor(time_left / 1000) % 60;
           onEventPress(
-            'Running event #' + event.id,
-            hours +
+            event.id,
+            days + ':' +
+            (hours < 10? '0' + hours : hours) +
               ':' +
-              minutes +
+              (minutes < 10? '0' + minutes : minutes) +
               ':' +
               (seconds < 10 ? '0' + seconds : seconds),
             event.description,
@@ -159,10 +163,11 @@ function Map({setOverlayVisible, setOverlayContent}) {
     // eventType, timeRemaining, radius, desc
     setOverlayContent(
       <EventDetails
-        eventType={type}
+        eventType={"Event #" + type}
         timeRemaining={time}
         radius={radius}
         desc={desc}
+        eventScoreData={eventScores[type]}
       />,
     );
     setOverlayVisible(true);
@@ -176,8 +181,31 @@ function Map({setOverlayVisible, setOverlayContent}) {
     Geolocation.getCurrentPosition(({coords}) => {
       getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
       [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
-    });
+      .then(result => setGrids(result));
+    })
+  }
+
+  function collectEventScores(){
+    console.log("CALCULATING SCORES");
+    console.log("HAVE EVENTS:" + events);
+    result = {};
+    events.forEach((event) => {
+      console.log("GOT EVENT:" + JSON.stringify(event));
+      var eventScore = getEventScores(grids,event["bounds"]["coordinates"]);
+      if(eventScore.length != 0){
+        converted_result = []
+        eventScore.forEach(score => {
+          converted_result.push({
+            title:score["details"]["team"],
+            picture:score["details"]["picture"],
+            points:score["count"]
+          });
+        });
+        result[event.id] = converted_result;
+      }
+    }); 
+    setEventScores(result);
+    console.log(result);
   }
 
   useEffect(() => {
@@ -222,13 +250,17 @@ function Map({setOverlayVisible, setOverlayContent}) {
       },
     );
 
-    getEvents().then(result => setEvents(result));
-    collectGrids();
+    getEvents().then(result => setEvents(result))
+    .then(_ => collectGrids());
     }, []);
+    
+    useEffect(() => {
+      collectEventScores();
+    },[grids]);
 
   return (
     <View style={styles.mapContainer}>
-      <Animated
+      <Animated 
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         region={region}

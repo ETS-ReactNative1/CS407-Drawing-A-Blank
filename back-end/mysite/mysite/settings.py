@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apifile.apps.ApifileConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+# needs to be added in terminal like
+# python manage.py crontab add
+# everytime a new job is added to this list
+# '0 0 * * 0' will run the test function every sunday at 00:00
+# * * * * * will run every minute (useful for debugging)
+CRONJOBS = [('* * * * *', 'apifile.cron.test')]
