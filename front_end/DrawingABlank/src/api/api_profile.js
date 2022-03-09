@@ -29,6 +29,17 @@ export const updateProfile = (first_name="",last_name="",age="",gender="",height
         if(response.status != 200 && response.status != 201){
             throw new Error('Could not update profile.');
         }
-        response.json()
+        return response.json();
+    });
+}
+
+export const getProfile = (username) => {
+    query = "?username=" + username;
+    return getToken().then(token => request('GET','user',query,'',token))
+    .then(response => {
+        if(response.status != 200 && response.status != 201){
+            throw new Error('Could not obtain profile.');
+        }
+        return response.json();
     });
 }

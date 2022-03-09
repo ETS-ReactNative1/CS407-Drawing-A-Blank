@@ -4,7 +4,7 @@ import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
-
+import { setUsername } from '../../../api/api_networking.js';
 
 class LoginScreen extends Component{
     state = {
@@ -35,6 +35,7 @@ class LoginScreen extends Component{
             return;
         }
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
+            setUsername(this.state.email);
             this.props.navigation.navigate('map_view_complete');
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);

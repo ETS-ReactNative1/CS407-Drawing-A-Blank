@@ -1,4 +1,7 @@
 {
   "name": "DrawingABlank",
-  "displayName": "DrawingABlank"
+  "displayName": "DrawingABlank",
+  "expo": {
+    "userInterfaceStyle": "automatic"
+  }
 }
