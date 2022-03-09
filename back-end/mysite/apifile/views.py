@@ -321,19 +321,8 @@ class VerifyToken(viewsets.ViewSet):
     @action(methods=['patch'], detail=False)
     def verify_token(self, request):
         user = request.user
-
-        try:   
-            token = Token.objects.get(user=user)
-        except:
-            return Response("User does not have any tokens - log in again", status=status.HTTP_400_BAD_REQUEST)
-
-        utc=pytz.UTC
-        time_now = utc.localize(datetime.datetime.utcnow()) 
-
-        # if token expired, return error
-        # currently set to 1 day usage
-        if token.created < time_now - datetime.timedelta(days=1):
-            return Response('Token expired', status=status.HTTP_400_BAD_REQUEST)
+        
+        token = Token.objects.get(user=user)
 
         # if token not expired, refresh expiry
         token.created = datetime.datetime.utcnow()

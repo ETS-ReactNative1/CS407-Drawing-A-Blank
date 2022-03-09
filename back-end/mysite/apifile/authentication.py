@@ -17,7 +17,7 @@ class ExpTokenAuthentication(TokenAuthentication):
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
        
-        # localise datetime objects as cannot compare naive and aware
+        # localize datetime objects as cannot compare naive and aware
         # aka set to same timezone regardless of os clock
         utc=pytz.UTC
         time_now = utc.localize(datetime.datetime.utcnow()) 
