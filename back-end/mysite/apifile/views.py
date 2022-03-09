@@ -318,7 +318,7 @@ class VerifyToken(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['patch'], detail=False)
     def verify_token(self, request):
         user = request.user
 
