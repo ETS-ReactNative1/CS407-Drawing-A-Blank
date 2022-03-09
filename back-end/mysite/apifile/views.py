@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+import pytz
 
 class Events(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
@@ -312,3 +313,32 @@ class ObtainExpAuthToken(ObtainAuthToken):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 obtain_exp_auth_token = ObtainExpAuthToken.as_view()
+
+class VerifyToken(viewsets.ViewSet):
+    authentication_classes = [authentication.ExpTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @action(methods=['post'], detail=False)
+    def verify_token(self, request):
+        user = request.user
+
+        try:   
+            token = Token.objects.get(user=user)
+        except:
+            return Response("User does not have any tokens - log in again", status=status.HTTP_400_BAD_REQUEST)
+
+        utc=pytz.UTC
+        time_now = utc.localize(datetime.datetime.utcnow()) 
+
+        # if token expired, return error
+        # currently set to 1 day usage
+        if token.created < time_now - datetime.timedelta(days=1):
+            return Response('Token expired', status=status.HTTP_400_BAD_REQUEST)
+
+        # if token not expired, refresh expiry
+        token.created = datetime.datetime.utcnow()
+        token.save()
+                
+        return Response('Token valid and refreshed', status=status.HTTP_200_OK)
+
+

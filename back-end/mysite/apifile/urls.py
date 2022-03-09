@@ -9,6 +9,7 @@ router.register("map", views.GridView, "map")
 router.register("user", views.UserProfile, "user")
 router.register("workout", views.WorkoutSubmission, "workout")
 router.register("leaderboard", views.Leaderboard, "leaderboard")
+router.register("token", views.VerifyToken, "token")
 
 
 # Wire up our API using automatic URL routing.
