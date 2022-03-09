@@ -330,4 +330,14 @@ class VerifyToken(viewsets.ViewSet):
                 
         return Response('Token valid and refreshed', status=status.HTTP_200_OK)
 
+    @action(methods = ['delete'], detail=False)
+    def log_out(self, request):
+        user = request.user
+        token = Token.objects.get(user=user)
+        token.delete()
+        token.save()
+
+        return Response('User logged out', status=status.HTTP_200_OK)
+
+
 
