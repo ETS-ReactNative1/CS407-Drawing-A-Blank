@@ -38,6 +38,7 @@ def purge_tokens():
     for token in tokens:
         if token.created < time_now - datetime.timedelta(days=7):
                 token.delete()
+                token.save()
 
 # testing case, cron job adds a user to db
 def test():
