@@ -4,7 +4,7 @@ from . import views
 
 router = routers.DefaultRouter()
 
-router.register("events", views.EventView, "events")
+router.register("events", views.Events, "events")
 router.register("map", views.GridView, "map")
 router.register("user", views.UserProfile, "user")
 router.register("workout", views.WorkoutSubmission, "workout")

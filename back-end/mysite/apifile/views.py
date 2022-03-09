@@ -41,7 +41,7 @@ class Events(viewsets.ViewSet):
 
     def list(self, _):
         events = Event.get_current_events()
-        ret_val = EventView.event_list_to_json(events)
+        ret_val = self.event_list_to_json(events)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
@@ -54,7 +54,7 @@ class Events(viewsets.ViewSet):
         dist = data["distance"]
 
         events = Event.get_events_within_distance(centre, dist)
-        ret_val = EventView.event_list_to_json(events)
+        ret_val = self.event_list_to_json(events)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
