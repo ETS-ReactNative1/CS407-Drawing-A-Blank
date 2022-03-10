@@ -366,8 +366,6 @@ class VerifyToken(viewsets.ViewSet):
     @action(methods=['delete'], detail=False)
     def log_out(self, request):
         user = request.user
-        token = Token.objects.get(user=user)
-        token.delete()
-        token.save()
+        Token.objects.get(user=user).delete()
 
         return Response('User logged out', status=status.HTTP_200_OK)
