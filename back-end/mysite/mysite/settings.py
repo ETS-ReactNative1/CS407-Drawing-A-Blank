@@ -149,4 +149,4 @@ REST_FRAMEWORK = {
 # everytime a new job is added to this list
 # '0 0 * * 0' will run the test function every sunday at 00:00
 # * * * * * will run every minute (useful for debugging)
-CRONJOBS = [('0 0 * * *', 'apifile.cron.purge_tokens')]
+CRONJOBS = [('0 0 * * *', 'apifile.cron.purge_tokens'), ('0 1 * * *', 'apifile.cron.event_check_today')]
