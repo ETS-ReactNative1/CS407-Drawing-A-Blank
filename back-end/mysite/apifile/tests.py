@@ -35,7 +35,7 @@ class LeaderboardTests(TestCase):
         self.player4 = Player.objects.create(user=self.user4, team=self.team_green)
 
         # Workout 1 - Player 1, Team red, 1/1/2022
-        self.workout1 = Workout.objects.create(player=self.player, duration=120, calories=0)
+        self.workout1 = Workout.objects.create(player=self.player, duration=120, calories=0,type="run")
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=100, northing=100, ghost=False)
 
@@ -45,6 +45,8 @@ class LeaderboardTests(TestCase):
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=300, northing=300, ghost=False)
 
+        self.workout1.calories = stats.calories_total(self.player.weight,self.workout1)
+        self.workout1.save(update_fields=['calories'])
         # Workout 2 - Player 2, Team red, 1/1/2020
         self.workout2 = Workout.objects.create(player=self.player2, duration=120, calories=0)
         time = datetime.datetime(2020, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
@@ -55,6 +57,7 @@ class LeaderboardTests(TestCase):
 
         time = datetime.datetime(2020, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=0, ghost=False)
+        self.workout2.calories = stats.calories_total(self.player2.weight,self.workout2)
 
         # Workout 3 - Player 2, Team red, 1/1/2022.
         self.workout3 = Workout.objects.create(player=self.player2, duration=120, calories=0)
@@ -66,7 +69,7 @@ class LeaderboardTests(TestCase):
 
         time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
         WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0, ghost=False)
-
+        self.workout3.calories = stats.calories_total(self.player2.weight,self.workout3)
         # Workout 4 - Player 3, Team Blue, 1/1/2022.
         self.workout4 = Workout.objects.create(player=self.player3, duration=120, calories=0)
         time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
@@ -102,6 +105,10 @@ class LeaderboardTests(TestCase):
 
     def test_players(self):
         time = datetime.datetime(2021, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
+
+        print("Calories")
+        print(self.workout1.calories)
+
         print("2021")
         print(leaderboards.distance_leaderboard(time, []))
         print(leaderboards.distance_leaderboard(time, ["Green", "Blue"]))
