@@ -314,7 +314,7 @@ class EventOpenCloseTests(TestCase):
         self.assertEqual(close_grids_after, 0, "Event grids not cleared.")
 
         # Get team positions for closed event
-        positions = EventStandings.objects.filter(event=self.close_event).order_by("place")
+        positions = EventStandings.objects.filter(event=self.close_event).order_by("-score")
         first_place = positions[0]
         second_place = positions[1]
         third_place = positions[2]

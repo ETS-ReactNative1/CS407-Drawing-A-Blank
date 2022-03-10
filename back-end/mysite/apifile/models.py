@@ -56,7 +56,8 @@ class Player(models.Model):
             teams = ['terra', 'windy', 'ocean']
 
         players = Player.objects.values('user__username').filter(
-            workout__workoutpoint__time__gte=time, team__name__in=teams).distinct().annotate(points=Count('workout__points'))
+            workout__workoutpoint__time__gte=time, team__name__in=teams).distinct().annotate(
+            points=Count('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
@@ -160,40 +161,73 @@ class Event(models.Model):
                      "ocean": Team.objects.get(name="ocean"),
                      "windy": Team.objects.get(name="windy")}
 
-            if len(winners) == 3:
-                first = teams[winners[0]['name']]
-                second = teams[winners[1]['name']]
-                third = teams[winners[2]['name']]
-            elif len(winners) == 2:
-                first = teams[winners[0]['name']]
+            if len(winners) >= 1:
+                first = (teams[winners[0]['name']], winners[0]['score'])
                 unseen_teams.remove(winners[0]['name'])
-                second = teams[winners[1]['name']]
-                unseen_teams.remove(winners[1]['name'])
-                third = teams[unseen_teams.pop()]
-            elif len(winners) == 1:
-                first = teams[winners[0]['name']]
-                unseen_teams.remove(winners[0]['name'])
-                second = teams[unseen_teams.pop()]
-                third = teams[unseen_teams.pop()]
+                if len(winners) >= 2:
+                    second = (teams[winners[1]['name']], winners[1]['score'])
+                    unseen_teams.remove(winners[1]['name'])
+                    if len(winners) >= 3:
+                        third = (teams[winners[2]['name']], winners[2]['score'])
+                    else:
+                        third = (teams[unseen_teams.pop()], 0)
+                else:
+                    second = (teams[unseen_teams.pop()], 0)
+                    third = (teams[unseen_teams.pop()], 0)
             else:
-                first = teams[unseen_teams.pop()]
-                second = teams[unseen_teams.pop()]
-                third = teams[unseen_teams.pop()]
+                first = (teams[unseen_teams.pop()], 0)
+                second = (teams[unseen_teams.pop()], 0)
+                third = (teams[unseen_teams.pop()], 0)
 
-            EventStandings.objects.create(event=event, team=first, place=1)
-            EventStandings.objects.create(event=event, team=second, place=2)
-            EventStandings.objects.create(event=event, team=third, place=3)
+            EventStandings.objects.create(event=event, team=first[0], score=first[1])
+            EventStandings.objects.create(event=event, team=second[0], score=second[1])
+            EventStandings.objects.create(event=event, team=third[0], score=third[1])
 
             # rewards
-            players = EventPerformance.objects.filter(event=event, player__team=first)
-            for playerPerf in players:
-                Player.objects.filter(id=playerPerf.player.id).update(coins=F('coins') + (3 * playerPerf.contribution))
-            players = EventPerformance.objects.filter(event=event, player__team=second)
-            for playerPerf in players:
-                Player.objects.filter(id=playerPerf.player.id).update(coins=F('coins') + (2 * playerPerf.contribution))
-            players = EventPerformance.objects.filter(event=event, player__team=third)
-            for playerPerf in players:
-                Player.objects.filter(id=playerPerf.player.id).update(coins=F('coins') + playerPerf.contribution)
+            if first[1] > second[1]:
+                # single first
+                players = EventPerformance.objects.filter(event=event, player__team=first[0])
+                for playerPerf in players:
+                    Player.objects.filter(id=playerPerf.player.id).update(
+                        coins=F('coins') + (3 * playerPerf.contribution))
+
+                if second[1] > third[1]:
+                    # single second
+                    players = EventPerformance.objects.filter(event=event, player__team=second[0])
+                    for playerPerf in players:
+                        Player.objects.filter(id=playerPerf.player.id).update(
+                            coins=F('coins') + (2 * playerPerf.contribution))
+
+                    players = EventPerformance.objects.filter(event=event, player__team=third[0])
+                    for playerPerf in players:
+                        Player.objects.filter(id=playerPerf.player.id).update(
+                            coins=F('coins') + playerPerf.contribution)
+
+                else:
+                    # second third tie
+                    players = EventPerformance.objects.filter(event=event, player__team__in=[second[0], third[0]])
+                    for playerPerf in players:
+                        Player.objects.filter(id=playerPerf.player.id).update(
+                            coins=F('coins') + (2 * playerPerf.contribution))
+
+            elif second[1] > third[1]:
+                # first second tie
+                players = EventPerformance.objects.filter(event=event, player__team__in=[first[0], second[0]])
+                for playerPerf in players:
+                    Player.objects.filter(id=playerPerf.player.id).update(
+                        coins=F('coins') + (3 * playerPerf.contribution))
+
+                players = EventPerformance.objects.filter(event=event, player__team=third[0])
+                for playerPerf in players:
+                    Player.objects.filter(id=playerPerf.player.id).update(
+                        coins=F('coins') + playerPerf.contribution)
+
+            else:
+                # 3 way tie
+                players = EventPerformance.objects.filter(event=event, player__team__in=[first[0], second[0], third[0]])
+                for playerPerf in players:
+                    Player.objects.filter(id=playerPerf.player.id).update(
+                        coins=F('coins') + (3 * playerPerf.contribution))
 
             # clear area
             event.clear_area()
@@ -292,7 +326,7 @@ class EventBounds(models.Model):
 class EventStandings(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    place = models.PositiveIntegerField()
+    score = models.PositiveIntegerField()
 
 
 class Workout(models.Model):
