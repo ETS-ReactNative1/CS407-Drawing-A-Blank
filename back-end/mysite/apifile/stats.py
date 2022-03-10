@@ -57,7 +57,7 @@ def user_total_points(input_name):
     time = datetime.min
 
     workouts = Workout.objects.filter(player__user__username=input_name).aggregate(score=Sum('points'))
-    
+    return workouts
     total = 0
     if workouts.exists():
         for w in workouts:
