@@ -56,7 +56,7 @@ def user_total_points(input_name):
     # workouts = Workout.objects.values("player__user__username").filter(player__user__username=input_name).annotate(
     #     score=Sum('points'))
 
-    workouts = Player.objects.values('user__username').filter(user__username=input_name).annotate(points=Sum('workout__points'))
+    workouts = Player.objects.values('user__username').filter(user__username=input_name).annotate(score=Sum('workout__points'))
     
     if workouts.exists():
         return workouts[0]["score"]
