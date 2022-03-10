@@ -1,6 +1,6 @@
 import Geolocation from 'react-native-geolocation-service';
 import {requestLocationPermission} from './permissions';
-// geolocation should be state, but too expensive until map component memoization
+
 const setupGeolocation = async (callback, options) => {
   if ((await requestLocationPermission()).granted) {
     // Use Current Location immediatly

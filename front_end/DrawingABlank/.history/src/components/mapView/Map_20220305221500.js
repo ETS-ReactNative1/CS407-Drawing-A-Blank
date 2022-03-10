@@ -43,11 +43,6 @@ const DEBUG_ZOOM_LEVEL = {
   longitudeDelta: 0.5393288657069206,
 };
 
-// needs optimizations - map can be slow
-// https://hackernoon.com/how-to-optimize-react-native-map-in-your-application-eeo3nib
-// mostly just memoize
-// and perhaps clustering
-
 function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
     useRegion();
@@ -72,13 +67,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   // might want to make hooks "pausible" if using state (not refs), e.g. dont re render on userpath change, if were not showing it
   //    more an issue of proper state updates/ only do updates which we want to be shown
   // refs are always "paused", must be manually listened to using useEffect
-  const userLocation = useGeoLocation(location =>
-    recorder.addCoordinate(
-      location.longitude,
-      location.latitude,
-      isMapTracking.current,
-    ),
-  );
+  const userLocation = useGeoLocation();
 
   // if regionref == init region set ref to geolocation
 
@@ -131,23 +120,23 @@ function Map({setOverlayVisible, setOverlayContent}) {
   // }, [userLocation.current]);
   // console.log('remount', region);
 
-  useDidUpdateEffect(() => {
-    // set to map to user location when user location known (second userLocation change (init state -> actual))
-    if (isMapTracking.current) {
-      const {latitude, longitude} = userLocation.current;
-      console.log('region change', region);
-      setRegion({
-        // !! No longer doing following a user on map !!
-        //...region, //take previous zoom level
-        // ...zoomLevel, //take zoom level from constant
-        ...MAP_ZOOMLEVEL_CLOSE,
-        latitude,
-        longitude,
-        //longitudeDelta: region.longitudeDelta,
-        //latitudeDelta: region.latitudeDelta,
-      });
-    }
-  }, [userLocation.current]);
+  // useDidUpdateEffect(() => {
+  //   // set to map to user location when user location known (second userLocation change (init state -> actual))
+  //   if (isMapTracking.current) {
+  //     const {latitude, longitude} = userLocation.current;
+  //     console.log('region change', region);
+  //     setRegion({
+  //       // !! No longer doing following a user on map !!
+  //       //...region, //take previous zoom level
+  //       // ...zoomLevel, //take zoom level from constant
+  //       ...MAP_ZOOMLEVEL_CLOSE,
+  //       latitude,
+  //       longitude,
+  //       //longitudeDelta: region.longitudeDelta,
+  //       //latitudeDelta: region.latitudeDelta,
+  //     });
+  //   }
+  // }, [userLocation.current]);
 
   function handleRegionChange(newRegion) {
     debouncedsetRegion(newRegion);
@@ -180,8 +169,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         // initialRegion={viewRegion}
         mapType={'standard'}
         showsUserLocation={true}
-        onRegionChangeComplete={r => setRegion(r)}
-        //onRegionChange={r => handleRegionChange(r)}
+        onRegionChange={r => handleRegionChange(r)}
         // minZoomLevel={5}
         // maxZoomLevel={10}
       >
@@ -193,7 +181,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
       <MapControls
         toggleGhostMode={() => {
-          isMapTracking.current = !isMapTracking.current;
           console.log('Enabling Ghost mode...');
         }}
         toggleShowEventsList={() => {
@@ -210,7 +197,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
             changeToStats();
           }
         }}
-        workout_active={workout_active}
         workoutText={workout_button_text}
         drawGridsFunction={() => {}}
         // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}

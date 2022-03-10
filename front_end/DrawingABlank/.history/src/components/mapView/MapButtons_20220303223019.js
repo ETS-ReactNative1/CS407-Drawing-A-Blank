@@ -12,9 +12,8 @@ export default function MapControls({
   toggleShowEventsList,
   workoutText,
   drawGridsFunction,
-  workout_active,
 }) {
-  toggle_workout = () => startWorkout();
+  const [workoutActive, setWorkoutActive] = useState(false);
 
   return (
     <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
@@ -30,14 +29,17 @@ export default function MapControls({
           />
         </TouchableOpacity>
         <TouchableOpacity>
-          {workout_active ? (
+          {workoutActive ? (
             <Icon
               name={'pause'}
               type={'feather'}
               iconStyle={styles.paused}
               // containerStyle={styles.menu}
               size={30}
-              onPress={toggle_workout}
+              onPress={() => {
+                //startWorkout();
+                setWorkoutActive(false);
+              }}
             />
           ) : (
             <Icon
@@ -46,7 +48,10 @@ export default function MapControls({
               // iconStyle={styles.icon}
               // containerStyle={styles.menu}
               size={30}
-              onPress={toggle_workout}
+              onPress={() => {
+                //startWorkout();
+                setWorkoutActive(true);
+              }}
             />
           )}
         </TouchableOpacity>

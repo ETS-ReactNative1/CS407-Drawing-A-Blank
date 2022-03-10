@@ -48,10 +48,6 @@ export default function useLocalGrids(
     tileSize,
   ) {
     const refresh = getGrids(renderRegion, tileSize, {isPost: true});
-
-    // refresh().then(res => console.log('res', res));
-    // console.log('r', refresh, refresh(), userLocation.current);
-
     return [tileSize, refresh(), refresh];
   }
 
@@ -73,9 +69,6 @@ export default function useLocalGrids(
       const {latitude, longitude} = userLocation.current;
       const {longitudeDelta, latitudeDelta} = zoomLevel.current;
 
-      // Need to "convert" from longLatDeltas to tile size
-      // By experimentation
-
       const tileSize = 5;
       console.log('lat', latitude, 'delta', latitudeDelta);
       grids = getGrids(
@@ -84,29 +77,15 @@ export default function useLocalGrids(
         tileSize,
       );
     } else {
-      // use cached data
-
-      // if deviated too far
-      // set entry
-      // also for loading initial cache entry - cant be static forever
-
-      /////key = tileSize;
-      const tileSize = zoomLayer * 5;
-      // key = {
-      //   tileSize,
-      //   // latititude: renderRegion.latitude,
-      //   // longitude: renderRegion.longitude,
-      // };
-
-      key = zoomLayer;
+      // Use cached data if availible, else use live data
 
       // if entry doesnt exist, generate it
       // curently just generate a new bounded area of events
       // should ideally use existing ones if user enters back into already cahced bound area
-      //  or just clear cache every time bound changes
 
-      // get grids or set it in cache
-      console.log('Getting from cache, key:', key);
+      const key = zoomLayer;
+      const tileSize = zoomLayer * 5;
+
       grids = await gridZoomCache.getEntryContent(key, 0, (key, entry) => {
         const renderRegionCentre = {
           latitude: renderRegion[latitude],

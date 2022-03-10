@@ -8,18 +8,17 @@ const locationConfig = {
   distanceFilter: 5, // min moved distance before next data point
 };
 
-export default function useGeoLocation(callback) {
+export default function useGeoLocation() {
   // const location = useRef({latitude: 0, longitude: 0}); -> by using ref, map wont snap to user location when moving
   const location = useRef({latitude: 0, longitude: 0});
   watchId = useRef(-1);
 
   useEffect(() => {
-    async function handleGeoLocation(callback) {
+    async function handleGeoLocation() {
       const {ID} = await setupGeolocation(userLocation => {
         // Listens to userlocation changes
         // setLocation(userLocation);
         location.current = userLocation;
-        callback(userLocation);
       }, locationConfig);
       watchId.current = ID;
     }

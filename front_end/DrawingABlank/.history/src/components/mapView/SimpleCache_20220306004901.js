@@ -48,20 +48,20 @@ export default function SimpleCache(initContent = {}) {
     // if key == funtion, use as filter
     // else as key
 
-    // if (filter) {
-    //   entries = Object.entries(this.content);
-    //   entry;
-    //   for (let i = 0; i < values.length; i++) {
-    //     [key, value] = entries[i];
-    //     JSON.parse(key);
-    //     filteredFound = filter(key, value); //expects return entry when filter condition is true
+    if (filter) {
+      entries = Object.entries(this.content);
+      entry;
+      for (let i = 0; i < values.length; i++) {
+        [key, value] = entries[i];
+        JSON.parse(key);
+        filteredFound = filter(key, value); //expects return entry when filter condition is true
 
-    //     if (filteredFound) {
-    //       entry = filteredFound;
-    //       break;
-    //     }
-    //   }
-    // }
+        if (filteredFound) {
+          entry = filteredFound;
+          break;
+        }
+      }
+    }
 
     key = JSON.stringify(key);
     entry = this.content[key];

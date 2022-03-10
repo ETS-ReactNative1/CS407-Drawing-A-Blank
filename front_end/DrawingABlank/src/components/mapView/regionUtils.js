@@ -16,6 +16,40 @@ class regionUtils {
   //   this.bounds = r;
   // };
 
+  checkRegionCoverage(region, compareToRegion) {
+    const regionBounds = this.getRegionCorners(region);
+    const compareCorners = this.getRegionCorners(compareToRegion);
+
+    const compareRegionCentre = {
+      latitude: compareToRegion.latitude,
+      longitude: compareToRegion.longitude,
+    };
+
+    // if nay of the corners of the current region are outside the render region, re render
+
+    // check if centre of compareregion is outside the region
+    // for early exit before loop
+    if (!this.checkPointInRegion(region, compareRegionCentre)) return false;
+
+    // checks if any of the corners are oustside the region
+    // if they are, return false - no full coverage
+    for (let i = 0; i < compareCorners.length; i++) {
+      if (!this.checkPointInRegion(region, compareCorners[i])) return false;
+    }
+
+    return true;
+
+    //when finingd correct region from cache, need to find which regions
+    // have all corners of current view region inside
+
+    // if nay 4 points lay outside the render reigon, need new render region
+
+    return false;
+    // if one of the display 4 corners are outside the
+    // 4 corners of the render render region corners
+    // then need new render region
+  }
+
   checkPointInRegion(region, point) {
     const [bottomLeft, topRight] = this.getRegionCorners(region);
 
@@ -30,8 +64,20 @@ class regionUtils {
     return true;
   }
 
+  getRegionCentre = region => {
+    let {
+      latitude: lat,
+      longitude: long,
+      latitudeDelta: dLat,
+      longitudeDelta: dLong,
+    } = region;
+
+    return {
+      latitude: lat + dLat / 2,
+    };
+  };
+
   getRegionCorners = region => {
-    console.log('112233', region);
     let {
       latitude: lat,
       longitude: long,
@@ -41,8 +87,6 @@ class regionUtils {
 
     dLat = dLat / 2 || 0;
     dLong = dLong / 2 || 0;
-
-    console.log('dlatlng', dLat, dLong, lat, long);
 
     const bottomLeft = {
       latitude: lat - dLat,
