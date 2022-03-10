@@ -169,7 +169,7 @@ class UserProfile(viewsets.ViewSet):
         return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=False)
-    def user_stats(self, request):
+    def stats(self, request):
         user = request.user
 
         points = stats.user_total_points(user.username)
