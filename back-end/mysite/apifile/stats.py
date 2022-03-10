@@ -54,15 +54,10 @@ def user_total_distance(input_name):
 
 def user_total_points(input_name):
     
-    workouts = Player.objects.filter(user__username=input_name).annotate(points=Sum('workout__points'))
-    
-    # Workout.objects.values("player__user__username").filter(player__user__username=input_name).annotate(
-    #     score=Sum('points'))
-    test = []
-    for w in workouts:
-        test.append(w)
+    workouts = Workout.objects.values("player__user__username").filter(player__user__username=input_name).annotate(
+        score=Sum('points'))
     if workouts.exists():
-        return test
+        return workouts[0]["points"]
     else:
         return 0
 
