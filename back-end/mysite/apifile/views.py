@@ -15,6 +15,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 import pytz
 
+
 class Events(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
 
@@ -57,6 +58,16 @@ class Events(viewsets.ViewSet):
         ret_val = self.event_list_to_json(events)
 
         return Response(ret_val, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def history(self, request):
+        data = request.GET
+        player = Player.objects.get(user=request.user)
+
+        date = data['date']
+        if date != '':
+            date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        return Response(Event.event_scores(date, player), status=status.HTTP_200_OK)
 
     @staticmethod
     def event_list_to_json(events):
@@ -182,6 +193,7 @@ class UserProfile(viewsets.ViewSet):
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
+
 class GridView(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
@@ -247,7 +259,7 @@ class WorkoutSubmission(viewsets.ViewSet):
             workout.points += len(tiles)
             workout.save()
 
-            if not bounds[i].ghost and not bounds[i-1].ghost:
+            if not bounds[i].ghost and not bounds[i - 1].ghost:
                 checkedTiles = set()
 
                 for tile in tiles:
@@ -300,6 +312,7 @@ class Leaderboard(viewsets.ViewSet):
 def calc_calories(workout_type, dur):
     return 0
 
+
 class ObtainExpAuthToken(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
 
@@ -310,7 +323,7 @@ class ObtainExpAuthToken(ObtainAuthToken):
     def post(self, request):
         # authenticates username + password
         serializer = self.get_serializer(data=request.data)
-        
+
         if serializer.is_valid():
             # get the user and their current token if exists, or make new one if not exist
             user = serializer.validated_data['user']
@@ -320,12 +333,14 @@ class ObtainExpAuthToken(ObtainAuthToken):
             if not created:
                 token.created = datetime.datetime.utcnow()
                 token.save()
-            
+
             return Response({'token': token.key})
-                
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 obtain_exp_auth_token = ObtainExpAuthToken.as_view()
+
 
 class VerifyToken(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
@@ -334,16 +349,16 @@ class VerifyToken(viewsets.ViewSet):
     @action(methods=['patch'], detail=False)
     def verify_token(self, request):
         user = request.user
-        
+
         token = Token.objects.get(user=user)
 
         # if token not expired, refresh expiry
         token.created = datetime.datetime.utcnow()
         token.save()
-                
+
         return Response('Token valid and refreshed', status=status.HTTP_200_OK)
 
-    @action(methods = ['delete'], detail=False)
+    @action(methods=['delete'], detail=False)
     def log_out(self, request):
         user = request.user
         token = Token.objects.get(user=user)
@@ -351,6 +366,3 @@ class VerifyToken(viewsets.ViewSet):
         token.save()
 
         return Response('User logged out', status=status.HTTP_200_OK)
-
-
-

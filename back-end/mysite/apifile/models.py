@@ -1,3 +1,4 @@
+import datetime
 import math
 import operator
 from functools import reduce
@@ -6,7 +7,7 @@ import mahotas
 import numpy as np
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import F, Q, Count, Sum
+from django.db.models import F, Q, Count
 from django.db.models.functions import Cast
 from django.utils import timezone
 from shapely.geometry import Point, Polygon
@@ -235,6 +236,39 @@ class Event(models.Model):
             # switch flag
             event.active = False
             event.save()
+
+    @staticmethod
+    def event_scores(date, player):
+        # get finished events
+        today = datetime.date.today()
+        if date != '':
+            events = Event.objects.filter(
+                end__gte=date, end__lte=today, active=False,
+                event__eventperformance__player=player).prefetch_related('eventperformance',
+                                                                         'eventstandings').order_by('-end')
+        else:
+            events = Event.objects.filter(
+                end__lte=today, active=False,
+                event__eventperformance__player=player).prefetch_related('eventperformance',
+                                                                         'eventstandings').order_by('-end')
+
+        ret = []
+        for event in events:
+            perfs = dict()
+
+            # get user performance
+            player_perf = event.eventperformance.first()
+            perfs['user'] = player_perf.contribution
+
+            # get team performance
+            team_perfs = event.eventstandings.all()
+            for team_perf in team_perfs:
+                perfs[team_perf.team.name] = team_perf.score
+
+            ret.append({'id': event.id, 'start': event.start, 'end': event.end, 'performance': perfs})
+
+        return ret
+
 
     def check_within(self, point):
         """
