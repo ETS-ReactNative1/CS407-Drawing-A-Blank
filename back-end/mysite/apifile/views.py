@@ -193,6 +193,11 @@ class UserProfile(viewsets.ViewSet):
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
+    @action(methods=['delete'], detail=False)
+    def delete_user(self, request):
+        user = request.user
+        user.delete()
+
 
 class GridView(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
