@@ -56,7 +56,7 @@ def user_total_distance(input_name):
 def user_total_points(input_name):
     time = datetime.min
 
-    workouts = Workout.objects.values("player__user__username").filter(player__user__username=input_name, workoutpoint__time__gte=time).distinct().annotate(
+    workouts = Workout.objects.values("player__user__username").filter(player__user__username=input_name).distinct().annotate(
         score=Sum('points'))
     
 
