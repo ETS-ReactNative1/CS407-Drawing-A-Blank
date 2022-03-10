@@ -60,8 +60,7 @@ def user_total_points(input_name):
     
 
     if workouts.exists():
-        for w in workouts:
-            return w.score
+        return len(workouts)
     else:
         return 0
 
