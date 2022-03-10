@@ -61,7 +61,7 @@ def user_total_points(input_name):
 
     if workouts.exists():
         for w in workouts:
-            return w[0]["score"]
+            return w.score
     else:
         return 0
 
