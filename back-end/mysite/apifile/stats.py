@@ -58,9 +58,11 @@ def user_total_points(input_name):
 
     workouts = Workout.objects.filter(player__user__username=input_name).annotate(score=Sum('points'))
     
-
+    total = 0
     if workouts.exists():
-        return len(workouts)
+        for w in workouts:
+            total += w.score
+        return total
     else:
         return 0
 
