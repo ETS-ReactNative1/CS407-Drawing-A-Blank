@@ -348,7 +348,6 @@ class VerifyToken(viewsets.ViewSet):
         user = request.user
         token = Token.objects.get(user=user)
         token.delete()
-        token.save()
 
         return Response('User logged out', status=status.HTTP_200_OK)
 
