@@ -4,17 +4,19 @@ from functools import reduce
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import viewsets, status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
-from . import leaderboards, stats, grids
+from . import leaderboards, stats, grids, authentication
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
+from rest_framework.decorators import action
+from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+import pytz
 
-
-class EventView(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+class Events(viewsets.ViewSet):
+    authentication_classes = [authentication.ExpTokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -39,7 +41,7 @@ class EventView(viewsets.ViewSet):
 
     def list(self, _):
         events = Event.get_current_events()
-        ret_val = EventView.event_list_to_json(events)
+        ret_val = self.event_list_to_json(events)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
@@ -52,7 +54,7 @@ class EventView(viewsets.ViewSet):
         dist = data["distance"]
 
         events = Event.get_events_within_distance(centre, dist)
-        ret_val = EventView.event_list_to_json(events)
+        ret_val = self.event_list_to_json(events)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
@@ -73,7 +75,7 @@ class EventView(viewsets.ViewSet):
 
 
 class UserProfile(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
 
     def get_permissions(self):
         if self.action == 'create':
@@ -166,9 +168,22 @@ class UserProfile(viewsets.ViewSet):
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
+    @action(methods=['get'], detail=False)
+    def stats(self, request):
+        user = request.user
+
+        points = stats.user_total_points(user.username)
+        distance = stats.user_total_distance(user.username)
+
+        ret_val = {
+            "points": points,
+            "distance": distance
+        }
+
+        return Response(ret_val, status=status.HTTP_200_OK)
 
 class GridView(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
@@ -186,7 +201,7 @@ class GridView(viewsets.ViewSet):
 
 
 class WorkoutSubmission(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def create(self, request):
@@ -262,7 +277,7 @@ class WorkoutSubmission(viewsets.ViewSet):
 
 
 class Leaderboard(viewsets.ViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     @action(methods=['get'], detail=False)
@@ -286,3 +301,56 @@ class Leaderboard(viewsets.ViewSet):
 
 def calc_calories(workout_type, dur):
     return 0
+
+class ObtainExpAuthToken(ObtainAuthToken):
+    serializer_class = AuthTokenSerializer
+
+    @classmethod
+    def get_extra_actions(cls):
+        return []
+
+    def post(self, request):
+        # authenticates username + password
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid():
+            # get the user and their current token if exists, or make new one if not exist
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+
+            # if token fetched, refresh expiry
+            if not created:
+                token.created = datetime.datetime.utcnow()
+                token.save()
+            
+            return Response({'token': token.key})
+                
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+obtain_exp_auth_token = ObtainExpAuthToken.as_view()
+
+class VerifyToken(viewsets.ViewSet):
+    authentication_classes = [authentication.ExpTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @action(methods=['patch'], detail=False)
+    def verify_token(self, request):
+        user = request.user
+        
+        token = Token.objects.get(user=user)
+
+        # if token not expired, refresh expiry
+        token.created = datetime.datetime.utcnow()
+        token.save()
+                
+        return Response('Token valid and refreshed', status=status.HTTP_200_OK)
+
+    @action(methods = ['delete'], detail=False)
+    def log_out(self, request):
+        user = request.user
+        Token.objects.get(user=user).delete()
+
+        return Response('User logged out', status=status.HTTP_200_OK)
+
+
+

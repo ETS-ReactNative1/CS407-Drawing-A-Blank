@@ -1,5 +1,10 @@
 from datetime import date
-from .models import Event, Player
+from .models import Event, Player, User
+import random
+import datetime
+import pytz
+
+from . import authentication
 
 
 def event_check_today():
@@ -18,10 +23,22 @@ def test_cron():
     p.coins += 1
     p.save()
 
-
-# placeholder to empty token table of very expired tokens
+# empty token table of very expired tokens
 def purge_tokens():
     # get all tokens in token table
     # if token.created is older than x
     # delete
-    pass
+    utc=pytz.UTC
+    time_now = utc.localize(datetime.datetime.utcnow()) 
+    
+    tokens = authentication.ExpTokenAuthentication().get_model().objects.filter(created__lt=time_now-datetime.timedelta(days=1)).delete()
+
+# testing case, cron job adds a user to db
+def test():
+    username = "crontest" + str(random.randint(0,10000000))
+    password = "crontest"
+    email = "cron@test.com"
+    team = 'terra'
+
+    user = User.objects.create_user(username, email, password)
+
