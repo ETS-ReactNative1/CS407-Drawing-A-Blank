@@ -18,7 +18,7 @@ class ProfileAvatar extends Component{
     }
 
     goToMap = () =>{
-        this.props.navigation.navigate('map_view_complete');
+        this.props.navigation.navigate('loading_screen',{username:this.state.name});
     }
 
     openImages = () =>{

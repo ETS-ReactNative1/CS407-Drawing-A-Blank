@@ -7,20 +7,25 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
     main:{
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#2179b8',
         alignItems:"center",
         alignContent:"center",
         width:"100%",
+        height:"100%"
+    },
+    background:{
+        backgroundColor: '#2179b8',
     },
     welcome_title:{
         alignItems:"center",
-        backgroundColor:'#fff',
+        backgroundColor:'#2179b8',
         top:"5%",
-        paddingBottom:"2%"
+        paddingBottom:"2%",
+        position:'relative'
     },
     title_text:{
         fontSize:36,
-        color:"#6db0f6",
+        color:"#fafafa",
         paddingBottom:"10%",
         textAlign:"justify"
     },
@@ -29,7 +34,7 @@ const styles = StyleSheet.create({
     },
     body_text:{
         fontSize:20,
-        color:"#a3a3a3",
+        color:"#fafafa",
         paddingBottom:"5%",
     },
     create_profile:{
@@ -45,10 +50,13 @@ const styles = StyleSheet.create({
         borderColor:"#e8e1df",
         borderWidth:1,
         width:350,
-        paddingBottom:10
+        paddingBottom:10,
+        color:"#fafafa",
+        backgroundColor:"#2179b8"
     },
     form_input_title:{
         width:"100%",
+        color:"#fafafa"
     },
     continue_button:{
         paddingTop:20,
@@ -57,14 +65,16 @@ const styles = StyleSheet.create({
     character_counter:{//Kind of want this in the centre but fix later
         paddingTop:20
     },
+    chartext:{
+        color:"#fafafa"
+    },
     avatar:{
         width:256,
         height:256,
-        borderWidth:2,
-        borderColor:"grey"
     },
     welcome_text:{
-        fontSize:24
+        fontSize:24,
+        color:'#fafafa'
     },
     welcome_view:{
         paddingTop:"30%",
@@ -114,11 +124,11 @@ const styles = StyleSheet.create({
     },
     mascot_title_text:{
         fontSize:22,
-        color:"black"
+        color:"#fafafa"
     },
     mascot_info_text:{
         fontSize:14,
-        color:"black"
+        color:"#fafafa"
     },
     mascot_container:{
         flex:2
