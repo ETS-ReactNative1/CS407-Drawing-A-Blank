@@ -10,6 +10,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
 import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
+import MapTutorial from './src/components/account_ui/tutorial_screens/MapTutorial.js';
+import TutorialNavigation from './src/components/account_ui/tutorial_screens/TutorialNavigation.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.

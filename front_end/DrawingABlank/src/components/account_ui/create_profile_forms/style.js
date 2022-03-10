@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
         fontSize:36,
         color:"#fafafa",
         paddingBottom:"10%",
-        textAlign:"justify"
+        textAlign:"justify",
+        fontFamily:'Ubuntu-Light'
     },
     body_explanation:{
         alignContent:"center"
@@ -36,6 +37,7 @@ const styles = StyleSheet.create({
         fontSize:20,
         color:"#fafafa",
         paddingBottom:"5%",
+        fontFamily:'Ubuntu-Light'
     },
     create_profile:{
         width:"85%"
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
         left:"5%"
     },
     form_input:{
-        fontFamily:"Rubik-VariableFont_wght",
+        fontFamily:'Ubuntu-Light',
         borderColor:"#e8e1df",
         borderWidth:1,
         width:350,
@@ -124,11 +126,13 @@ const styles = StyleSheet.create({
     },
     mascot_title_text:{
         fontSize:22,
-        color:"#fafafa"
+        color:"#fafafa",
+        fontFamily:'Ubuntu-Light'
     },
     mascot_info_text:{
         fontSize:14,
-        color:"#fafafa"
+        color:"#fafafa",
+        fontFamily:'Ubuntu-Light'
     },
     mascot_container:{
         flex:2

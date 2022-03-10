@@ -10,6 +10,7 @@ import ProfileAvatar from './create_profile_forms/profile_avatar.js';
 import ProfileBiography from './create_profile_forms/profile_biography.js';
 import ProfileTeamSelection from './create_profile_forms/profile_team_selection.js';
 import LoadingScreen from './loading_screen/loading_screen.js';
+import TutorialNavigation from './tutorial_screens/TutorialNavigation.js';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ class AccountAuthUI extends Component{
                 <Stack.Screen name="ProfileBiography" component={ProfileBiography} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileAvatar" component={ProfileAvatar} options={{headerLeft:()=>null}}/>
                 <Stack.Screen name="ProfileTeam" component={ProfileTeamSelection} options={{headerLeft:()=>null}}/>
+                <Stack.Screen name="tutorial" component={TutorialNavigation}/>
                 <Stack.Screen name="loading_screen" component={LoadingScreen} options={{headerLeft:()=>null}}/>
             </Stack.Navigator>
         );

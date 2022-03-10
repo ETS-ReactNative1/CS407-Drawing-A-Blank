@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {useState} from "react";
-import {Text, View, Button, Image, BackHandler} from "react-native";
+import {Text, View, Button, Image, BackHandler, Alert} from "react-native";
 import { styles } from "./style";
 import { launchImageLibrary } from 'react-native-image-picker';
 import {updateProfile} from '../../../api/api_profile.js';
@@ -18,7 +18,12 @@ class ProfileAvatar extends Component{
     }
 
     goToMap = () =>{
-        this.props.navigation.navigate('loading_screen',{username:this.state.name});
+        //this.props.navigation.navigate('loading_screen',{username:this.state.name});
+        Alert.alert('Tutorial','Would you like to proceed to the tutorial? (Recommended for first time users)',
+        [
+            {text:'Yes',onPress:()=>this.props.navigation.navigate('tutorial')},
+            {text:'No',onPress:()=>this.props.navigation.navigate('loading_screen',{username:this.state.name})}
+        ])
     }
 
     openImages = () =>{
