@@ -28,17 +28,10 @@ def purge_tokens():
     # get all tokens in token table
     # if token.created is older than x
     # delete
-    
-    tokens = authentication.ExpTokenAuthentication().get_model().objects.all()
-
     utc=pytz.UTC
     time_now = utc.localize(datetime.datetime.utcnow()) 
-
-    # delete any 7 day old unused tokens
-    for token in tokens:
-        if token.created < time_now - datetime.timedelta(days=7):
-                token.delete()
-                token.save()
+    
+    tokens = authentication.ExpTokenAuthentication().get_model().objects.filter(created__lt=time_now-datetime.timedelta(days=1)).delete()
 
 # testing case, cron job adds a user to db
 def test():
