@@ -42,4 +42,42 @@ export const getProfile = (username) => {
         }
         return response.json();
     });
-}
+};
+
+export const getUserWorkouts = () => {
+  return getToken()
+    .then(token =>
+      request('GET', 'user/workout_history/?username=', 'cheese', '', token),
+    )
+    .then(response => {
+      if (response.status != 200) {
+        throw new Error(`Could not obtain workout_history. ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data) {
+        // console.log('workout_history Got:' + JSON.stringify(data));
+      }
+      return data;
+    });
+};
+
+export const getUserWorkout = id => {
+  return getToken()
+    .then(token =>
+      request('GET', 'user/specific_workout/?id=', `${id}`, '', token),
+    )
+    .then(response => {
+      if (response.status != 200) {
+        throw new Error(`Could not obtain workout. ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data) {
+        // console.log('workout Got:' + JSON.stringify(data));
+      }
+      return data;
+    });
+};
