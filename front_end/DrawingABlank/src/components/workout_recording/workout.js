@@ -1,4 +1,5 @@
 import { submit_workout } from '../../api/api_workout';
+import PushNotification,{Importance} from "react-native-push-notification";
 
 const haversine = require('haversine');
 
@@ -9,12 +10,48 @@ export class Workout{
         this.date_end = new Date();
         this.coordinates = [];
         this.recording = false;
+        PushNotification.createChannel(
+            {
+              channelId: "fresgo-workout", // (required)
+              channelName: "Fresgo Channel", // (required)
+              channelDescription: "Fresgo notification channel", // (optional) default: undefined.
+              playSound: false, // (optional) default: true
+              soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+              importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
+              vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
+            },
+            (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+          );
+    }
+    startNotification(){
+        PushNotification.localNotification({
+            channelId:'fresgo-workout',
+            ongoing: true, // (optional) set whether this is an "ongoing" notification
+            priority: "high", // (optional) set notification priority, default: high
+            showWhen:true,
+            when:this.date_start.getTime(),
+            usesChronometer:true,
+            invokeApp:true,
+            autoCancel:false,
+            /* iOS and Android properties */
+            id:0,
+            title: "Fresgo", // (optional)
+            message: `Recording Workout`, // (required)
+            picture:'',
+            userInfo: {start:this.date_start}, // (optional) default: {} (using null throws a JSON value '<null>' error)
+            playSound: false, // (optional) default: true
+            soundName: "default", // (optional) Sound to play when the notification is shown. Value of 'default' plays the default sound. It can be set to a custom sound such as 'android.resource://com.xyz/raw/my_sound'. It will look for the 'my_sound' audio file in 'res/raw' directory and play it. default: 'default' (default sound is played)
+        })
+    }
+    stopNotification(){
+        PushNotification.cancelLocalNotification(0);
     }
     startWorkout(){
         if(!this.recording){
             this.coordinates = [];
             this.date_start = new Date();
             this.recording = true;
+            this.startNotification();
         }
     }
     addCoordinate(latitude,longitude){
@@ -25,6 +62,7 @@ export class Workout{
     }
     stopWorkout(){
         if(this.recording){
+            this.stopNotification();
             this.date_end = new Date();
             console.log(JSON.stringify(this.toJSON()));
             submit_workout(this.toJSON());
