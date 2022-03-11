@@ -27,5 +27,5 @@ def purge_tokens():
     time_now = utc.localize(datetime.datetime.utcnow())
 
     authentication.ExpTokenAuthentication().get_model().objects.filter(
-        created__lt=time_now-datetime.timedelta(days=1)).delete()
+        created__lt=time_now-datetime.timedelta(days=7)).delete()
 
