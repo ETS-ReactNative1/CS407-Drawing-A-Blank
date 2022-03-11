@@ -287,8 +287,8 @@ class WorkoutSubmission(viewsets.ViewSet):
                 for tile in allGrids - checkedTiles:
                     Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
                     WorkoutSubmission.add_participation(player, tile)
-        workout.calories = stats.calories_total(body_mass, workout)
-        workout.save(update_fields=["calories"])
+        # workout.calories = stats.calories_total(body_mass, workout)
+        # workout.save(update_fields=["calories"])
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
     @staticmethod
