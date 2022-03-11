@@ -45,7 +45,6 @@ export const getToken = cb => {
   return SecureStorage.getItemAsync(TOKEN_KEY_NAME);
 };
 
-<<<<<<< HEAD
 export const setToken = (token) => {
     SecureStorage.setItemAsync(TOKEN_KEY_NAME,token);
 }
@@ -57,8 +56,3 @@ export const getUsername = () =>{
 export const setUsername = (username) =>{
     SecureStorage.setItemAsync(USERNAME_KEY_NAME,username);
 }
-=======
-export const setToken = token => {
-  SecureStorage.setItemAsync(TOKEN_KEY_NAME, token);
-};
->>>>>>> tile_zoomScaling

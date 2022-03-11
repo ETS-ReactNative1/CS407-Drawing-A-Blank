@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer, TabActions, StackActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import MapTutorial from './MapTutorial';
 import WorkoutTutorial from './WorkoutTutorial';

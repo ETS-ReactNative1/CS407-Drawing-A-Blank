@@ -1,20 +1,7 @@
 import {request, getToken} from './api_networking.js';
 import {getCorners} from '../components/mapView/utils';
-
-<<<<<<< HEAD
-export const getGrids = (bottom_left, top_right) => {
-    query_string = `?bottom_left=${bottom_left}&top_right=${top_right}&zoom=5`
-    console.log(query_string);
-    return getToken().then(token => request('GET','map',query_string,'',token))
-    .then(response => {
-        if(response.status != 200){
-            throw new Error('Could not retrieve grids.');
-        }
-        return response.json();
-    });
-}
-=======
 export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
+  console.log(region);
   const corners = getCorners(region);
   console.log('buf region for girds', region);
   const body = {
@@ -76,4 +63,3 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
     return generateRequest();
   }
 };
->>>>>>> tile_zoomScaling

@@ -108,6 +108,10 @@ class regionUtils {
       longitude: long - dLong,
     };
 
+    console.log("BL:"+JSON.stringify(bottomLeft));
+    console.log("TL:"+JSON.stringify(topLeft));
+    console.log("TR:"+JSON.stringify(topRight));
+    console.log("BR:"+JSON.stringify(bottomRight));
     return [bottomLeft, topRight, bottomRight, topLeft];
   };
 }

@@ -1,7 +1,5 @@
-import { NavigationRouteContext } from '@react-navigation/core';
 import React, {Component} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
 import { getUsername, setUsername } from '../../../api/api_networking.js';

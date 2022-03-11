@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from 'react';
 import setupGeolocation, {clearWatch, getCurrentPosition} from './geoLocation';
 
+
 const locationConfig = {
   enableHighAccuracy: true,
   timeout: 200, // max time for location request duration
@@ -10,7 +11,7 @@ const locationConfig = {
 
 export default function useGeoLocation(callback) {
   // const location = useRef({latitude: 0, longitude: 0}); -> by using ref, map wont snap to user location when moving
-  const location = useRef({latitude: 0, longitude: 0});
+  location = useRef({latitude: 0, longitude: 0});
   watchId = useRef(-1);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function useGeoLocation(callback) {
     handleGeoLocation();
 
     return () => clearWatch(watchId.current);
-  }, []);
+  }, [location,watchId]);
 
   return location;
 }

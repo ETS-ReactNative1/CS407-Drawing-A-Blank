@@ -1,4 +1,3 @@
-import React, {useState, Component, useEffect} from 'react';
 import React, {useState, Component, useRef, useEffect} from 'react';
 import Map from './Map.js';
 import {Button, StyleSheet, View, Text} from 'react-native';
@@ -17,9 +16,6 @@ function MapViewComplete(props){
   useEffect(()=>{
     console.log("LOCATION:"+JSON.stringify(props.props.location))
   })
-  const [overlayVisible, setOverlayVisible] = useState(false);
-  // use setOverlayContent to change the content of the overlay
-  const [overlayContent, setOverlayContent] = useState();
   const drawRef = useRef();
   const isSideBarOpen = useRef();
 
@@ -72,16 +68,9 @@ function MapViewComplete(props){
         })}
         content={<SideBar DrawItems={DrawItems} />}>
         <Map
-<<<<<<< HEAD
-        setOverlayVisible={setOverlayVisible}
-        setOverlayContent={setOverlayContent}
-        eventsRetrieved={props.props.events_result}
-        mapRetrieved={props.props.map_result}
-        initialLocation={props.props.location}
-=======
           setOverlayVisible={setOverlayVisible}
           setOverlayContent={setOverlayContent}
->>>>>>> tile_zoomScaling
+          eventsRetrieved={props.props.events_result}
         />
         <Overlay
           visible={overlayVisible}

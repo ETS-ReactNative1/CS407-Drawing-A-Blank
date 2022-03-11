@@ -37,27 +37,17 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-image-picker": "^4.7.1",
     "react-native-maps": "0.29.3",
-<<<<<<< HEAD
     "react-native-modal-datetime-picker": "^13.0.1",
     "react-native-multiple-select": "^0.5.7",
     "react-native-push-notification": "^8.1.1",
     "react-native-reanimated": "^2.2.4",
     "react-native-safe-area-context": "^3.3.2",
+    "react-native-screens": "^3.13.1",
     "react-native-svg": "^12.1.1",
     "react-native-svg-charts": "^5.4.0",
     "react-native-vector-icons": "^9.0.0",
     "react-navigation": "^4.4.4",
     "react-select": "^5.2.2"
-=======
-    "react-native-reanimated": "^2.4.1",
-    "react-native-safe-area-context": "^3.4.1",
-    "react-native-screens": "^3.13.1",
-    "react-native-sidebar": "^0.3.0",
-    "react-native-svg": "^12.1.1",
-    "react-native-svg-charts": "^5.4.0",
-    "react-native-vector-icons": "^9.1.0",
-    "react-navigation": "^4.4.4"
->>>>>>> tile_zoomScaling
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

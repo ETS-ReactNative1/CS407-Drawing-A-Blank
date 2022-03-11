@@ -15,7 +15,7 @@ import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 import {getInitialStateAnimated as getInitialState} from './testData';
 import {getEvents, getEventScores} from '../../api/api_events';
-
+import setupGeolocation from './geoLocation';
 import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
@@ -26,31 +26,18 @@ import useGeoLocation from './useGeoLocation';
 import useUserPath from './useUserPath';
 import useRegion from './useRegion';
 import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
-import useZoomLevel from './useZoomLevel';
 
 import {debounce} from './utils';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
-const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
-
-const MAP_ZOOMLEVEL_CLOSEST = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
-const MAP_ZOOMLEVEL_FURTHEST = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
-
-const USER_DRAW_DIAMETER = 1; // metres
-const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
-
-const DEBUG_ZOOM_LEVEL = {
-  latitudeDelta: 0.6039001489487674,
-  longitudeDelta: 0.5393288657069206,
-};
 
 // needs optimizations - map can be slow
 // https://hackernoon.com/how-to-optimize-react-native-map-in-your-application-eeo3nib
 // mostly just memoize
 // and perhaps clustering
 
-function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieved, initialLocation}) {
+function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
   const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
     useRegion();
   console.log('Regions Setup');
@@ -70,8 +57,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
   // const userPathRef = useRef(userPath);
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
-  const userLocation = useRef(region);
-
   const [events, setEvents] = useState([]);
 
   const [grids, setGrids] = useState([]);
@@ -86,33 +71,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
   // moving between two close-by locations wont move map
 
   // draw user path onto map
-  function DrawUserPath() {
-    return (
-      <Polyline
-        coordinates={userPath}
-        strokeWidth={3 || USER_DRAW_DIAMETER}
-        strokeColor={USER_INK_COLOUR}
-      />
-    );
-  }
-
-  function DrawGrids(){
-    return grids.map((grid, i)=>{
-      if(grid.bounds.length > 0){
-        return(
-          <Polygon
-            coordinates={grid.bounds}
-            strokeColor={"#000000"}
-            fillColor={"#"+grid.colour}
-            strokeWidth={1}
-            key={i}
-          >
-
-          </Polygon>
-        );
-      }
-    });
-  }
+  
 
   // might want to make hooks "pausible" if using state (not refs), e.g. dont re render on userpath change, if were not showing it
   //    more an issue of proper state updates/ only do updates which we want to be shown
@@ -124,42 +83,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
       isMapTracking.current,
     ),
   );
-
-  function DrawMarkers() {
-    return events.map(event => (
-      <Marker
-        key={event.id}
-        coordinate={event.marker}
-        title={event.title}
-        anchor={{x: 0, y: 1}}
-        description={event.description}
-        image={{
-          uri: 'http://clipart-library.com/data_images/165937.png',
-        }}
-        onPress={() => {
-          var current_date = new Date();
-          var event_date = Date.parse(event.date_end);
-          var time_left = event_date - current_date;
-          console.log(current_date);
-          console.log(event.date_end);
-          var days = Math.floor(time_left / (1000 * 3600 * 3600));
-          var hours = Math.floor(time_left / (1000 * 3600)) % 24;
-          var minutes = Math.floor(time_left / (1000 * 60)) % 60;
-          var seconds = Math.floor(time_left / 1000) % 60;
-          onEventPress(
-            event.id,
-            days + ':' +
-            (hours < 10? '0' + hours : hours) +
-              ':' +
-              (minutes < 10? '0' + minutes : minutes) +
-              ':' +
-              (seconds < 10 ? '0' + seconds : seconds),
-            event.description,
-          );
-        }}
-      />
-    ));
-  }
 
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc
@@ -179,15 +102,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
     navigation.navigate('post_workout_stats', {recorder: recorder});
   }
 
-  function collectGrids() {
-    /*Geolocation.getCurrentPosition(({coords}) => {
-      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
-      [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
-    });*/
-    setGrids(mapRetrieved);
-  }
-  
   function collectEventScores(){
     console.log("CALCULATING SCORES");
     console.log("HAVE EVENTS:" + events);
@@ -212,7 +126,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
   }
 
   useEffect(() => {
-    console.log("INTIIAL REGION:"+JSON.stringify(initialLocation))
     // Get User permission for location tracking, and initialize map to listen
     // if user permission not given, map will default to initial state - could change to anything e.g. dont render map at all nd show hser dialog
     // (logic could be moved to "withPermissions" hoc)1
@@ -256,7 +169,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
 
     //getEvents().then(result => setEvents(result));
     setEvents(eventsRetrieved);
-    collectGrids();
+    //collectGrids();
       
     }, []);
     
@@ -269,31 +182,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieve
     newRegion => setRegion(newRegion),
     1000,
   );
-
-  // useEffect(() => {
-  //   addPathPoint(userLocation.current);
-
-  //   const {latitude, longitude} = userLocation.current;
-  //   const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
-  //   const oldUserPath = userPathRef.current;
-
-  //   recorder.addCoordinate(latitude, longitude);
-
-  //   //draw new user movement polygon - map their travelled path
-  //   userPathRef.current = [...oldUserPath, {latitude, longitude}];
-
-  //   setUserPath(userPathRef.current);
-  //   if (isMapTracking.current) {
-  //     // setRegion({ // !! No longer doing following a user on map !!
-  //     //   //...region, //take previous zoom level
-  //     //   ...zoomLevel, //take zoom level from constant
-  //     //   latitude,
-  //     //   longitude,
-  //     // });
-  //   } else {
-  //   }
-  // }, [userLocation.current]);
-  // console.log('remount', region);
 
   useDidUpdateEffect(() => {
     // set to map to user location when user location known (second userLocation change (init state -> actual))

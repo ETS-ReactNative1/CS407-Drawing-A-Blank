@@ -10,32 +10,24 @@ class LoadingScreen extends Component{
     state={
         loading_text:"Obtaining location",
         events_result:[],
-        map_result:[],
     }
     componentDidMount(){
         //Perform requests here. Requests to do: get map info and get events (maybe cache workout history and event history?)*
         requestLocationPermission().then(granted => {
             if(granted){
-                Geolocation.getCurrentPosition(({coords}) => {
-                    //Could maybe be changed depending on the work done with the map endpoint
-                    this.setState({loading_text:"Obtaining map info", location:{latitude:coords.latitude,longitude:coords.longitude,latitudeDelta: 0.000000922,longitudeDelta: 0.000000421}});
-                    getGrids(`${coords.latitude - DEBUG_ZOOM_LEVEL},${coords.longitude - DEBUG_ZOOM_LEVEL}`
-                    ,`${coords.latitude + DEBUG_ZOOM_LEVEL},${coords.longitude + DEBUG_ZOOM_LEVEL}`)
-                    .then(result => {this.setState({map_result:result, loading_text:"Retrieving event info"});console.log("GRID AMOUNT:"+result.length)})
-                    .then(_ => {
+                    this.setState({loading_text:"Retrieving event info"},_ => {
                         getEvents().then(res => {
                             this.setState({events_result:res, loading_text:"Launching map"}, _ => {
                                 console.log("NAVIGATING WITH:"+this.state);
                                 this.props.navigation.navigate('map_view_complete',this.state);
                             });
+                        }).catch(err => {
+                            Alert.alert("Error","Sorry, we could not connect you to our servers. Please try again later, or send this to our code monkeys.\n"+err);
+                            this.props.navigation.navigate('login_screen');
                         });
-                    }).catch(err => {
-                        Alert.alert("Error","Sorry, we could not connect you to our servers. Please try again later, or send this to our code monkeys.\n"+err);
-                        this.props.navigation.navigate('login_screen');
-                    });
-                })
-            }
-        });
+                    })
+                    
+        }});
     }
     render(){
         return(
