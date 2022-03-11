@@ -11,18 +11,18 @@ import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import {getUserWorkout, getUserWorkouts} from '../../api/api_profile';
 import {authenticateUser} from '../../api/api_authentication';
+import {getUsername} from '../../api/api_networking';
 
 const WorkoutHistory = () => {
   const navigation = useNavigation();
 
+  const [username, setUsername] = useState([]);
   const [workouts, setWorkouts] = useState([]);
   const [workout, setWorkout] = useState([]);
 
   useEffect(() => {
-    // TODO: REMOVE BEFORE PRODUCTION
-    // for debug authentice the user here to avoid logging in each reload
-    authenticateUser('cheese', 'cheese').then();
     getUserWorkouts().then(result => setWorkouts(result));
+    getUsername().then(result => setUsername(result));
   }, []);
 
   const prev_workouts = workouts.map((workout, index) => {
@@ -71,8 +71,7 @@ const WorkoutHistory = () => {
 
       <ScrollView style={styles.body}>
         <View style={styles.bodyContent}>
-          <Text style={styles.username}>[USERNAME]</Text>
-          <Text style={styles.name}>[NAME]: workout history</Text>
+          <Text style={styles.name}>{username}: workout history</Text>
           <Text style={styles.info}>Filter by date [DATEPICKER]</Text>
           <Text style={styles.description}>
             Take a look back at some of your previous workouts!
