@@ -299,8 +299,6 @@ class Leaderboard(viewsets.ViewSet):
         return Response(ret_val, status=status.HTTP_200_OK)
 
 
-def calc_calories(workout_type, dur):
-    return 0
 
 class ObtainExpAuthToken(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
