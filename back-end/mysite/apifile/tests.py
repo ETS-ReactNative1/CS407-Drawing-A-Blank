@@ -108,10 +108,12 @@ class LeaderboardTests(TestCase):
 
         print("Calories")
         print(self.workout1.calories)
-
+        
         print("2021")
         print(leaderboards.distance_leaderboard(time, []))
         print(leaderboards.distance_leaderboard(time, ["Green", "Blue"]))
+
+
 
         time = datetime.datetime(2019, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
         print("2019")

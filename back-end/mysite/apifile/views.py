@@ -6,7 +6,7 @@ from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from . import leaderboards, stats, grids, authentication
-from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
+from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance, ReportGrids
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
@@ -185,6 +185,16 @@ class UserProfile(viewsets.ViewSet):
 class GridView(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
+
+    @action(methods=['post'], detail=False)
+    def report_grids(self,request):
+        data = request.data
+        user = request.user
+        reasoning = data["reason"]
+        coords = data["coordinates"]
+        east, north = grids.latlong_to_grid(coords)
+        ReportGrids.objects.create(easting=east, northing=north,time=datetime.datetime.utcnow(),reported_by=user.username,reason=reasoning)
+        return Response("Grids reported", status=status.HTTP_200_OK)
 
     def list(self, request):
         data = request.GET
