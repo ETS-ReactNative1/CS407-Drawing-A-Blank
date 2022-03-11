@@ -29,6 +29,11 @@ build/
 local.properties
 *.iml
 *.hprof
+android/.project
+android/.settings/
+android/app/.classpath
+android/app/.project
+android/app/.settings/
 
 # node.js
 #
@@ -58,3 +63,7 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# Local History
+*.history
+
