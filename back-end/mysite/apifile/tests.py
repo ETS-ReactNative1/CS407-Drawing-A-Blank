@@ -1,14 +1,12 @@
 import datetime
-import operator
-from functools import reduce
 
-from django.db.models import Q
+import pytz
 from django.test import TestCase
 from rest_framework.authtoken.admin import User
-import pytz
+
+from . import leaderboards, stats
 from . import models
 from .models import Event, EventBounds, Player, Team, Workout, WorkoutPoint, Grid, EventStandings, EventPerformance
-from . import leaderboards, stats
 
 
 class LeaderboardTests(TestCase):
@@ -342,3 +340,69 @@ class EventOpenCloseTests(TestCase):
         self.assertEqual(1, p_ocean.coins, "Ocean player did not get correct rewards")
         p_windy_2 = Player.objects.get(user__username="u4")
         self.assertEqual(3, p_windy_2.coins, "Windy player 2 did not get correct rewards")
+
+
+class EventDetailsTests(TestCase):
+
+    def setUp(self):
+        # Create 3 test teams
+        terra = Team.objects.create(name="terra", colour="FF0000")
+        windy = Team.objects.create(name="windy", colour="00FF00")
+        ocean = Team.objects.create(name="ocean", colour="0000FF")
+
+        # Create 3 test users, one for each team
+        u1 = User.objects.create_user(username="u1", password="u1")
+        self.p_terra = Player.objects.create(user=u1, team=terra)
+        u2 = User.objects.create_user(username="u2", password="u2")
+        self.p_windy = Player.objects.create(user=u2, team=windy)
+        u3 = User.objects.create_user(username="u3", password="u3")
+        self.p_ocean = Player.objects.create(user=u3, team=ocean)
+        u4 = User.objects.create_user(username="u4", password="u4")
+        self.p_windy_2 = Player.objects.create(user=u4, team=windy)
+
+        # Create date to test around
+        self.test_date = datetime.date.today()
+
+        # Add event that is already closed
+        self.old1_end = self.test_date - datetime.timedelta(days=5)
+        self.old_event1 = Event.objects.create(start=self.test_date - datetime.timedelta(days=30),
+                                               end=self.old1_end)
+        EventBounds.objects.create(event=self.old_event1, easting=10, northing=10)
+        EventBounds.objects.create(event=self.old_event1, easting=10, northing=30)
+        EventBounds.objects.create(event=self.old_event1, easting=30, northing=30)
+        EventBounds.objects.create(event=self.old_event1, easting=30, northing=10)
+        EventPerformance.objects.create(player=self.p_terra, event=self.old_event1, contribution=3)
+        EventPerformance.objects.create(player=self.p_ocean, event=self.old_event1, contribution=1)
+        EventStandings.objects.create(event=self.old_event1, team=terra, score=3)
+        EventStandings.objects.create(event=self.old_event1, team=ocean, score=1)
+        EventStandings.objects.create(event=self.old_event1, team=windy, score=0)
+
+        # Add event that needs to be closed
+        self.old2_end = self.test_date - datetime.timedelta(days=1)
+        self.old_event2 = Event.objects.create(start=self.test_date - datetime.timedelta(days=50),
+                                               end=self.old2_end)
+        EventBounds.objects.create(event=self.old_event2, easting=50, northing=50)
+        EventBounds.objects.create(event=self.old_event2, easting=50, northing=70)
+        EventBounds.objects.create(event=self.old_event2, easting=70, northing=70)
+        EventBounds.objects.create(event=self.old_event2, easting=70, northing=50)
+        EventPerformance.objects.create(player=self.p_terra, event=self.old_event2, contribution=2)
+        EventPerformance.objects.create(player=self.p_windy, event=self.old_event2, contribution=2)
+        EventPerformance.objects.create(player=self.p_ocean, event=self.old_event2, contribution=1)
+        EventPerformance.objects.create(player=self.p_windy_2, event=self.old_event2, contribution=1)
+        EventStandings.objects.create(event=self.old_event2, team=terra, score=2)
+        EventStandings.objects.create(event=self.old_event2, team=ocean, score=1)
+        EventStandings.objects.create(event=self.old_event2, team=windy, score=3)
+
+        # Add open event
+        self.open_event = Event.objects.create(start=self.test_date - datetime.timedelta(days=1),
+                                               end=self.test_date + datetime.timedelta(days=25),
+                                               active=True)
+        EventBounds.objects.create(event=self.open_event, easting=50, northing=10)
+        EventBounds.objects.create(event=self.open_event, easting=50, northing=30)
+        EventBounds.objects.create(event=self.open_event, easting=70, northing=30)
+        EventBounds.objects.create(event=self.open_event, easting=70, northing=10)
+
+    def test_only_player_results(self):
+        test_return = Event.event_scores(self.test_date - datetime.timedelta(days=10), self.p_windy)
+
+        self.assertEqual(1, len(test_return))
