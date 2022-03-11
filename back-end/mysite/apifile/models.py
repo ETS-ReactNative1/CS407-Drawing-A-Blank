@@ -367,7 +367,7 @@ class EventStandings(models.Model):
 class Workout(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     duration = models.PositiveIntegerField()  # in seconds
-    calories = models.PositiveIntegerField()
+    calories = models.PositiveIntegerField(default=0)
     type = models.CharField(max_length=10)  # e.g. walk, run
     points = models.PositiveIntegerField(default=0)  # number of grids touched in that workout
 
