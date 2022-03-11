@@ -236,7 +236,7 @@ class WorkoutSubmission(viewsets.ViewSet):
         data = request.data
         user = request.user
 
-        body_mass = data["body_mass"]  # for calorie calculation
+        # body_mass = data["body_mass"]  # for calorie calculation
         waypoints = data["coordinates"]
         start = data["start"][:-1]  # removes 'Z' in timestamp
         end = data["end"][:-1]
