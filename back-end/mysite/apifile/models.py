@@ -39,6 +39,7 @@ class Item(models.Model):
     price = models.PositiveIntegerField()
 
 
+
 # alter the base django user table with extra fields
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -383,3 +384,11 @@ class EventPerformance(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     contribution = models.PositiveIntegerField()  # work out what we want to track when we develop events further
+
+
+class ReportGrids(models.Model):
+    easting = models.PositiveIntegerField()
+    northing = models.PositiveIntegerField()
+    time = models.DateTimeField()
+    reported_by = models.ForeignKey(Player, on_delete=models.CASCADE)
+    reason =models.CharField(max_length=100)

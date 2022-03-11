@@ -6,7 +6,7 @@ from django.db.models import Q
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from . import leaderboards, stats, grids, authentication
-from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance
+from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance, ReportGrids
 from rest_framework.decorators import action
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
@@ -203,6 +203,16 @@ class GridView(viewsets.ViewSet):
     authentication_classes = [authentication.ExpTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @action(methods=['post'], detail=False)
+    def report_grids(self,request):
+        data = request.data
+        user = request.user
+        reasoning = data["reason"]
+        coords = data["coordinates"]
+        east, north = grids.latlong_to_grid(coords)
+        ReportGrids.objects.create(easting=east, northing=north,time=datetime.datetime.utcnow(),reported_by=user.username,reason=reasoning)
+        return Response("Grids reported", status=status.HTTP_200_OK)
+
     def list(self, request):
         data = request.GET
         bl = data['bottom_left']
@@ -225,6 +235,7 @@ class WorkoutSubmission(viewsets.ViewSet):
         data = request.data
         user = request.user
 
+        body_mass= data["body_mass"] #for calorie calculation
         waypoints = data["coordinates"]
         start = data["start"][:-1]  # removes 'Z' in timestamp
         end = data["end"][:-1]
@@ -236,9 +247,9 @@ class WorkoutSubmission(viewsets.ViewSet):
         dur = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S.%f') - datetime.datetime.strptime(start, '%Y-%m-%dT'
                                                                                                           '%H:%M:%S.%f')
 
-        cals = calc_calories(type, dur)
 
-        workout = Workout.objects.create(player=player, duration=dur.total_seconds(), calories=cals, type=workout_type)
+
+        workout = Workout.objects.create(player=player, duration=dur.total_seconds(), calories=0, type=workout_type)
 
         for entry in waypoints:
             ghost = not entry["isTracking"]
@@ -277,7 +288,8 @@ class WorkoutSubmission(viewsets.ViewSet):
                 for tile in allGrids - checkedTiles:
                     Grid.objects.create(easting=tile[0], northing=tile[1], player=player, time=bounds[i].time)
                     WorkoutSubmission.add_participation(player, tile)
-
+        workout.calories = stats.calories_total(body_mass,workout)
+        workout.save(update_fields=["calories"])
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
     @staticmethod
@@ -314,8 +326,6 @@ class Leaderboard(viewsets.ViewSet):
         return Response(ret_val, status=status.HTTP_200_OK)
 
 
-def calc_calories(workout_type, dur):
-    return 0
 
 
 class ObtainExpAuthToken(ObtainAuthToken):
