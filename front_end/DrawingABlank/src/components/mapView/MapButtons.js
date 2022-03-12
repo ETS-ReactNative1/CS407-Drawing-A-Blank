@@ -13,6 +13,7 @@ export default function MapControls({
   workoutText,
   drawGridsFunction,
   workout_active,
+  ghost_active
 }) {
   toggle_workout = () => startWorkout();
 
@@ -20,14 +21,19 @@ export default function MapControls({
     <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity>
-          <Icon
+          {(ghost_active) ? <Icon
             name={'eye-off'}
             type={'feather'}
             // iconStyle={styles.icon}
             // containerStyle={styles.menu}
             size={30}
             onPress={toggleGhostMode}
-          />
+          /> : <Icon
+            name={'eye'}
+            type={'feather'}
+            size={30}
+            onPress={toggleGhostMode}
+          />}
         </TouchableOpacity>
         <TouchableOpacity>
           {workout_active ? (

@@ -56,6 +56,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
   const userPathRef = useRef(userPath);
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
+  const [isMapTrackingState, setIsMapTrackingState] = useState(true);
   const [events, setEvents] = useState([]);
 
   const [grids, setGrids] = useState([]);
@@ -182,6 +183,10 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
     1000,
   );
 
+  useEffect(() => {
+    recorder.changeTracking(isMapTrackingState);
+  },[isMapTrackingState])
+
   useDidUpdateEffect(() => {
     // set to map to user location when user location known (second userLocation change (init state -> actual))
     if (isMapTracking.current) {
@@ -246,6 +251,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
       <MapControls
         toggleGhostMode={() => {
           isMapTracking.current = !isMapTracking.current;
+          setIsMapTrackingState(!isMapTrackingState);
           console.log('Enabling Ghost mode...');
         }}
         toggleShowEventsList={() => {
@@ -267,6 +273,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
           }
         }}
         workout_active={workout_active}
+        ghost_active={isMapTrackingState}
         workoutText={workout_button_text}
         drawGridsFunction={() => {}}
         // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}

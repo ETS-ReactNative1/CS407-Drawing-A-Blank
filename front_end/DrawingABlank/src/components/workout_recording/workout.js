@@ -14,6 +14,7 @@ export class Workout{
         this.date_end = new Date();
         this.coordinates = [];
         this.recording = false;
+        this.tracking = true;
         PushNotification.createChannel(
             {
               channelId: "fresgo-workout", // (required)
@@ -37,7 +38,7 @@ export class Workout{
             console.log("GOT LOCATION IN WORKOUT:"+JSON.stringify(location));
             if(this.recording){
               console.log("ADDING COORDINATE:"+JSON.stringify(location));
-              this.addCoordinate(location.coords.latitude,location.coords.longitude,true);//True for now until ghost mode is chosen
+              this.addCoordinate(location.coords.latitude,location.coords.longitude,this.tracking);//True for now until ghost mode is chosen
             }
 
           }); 
@@ -105,7 +106,8 @@ export class Workout{
       });
     }
   }
-    stopWorkout(){
+
+  stopWorkout(){
         if(this.recording){
             //this.stopNotification();
             this.date_end = new Date();
@@ -114,6 +116,10 @@ export class Workout{
             this.recording = false;
             this.stopTracking();
         }
+    }
+    changeTracking(newTracking){
+      console.log("UPDATING TRACKING");
+      this.tracking = newTracking;
     }
     toJSON(){
         return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk"};
