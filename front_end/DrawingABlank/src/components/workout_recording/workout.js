@@ -1,9 +1,13 @@
 import { submit_workout } from '../../api/api_workout';
 import PushNotification,{Importance} from "react-native-push-notification";
+import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 
 const haversine = require('haversine');
+const TASK_NAME = 'FRESGO_GET_LOCATION';
 
 export class Workout{
+
     //In the future, this constructor needs to accept a user id or JWT from secret storage.
     constructor(){
         this.date_start = new Date();
@@ -22,7 +26,23 @@ export class Workout{
             },
             (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
           );
+          //https://stackoverflow.com/questions/60696365/the-best-way-of-tracking-location-in-background-using-react-native-expo-in-202
+          TaskManager.defineTask(TASK_NAME, async ({data:{locations},err}) => {
+            if(err){
+              console.log(err);
+              return;
+            }
+
+            const [location] = locations;
+            console.log("GOT LOCATION IN WORKOUT:"+JSON.stringify(location));
+            if(this.recording){
+              console.log("ADDING COORDINATE:"+JSON.stringify(location));
+              this.addCoordinate(location.coords.latitude,location.coords.longitude,true);//True for now until ghost mode is chosen
+            }
+
+          }); 
     }
+    
     startNotification(){
         PushNotification.localNotification({
             channelId:'fresgo-workout',
@@ -51,8 +71,28 @@ export class Workout{
             this.coordinates = [];
             this.date_start = new Date();
             this.recording = true;
-            this.startNotification();
+            //this.startNotification();
+            this.startTracking();
         }
+    }
+    startTracking(){
+      //https://stackoverflow.com/questions/60696365/the-best-way-of-tracking-location-in-background-using-react-native-expo-in-202
+      Location.startLocationUpdatesAsync(TASK_NAME, {
+        accuracy: Location.Accuracy.Highest,
+        distanceInterval: 5, // minimum change (in meters) betweens updates
+        deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+        foregroundService: {
+          notificationTitle: 'Fresgo',
+          notificationBody: 'Recording Workout',
+        },
+      });      
+    }
+    stopTracking(){
+      Location.hasStartedLocationUpdatesAsync(TASK_NAME).then((value) => {
+        if (value) {
+          Location.stopLocationUpdatesAsync(TASK_NAME);
+        }
+      });
     }
   addCoordinate(latitude, longitude, isTracking) {
     if (this.recording) {
@@ -61,17 +101,18 @@ export class Workout{
         latitude: latitude,
         longitude: longitude,
         timestamp: time,
-        isTracking,
+        isTracking: isTracking,
       });
     }
   }
     stopWorkout(){
         if(this.recording){
-            this.stopNotification();
+            //this.stopNotification();
             this.date_end = new Date();
-            console.log(JSON.stringify(this.toJSON()));
+            console.log("COMPLETED WORKOUT:"+JSON.stringify(this.toJSON()));
             submit_workout(this.toJSON());
             this.recording = false;
+            this.stopTracking();
         }
     }
     toJSON(){
