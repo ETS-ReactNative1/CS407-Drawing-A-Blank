@@ -6,6 +6,8 @@ import {Icon} from 'react-native-elements';
 import {styles} from './style.js';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
+import ModalSelector from 'react-native-modal-selector'
+
 export default function MapControls({
   toggleGhostMode,
   startWorkout,
@@ -16,6 +18,14 @@ export default function MapControls({
   ghost_active
 }) {
   toggle_workout = () => startWorkout();
+
+  const workout_choices = [
+    //Check the workout API choices with back-end
+    {key:0, label: 'Walking', customKey:'walk'},
+    {key:1, label: 'Running', customKey:'run'},
+    {key:2, label: 'Cycling', customKey:'cycle'}
+  ];
+  var option_selected = 'walk';
 
   return (
     <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
@@ -46,13 +56,17 @@ export default function MapControls({
               onPress={toggle_workout}
             />
           ) : (
-            <Icon
-              name={'play'}
-              type={'feather'}
-              // iconStyle={styles.icon}
-              // containerStyle={styles.menu}
-              size={30}
-              onPress={toggle_workout}
+            <ModalSelector
+              data={workout_choices}
+              ref={selector => this.selector=selector}
+              customSelector={
+                <Icon 
+                  name={'play'} 
+                  type={'feather'} 
+                  size={30} 
+                  onPress={() => this.selector.open()}
+                />}
+              onChange={(option)=>{this.option_selected = option.customKey; startWorkout(this.option_selected);}}
             />
           )}
         </TouchableOpacity>

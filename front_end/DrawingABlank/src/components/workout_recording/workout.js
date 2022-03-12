@@ -15,6 +15,7 @@ export class Workout{
         this.coordinates = [];
         this.recording = false;
         this.tracking = true;
+        this.type = 'walk';
         PushNotification.createChannel(
             {
               channelId: "fresgo-workout", // (required)
@@ -67,9 +68,10 @@ export class Workout{
     stopNotification(){
         PushNotification.cancelLocalNotification(0);
     }
-    startWorkout(){
+    startWorkout(type){
         if(!this.recording){
             this.coordinates = [];
+            this.type = type;
             this.date_start = new Date();
             this.recording = true;
             //this.startNotification();
@@ -122,7 +124,7 @@ export class Workout{
       this.tracking = newTracking;
     }
     toJSON(){
-        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":"walk"};
+        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":this.type};
     }
     /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.

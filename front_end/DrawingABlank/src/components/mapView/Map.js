@@ -258,14 +258,12 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
           console.log('Opening Events Bottom Tray...');
           bottomSheetRef.current.expand();
         }}
-        startWorkout={() => {
+        startWorkout={(type) => {
           if (!workout_active) {
-            //startWorkout();
             set_workout_active(true);
-            recorder.startWorkout();
+            recorder.startWorkout(type);
             set_workout_button_text(workout_button_stop);
           } else {
-            //stopWorkout();
             set_workout_active(false);
             recorder.stopWorkout();
             set_workout_button_text(workout_button_start);
