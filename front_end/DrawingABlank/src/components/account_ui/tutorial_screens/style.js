@@ -8,25 +8,55 @@ export const styles = StyleSheet.create({
         alignContent:"center",
         width:"100%",
         height:"100%",
-        padding:"2.5%"
+        padding:"2.5%",
+        position:"absolute"
+    },
+    title:{
+        flexDirection:'row',
+        alignContent:'center', 
+        width:"100%",
+        justifyContent:'center',
+        alignItems:'center',
+        paddingBottom:20
     },
     title_text:{
-        fontSize:36,
+        fontSize:30,
         color:"#fafafa",
-        paddingBottom:"10%",
         textAlign:"justify",
-        fontFamily:'Ubuntu-Light'
+        fontFamily:'Ubuntu-Light',
+        textAlign:'center',
+        justifyContent:'center',
     },
     description:{
-        paddingBottom:30
+        paddingBottom:30,
+        alignContent:"center"
     },
     description_text:{
         fontFamily:'Ubuntu-Light',
         color:'#fafafa',
-        fontSize:24
+        fontSize:24,
+        textAlign:'center'
     },
     continue_button:{
         paddingTop:20,
-        width:"90%",
+        bottom:"2%",
+        width:"100%",
+        position:"absolute",
+        flexDirection:'row',
+        justifyContent:"center",
     },
+    button_style:{
+        width:"50%",
+        paddingRight:10
+    }, 
+    titleContainer:{
+    },
+    icon:{
+        marginRight:'auto'
+    },
+    quit_button:{
+        position:"absolute",
+        right:0,
+        bottom:20,
+    }
 })
