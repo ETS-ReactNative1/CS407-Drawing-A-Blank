@@ -245,11 +245,13 @@ class Event(models.Model):
         if date != '':
             events = Event.objects.filter(
                 end__gte=date, end__lte=today, active=False,
-                eventperformance__player=player).prefetch_related('eventperformance', 'eventstandings').order_by('-end')
+                eventperformance__player=player).prefetch_related('eventperformance_set',
+                                                                  'eventstandings_set').order_by('-end')
         else:
             events = Event.objects.filter(
                 end__lte=today, active=False,
-                eventperformance__player=player).prefetch_related('eventperformance', 'eventstandings').order_by('-end')
+                eventperformance__player=player).prefetch_related('eventperformance_set',
+                                                                  'eventstandings_set').order_by('-end')
 
         ret = []
         for event in events:
