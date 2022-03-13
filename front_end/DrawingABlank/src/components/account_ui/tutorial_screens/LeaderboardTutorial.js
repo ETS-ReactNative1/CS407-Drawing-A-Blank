@@ -1,16 +1,21 @@
 import React, {Component} from "react";
 import {Text, View, Button, Image, BackHandler, Alert, TouchableOpacity} from "react-native";
 import { Icon } from "react-native-elements/dist/icons/Icon";
+import { getUsername } from "../../../api/api_networking.js";
 import { styles } from "../tutorial_screens/style.js";
 
 class LeaderboardTutorial extends Component{
     continueToNextTutorial = () =>{
         this.props.navigation.navigate('tutorial_location');
     }
-    skipTutorial(){
+    skipTutorial = () =>{
         Alert.alert("Skip Tutorial","Are you sure you want to skip this tutorial? You can revisit it later in the settings panel.",
         [
-            {text:'Yes',onPress:()=>this.props.navigation.navigate('loading_screen',{username:this.state.name})},
+            {text:'Yes',onPress:()=>{
+                getUsername().then(username => {                
+                    this.props.navigation.navigate('loading_screen',{username:username});
+                })
+            }},
             {text:'No',onPress:()=>{}}
         ])
     }

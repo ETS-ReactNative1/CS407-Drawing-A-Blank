@@ -20,7 +20,11 @@ class TutorialLocation extends Component{
     skipTutorial = () =>{
         Alert.alert("Skip Tutorial","Are you sure you want to skip this tutorial? You can revisit it later in the settings panel.",
         [
-            {text:'Yes',onPress:()=>this.props.navigation.navigate('loading_screen',{username:this.state.name})},
+            {text:'Yes',onPress:()=>{
+                getUsername().then(username => {                
+                    this.props.navigation.navigate('loading_screen',{username:username});
+                })
+            }},
             {text:'No',onPress:()=>{}}
         ])
     }
