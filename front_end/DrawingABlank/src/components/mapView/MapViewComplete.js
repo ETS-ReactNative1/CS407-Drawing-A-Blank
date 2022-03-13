@@ -13,6 +13,7 @@ function MapViewComplete(props){
   const [overlayVisible, setOverlayVisible] = useState(false);
   // use setOverlayContent to change the content of the overlay
   const [overlayContent, setOverlayContent] = useState();
+
   useEffect(()=>{
     console.log("LOCATION:"+JSON.stringify(props.props.location))
   })
@@ -29,7 +30,6 @@ function MapViewComplete(props){
       isSideBarOpen.current = true;
     }
   };
-
   return (
     <View style={styles.mapContainer}>
       <TouchableOpacity onPress={toggleSidebar}>

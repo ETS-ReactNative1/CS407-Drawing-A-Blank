@@ -41,12 +41,16 @@ export const request = (
   });
 };
 
-export const getToken = cb => {
+export const getToken = () => {
   return SecureStorage.getItemAsync(TOKEN_KEY_NAME);
 };
 
 export const setToken = (token) => {
     SecureStorage.setItemAsync(TOKEN_KEY_NAME,token);
+}
+
+export const deleteToken = () => {
+  return SecureStorage.deleteItemAsync(TOKEN_KEY_NAME);
 }
 
 export const getUsername = () =>{
@@ -55,4 +59,8 @@ export const getUsername = () =>{
 
 export const setUsername = (username) =>{
     SecureStorage.setItemAsync(USERNAME_KEY_NAME,username);
+}
+
+export const deleteUsername = (username) =>{
+  return SecureStorage.deleteItemAsync(USERNAME_KEY_NAME);
 }

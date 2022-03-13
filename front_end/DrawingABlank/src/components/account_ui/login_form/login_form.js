@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useCallback} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator, Alert} from 'react-native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
@@ -64,6 +64,13 @@ class LoginScreen extends Component{
     
     componentDidMount(){
         this.verifyTokenOnStart();
+        this.navigationListener = this.props.navigation.addListener('blur',()=>{
+            this.setState({loggingIn:false});
+        })
+    }
+    componentWillUnmount(){
+        //L + ratio + Unsubscribed
+        this.navigationListener();
     }
 
     render(){
