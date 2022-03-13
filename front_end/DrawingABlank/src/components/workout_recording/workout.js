@@ -130,6 +130,11 @@ export class Workout{
     /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.
     */
+  
+  isAnomaly(speed){
+    return this.type=="cycle" ? speed >= 100 : speed >= 11;
+  }
+  
   getAverageSpeed() {
     if (this.coordinates.length <= 1) return 0;
     var current_speed = 0.0;
@@ -152,10 +157,10 @@ export class Workout{
     var seconds = 0.0;
 
     //Subsample factor: floor(coordinate amount/10)
-    var subsample_factor = Math.floor(this.coordinates.length/SUBSAMPLE_CONSTANT);
+    var subsample_factor = Math.ceil(this.coordinates.length/SUBSAMPLE_CONSTANT);
 
     for (var c = 1; c < this.coordinates.length; c++) {
-      if(subsample_factor!=0 && c%subsample_factor==0)
+      if(subsample_factor!=1 && c%subsample_factor!=0)
         continue;
 
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
@@ -167,7 +172,7 @@ export class Workout{
       var speed = distance / time;
 
       //Anomaly (noone can cycle or run at this speed)
-      if(speed > 100)
+      if(this.isAnomaly(speed))
         continue;
 
       seconds += time;
@@ -195,10 +200,10 @@ export class Workout{
     var current_distance = 0.0;
 
     //Subsample factor: floor(coordinate amount/10)
-    var subsample_factor = Math.floor(this.coordinates.length/SUBSAMPLE_CONSTANT);
+    var subsample_factor = Math.ceil(this.coordinates.length/SUBSAMPLE_CONSTANT);
 
     for (var c = 1; c < this.coordinates.length; c++) {
-      if(subsample_factor!=0 && c%subsample_factor==0)
+      if(subsample_factor!=1 && c%subsample_factor!=0)
         continue;
 
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
@@ -208,7 +213,7 @@ export class Workout{
         (this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
         1000;
       
-      if(distance / time > 100)
+      if(this.isAnomaly(distance/time))
         continue;
 
       seconds += time;
