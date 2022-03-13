@@ -21,7 +21,7 @@ export const createUser = (username, email, password, team) => {
             throw new Error(JSON.stringify(response.json()));
         }
         return response.json()
-    }).then(res=>{console.log("GOT TOKEN RESPONSE:"+res);setToken(res.token)});
+    }).then(res=>{console.log("GOT TOKEN RESPONSE:"+JSON.stringify(res));setToken(res.token)});
 }
 
 export const authenticateUser = (username,password) => {

@@ -38,11 +38,11 @@ class ProfileTeamSelection extends Component{
     createAccount = (username,password,email,team) =>{
         var verification = this.detailsComplete();
         if(verification[0]){
-            createUser(username,email,password,team).then(token => {
-                setToken(token);
+            createUser(username,email,password,team).then(_ => {
                 setUsername(username);
                 this.moveToDetails();
-            }).catch(_ => { 
+            }).catch(err => { 
+                console.log("ERROR:"+err)
                 Alert.alert("Error","We were unable to create your account, this may mean your username or email has already been used. Please try again.");
                 this.props.navigation.navigate("login_screen");
             });
