@@ -245,13 +245,11 @@ class Event(models.Model):
         if date != '':
             events = Event.objects.filter(
                 end__gte=date, end__lte=today, active=False,
-                event__eventperformance__player=player).prefetch_related('eventperformance',
-                                                                         'eventstandings').order_by('-end')
+                eventperformance__player=player).prefetch_related('eventperformance', 'eventstandings').order_by('-end')
         else:
             events = Event.objects.filter(
                 end__lte=today, active=False,
-                event__eventperformance__player=player).prefetch_related('eventperformance',
-                                                                         'eventstandings').order_by('-end')
+                eventperformance__player=player).prefetch_related('eventperformance', 'eventstandings').order_by('-end')
 
         ret = []
         for event in events:
@@ -269,7 +267,6 @@ class Event(models.Model):
             ret.append({'id': event.id, 'start': event.start, 'end': event.end, 'performance': perfs})
 
         return ret
-
 
     def check_within(self, point):
         """
