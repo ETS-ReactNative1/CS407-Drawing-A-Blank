@@ -164,13 +164,13 @@ class Event(models.Model):
                      "windy": Team.objects.get(name="windy")}
 
             if len(winners) >= 1:
-                first = (teams[winners[0]['name']], winners[0]['score'])
+                first = (teams[winners[0]['name']], winners[0]['total'])
                 unseen_teams.remove(winners[0]['name'])
                 if len(winners) >= 2:
-                    second = (teams[winners[1]['name']], winners[1]['score'])
+                    second = (teams[winners[1]['name']], winners[1]['total'])
                     unseen_teams.remove(winners[1]['name'])
                     if len(winners) >= 3:
-                        third = (teams[winners[2]['name']], winners[2]['score'])
+                        third = (teams[winners[2]['name']], winners[2]['total'])
                     else:
                         third = (teams[unseen_teams.pop()], 0)
                 else:
