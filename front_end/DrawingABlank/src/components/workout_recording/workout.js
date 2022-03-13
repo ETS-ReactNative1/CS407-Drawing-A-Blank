@@ -5,6 +5,7 @@ import * as TaskManager from 'expo-task-manager';
 
 const haversine = require('haversine');
 const TASK_NAME = 'FRESGO_GET_LOCATION';
+const SUBSAMPLE_CONSTANT = 10;
 
 export class Workout{
 
@@ -149,7 +150,14 @@ export class Workout{
 
     var result = [{speed: 0.0, time: 0.0}];
     var seconds = 0.0;
+
+    //Subsample factor: floor(coordinate amount/10)
+    var subsample_factor = Math.floor(this.coordinates.length/SUBSAMPLE_CONSTANT);
+
     for (var c = 1; c < this.coordinates.length; c++) {
+      if(subsample_factor!=0 && c%subsample_factor==0)
+        continue;
+
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
@@ -157,6 +165,11 @@ export class Workout{
         (this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
         1000;
       var speed = distance / time;
+
+      //Anomaly (noone can cycle or run at this speed)
+      if(speed > 100)
+        continue;
+
       seconds += time;
       result.push({speed: speed, time: seconds});
     }
@@ -180,13 +193,24 @@ export class Workout{
     var result = [{distance: 0.0, time: 0.0}];
     var seconds = 0.0;
     var current_distance = 0.0;
+
+    //Subsample factor: floor(coordinate amount/10)
+    var subsample_factor = Math.floor(this.coordinates.length/SUBSAMPLE_CONSTANT);
+
     for (var c = 1; c < this.coordinates.length; c++) {
+      if(subsample_factor!=0 && c%subsample_factor==0)
+        continue;
+
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
       var time =
         (this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
         1000;
+      
+      if(distance / time > 100)
+        continue;
+
       seconds += time;
       current_distance += distance;
       result.push({distance: current_distance, time: seconds});
