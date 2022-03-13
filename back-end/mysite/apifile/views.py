@@ -63,10 +63,12 @@ class Events(viewsets.ViewSet):
     def history(self, request):
         data = request.GET
         player = Player.objects.get(user=request.user)
-
-        date = data['date']
-        if date != '':
-            date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        if 'date' in data:
+            date = data['date']
+            if date != '':
+                date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        else:
+            date = ''
         return Response(Event.event_scores(date, player), status=status.HTTP_200_OK)
 
     @staticmethod
