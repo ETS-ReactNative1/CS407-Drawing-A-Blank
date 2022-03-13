@@ -160,6 +160,20 @@ export default function useLocalGrids(
     });
   };
 
+  //Code taken from: https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
+  const hexToRGB = (hex) => {
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',0.7)';
+    }
+    throw new Error('Bad Hex');
+  }
+
   const DrawGrids = () => {
     return localGrids.map((grid, i) => {
       if (grid.bounds.length > 0) {
@@ -167,7 +181,8 @@ export default function useLocalGrids(
           <Polygon
             coordinates={grid.bounds}
             strokeColor={'#000000'}
-            fillColor={'#' + grid.colour}
+            fillColor={hexToRGB('#' + grid.colour)}
+            fillOpacity={0.7}
             strokeWidth={1}
             key={i}></Polygon>
         );
