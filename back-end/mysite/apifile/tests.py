@@ -403,6 +403,7 @@ class EventDetailsTests(TestCase):
         EventBounds.objects.create(event=self.open_event, easting=70, northing=10)
 
     def test_only_player_results(self):
+        print(Event._meta.get_fields())
         test_return = Event.event_scores(self.test_date - datetime.timedelta(days=10), self.p_windy)
 
         self.assertEqual(1, len(test_return))
