@@ -258,11 +258,11 @@ class Event(models.Model):
             perfs = dict()
 
             # get user performance
-            player_perf = event.eventperformance.first()
+            player_perf = event.eventperformance_set.first()
             perfs['user'] = player_perf.contribution
 
             # get team performance
-            team_perfs = event.eventstandings.all()
+            team_perfs = event.eventstandings_set.all()
             for team_perf in team_perfs:
                 perfs[team_perf.team.name] = team_perf.score
 
