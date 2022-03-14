@@ -84,7 +84,7 @@ export default function useLocalGrids(
       // should ideally use existing ones if user enters back into already cahced bound area
 
       const key = zoomLayer;
-      const tileSize = zoomLayer * 5;
+      const tileSize = zoomLayer //* 5;
 
       grids = await gridZoomCache.getEntryContent(key, 0, (key, entry) => {
         const renderRegionCentre = {
