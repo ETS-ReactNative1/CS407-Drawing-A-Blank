@@ -9,6 +9,7 @@ const setupGeolocation = async (callback, options) => {
     // Listen for future user movement
     const watchId = Geolocation.watchPosition(
       ({coords}) => {
+        console.log('first');
         callback(coords);
       },
       e => {

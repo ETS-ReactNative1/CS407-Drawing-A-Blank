@@ -29,17 +29,6 @@ function MapViewComplete() {
 
   return (
     <View style={styles.mapContainer}>
-      <TouchableOpacity onPress={toggleSidebar}>
-        <View style={styles.menu}>
-          <Icon
-            name={'menu'}
-            type={'feather'}
-            iconStyle={styles.menuIcon}
-            containerStyle={styles.menu}
-            size={30}
-          />
-        </View>
-      </TouchableOpacity>
       {/* <Button
         title="Burger"
         onPress={() => {

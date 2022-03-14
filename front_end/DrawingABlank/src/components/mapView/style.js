@@ -33,12 +33,19 @@ export const styles = StyleSheet.create({
   },
   menu: {
     //position: 'absolute',
-
+    // backgroundColor: 'black',
     flexDirection: 'row',
     flexGrow: 0,
     flexShrink: 1,
     alignContent: 'flex-start',
   },
+  // menu_container: {
+  //   flexShrink: 1,
+  //   alignSelf: 'flex-start',
+  //   // position: 'absolute',
+  //   elevation: 10,
+  //   // backgroundColor: 'black',
+  // },
   menuIcon: {
     alignSelf: 'flex-start',
   },

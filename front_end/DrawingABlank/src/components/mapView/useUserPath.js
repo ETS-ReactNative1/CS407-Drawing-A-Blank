@@ -22,16 +22,20 @@ export default function useUserPath() {
     userPath.current = userPath.current.pop();
   }
 
-  function addPathPoint(latLngPoint) {
+  function addPathPoint(latLngPoint, isTracking) {
     // add latlng point to path
-    setUserPath(userPath.push(latLngPoint));
-
+    setUserPath([...userPath, latLngPoint]);
+    console.log('adding points');
     // add point to workout recorder / exercise computer
     recorder.addCoordinate(
       latLngPoint.latitude,
       latLngPoint.longitude,
-      (isTracking = true),
+      isTracking,
     );
+  }
+
+  function clearPath() {
+    userPath = [];
   }
 
   function toggleWorkoutActive() {
@@ -53,6 +57,7 @@ export default function useUserPath() {
 
     recorder.stopWorkout();
     workout_active.current = false;
+    clearPath();
   }
 
   function DrawUserPath() {
@@ -69,5 +74,11 @@ export default function useUserPath() {
     }
   }
 
-  return [DrawUserPath, userPath];
+  return [
+    DrawUserPath,
+    startWorkout,
+    stopWorkout,
+    addPathPoint,
+    workout_active,
+  ];
 }

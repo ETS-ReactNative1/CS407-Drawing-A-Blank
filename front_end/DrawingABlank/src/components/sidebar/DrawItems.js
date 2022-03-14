@@ -6,7 +6,7 @@ export default [
   },
   {
     label: 'Settings',
-    iconType: 'Feather',
+    iconType: 'feather',
     iconName: 'settings',
   },
   {
@@ -16,14 +16,20 @@ export default [
   },
   {
     label: 'Logout',
-    iconType: 'material',
+    iconType: 'feather',
     iconName: 'logout',
     isFoot: true,
   },
   {
     label: 'Refer a Friend!',
     iconType: 'material',
-    iconName: 'group_add',
-    isFoot: true,
+    iconName: 'user-plus',
+    isFoot: false,
+  },
+  {
+    label: 'Report',
+    iconType: 'material',
+    iconName: 'flag',
+    isFoot: false,
   },
 ];

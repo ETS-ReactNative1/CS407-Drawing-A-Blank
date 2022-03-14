@@ -14,12 +14,13 @@ export default function useGeoLocation(callback) {
   watchId = useRef(-1);
 
   useEffect(() => {
-    async function handleGeoLocation(callback) {
+    async function handleGeoLocation() {
       const {ID} = await setupGeolocation(userLocation => {
         // Listens to userlocation changes
         // setLocation(userLocation);
         location.current = userLocation;
-        callback(userLocation);
+        callback ? console.log('true clb') : console.log('false clb');
+        if (callback) callback(userLocation);
       }, locationConfig);
       watchId.current = ID;
     }

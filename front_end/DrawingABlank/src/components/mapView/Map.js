@@ -52,9 +52,14 @@ function Map({setOverlayVisible, setOverlayContent}) {
   const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
     useRegion();
   console.log('Regions Setup');
-  const [DrawUserPath, userPath] = useUserPath();
-
-  // const [region, setRegion] = useState(getInitialState().region);
+  const [
+    DrawUserPath,
+    startWorkout,
+    stopWorkout,
+    addPathPoint,
+    workout_active,
+  ] = useUserPath();
+  // need the region ref out here so other states can update
   const navigation = useNavigation();
 
   const workout_button_start = 'Start Workout';
@@ -62,25 +67,14 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   const [workout_button_text, set_workout_button_text] =
     useState(workout_button_start);
-  // const workout_button_ref = useRef()
-  const [workout_active, set_workout_active] = useState(false);
-  // const [userPath, setUserPath] = useState([]);
-  // const userPathRef = useRef(userPath);
+
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
 
-  // might want to make hooks "pausible" if using state (not refs), e.g. dont re render on userpath change, if were not showing it
-  //    more an issue of proper state updates/ only do updates which we want to be shown
-  // refs are always "paused", must be manually listened to using useEffect
-  const userLocation = useGeoLocation(location =>
-    recorder.addCoordinate(
-      location.longitude,
-      location.latitude,
-      isMapTracking.current,
-    ),
-  );
-
-  // if regionref == init region set ref to geolocation
+  const userLocation = useGeoLocation(location => {
+    console.log('gel');
+    addPathPoint(location, isMapTracking.current);
+  });
 
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc
@@ -105,31 +99,6 @@ function Map({setOverlayVisible, setOverlayContent}) {
     newRegion => setRegion(newRegion),
     1000,
   );
-
-  // useEffect(() => {
-  //   addPathPoint(userLocation.current);
-
-  //   const {latitude, longitude} = userLocation.current;
-  //   const zoomLevel = MAP_ZOOMLEVEL_CLOSE;
-  //   const oldUserPath = userPathRef.current;
-
-  //   recorder.addCoordinate(latitude, longitude);
-
-  //   //draw new user movement polygon - map their travelled path
-  //   userPathRef.current = [...oldUserPath, {latitude, longitude}];
-
-  //   setUserPath(userPathRef.current);
-  //   if (isMapTracking.current) {
-  //     // setRegion({ // !! No longer doing following a user on map !!
-  //     //   //...region, //take previous zoom level
-  //     //   ...zoomLevel, //take zoom level from constant
-  //     //   latitude,
-  //     //   longitude,
-  //     // });
-  //   } else {
-  //   }
-  // }, [userLocation.current]);
-  // console.log('remount', region);
 
   useDidUpdateEffect(() => {
     // set to map to user location when user location known (second userLocation change (init state -> actual))
@@ -180,8 +149,8 @@ function Map({setOverlayVisible, setOverlayContent}) {
         // initialRegion={viewRegion}
         mapType={'standard'}
         showsUserLocation={true}
-        onRegionChangeComplete={r => setRegion(r)}
-        //onRegionChange={r => handleRegionChange(r)}
+        //onRegionChangeComplete={r => setRegion(r)}
+        onRegionChange={r => handleRegionChange(r)}
         // minZoomLevel={5}
         // maxZoomLevel={10}
       >
@@ -201,7 +170,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
           bottomSheetRef.current.expand();
         }}
         startWorkout={() => {
-          if (!workout_active) {
+          if (!workout_active.current) {
             startWorkout();
             set_workout_button_text(workout_button_stop);
           } else {
@@ -210,7 +179,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
             changeToStats();
           }
         }}
-        workout_active={workout_active}
+        workout_active={workout_active.current}
         workoutText={workout_button_text}
         drawGridsFunction={() => {}}
         // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}

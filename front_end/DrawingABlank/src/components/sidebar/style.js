@@ -34,10 +34,7 @@ export const styles = StyleSheet.create({
 
     elevation: 2,
   },
-  sidebarContainer: {
-    flexGrow: 1,
-    backgroundColor: 'rgba(250,250,250,0.8)',
-  },
+
   iconContainer: {},
   icon: {marginLeft: 'auto'},
   label: {
@@ -58,6 +55,21 @@ export const styles = StyleSheet.create({
   menu: {
     alignSelf: 'flex-start',
     position: 'absolute',
+    left: 0,
+  },
+  sidebarContainer: {
+    flexGrow: 1,
+    backgroundColor: 'rgba(250,250,250,0.8)',
+  },
+  sidebarContainer_footer: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+
+    marginBottom: 20,
+  },
+  sidebarContainer_toggleButton: {
+    backgroundColor: 'black',
+    elevation: 10,
     left: 0,
   },
 });
