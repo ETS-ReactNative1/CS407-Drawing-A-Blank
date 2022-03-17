@@ -14,6 +14,7 @@ import EventPodium from './src/components/events/EventPodium.js';
 import EventSummary from './src/components/events/EventSummary.js';
 import EventHistory from './src/components/events/EventHistory.js';
 import LoadingScreen from './src/components/account_ui/loading_screen/loading_screen.js';
+import WorkoutHistory from './src/components/workout_history/workout_history.js';
 const Stack = createStackNavigator();
 
 //Insert any code you wish to test here in order to see it. Note that before releasing the final version, we will want to change this back to the start screen.
@@ -25,12 +26,14 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="account"
         screenOptions={{headerShown: false}}>
-        <Stack.Screen name="account" component={AccountAuthUI}/>
+        <Stack.Screen name="account" component={AccountAuthUI} />
         <Stack.Screen
           name="map_view_complete"
           component={MapViewCompleteComponent}
         />
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
+
+        <Stack.Screen name="workout_history" component={WorkoutHistory} />
       </Stack.Navigator>
     </NavigationContainer>
     */

@@ -4,7 +4,7 @@ import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndi
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
-
+import { setUsername } from '../../../api/api_networking.js';
 
 class LoginScreen extends Component{
     state = {
@@ -38,6 +38,7 @@ class LoginScreen extends Component{
         this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
             this.props.navigation.navigate('loading_screen',{username:this.state.email});
+            setUsername(this.state.email);
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);
             Alert.alert("Login Error",err.toString());
