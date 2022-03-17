@@ -84,13 +84,13 @@ export default function useRegion() {
     } else if (dLat < 0.0024) {
       layer = 2;
     } else if (dLat < 0.0089) {
-      layer = 3;
-    } else if (dLat < 0.04) {
-      layer = 4;
-    } else if (dLat < 0.3) {
       layer = 5;
+    } else if (dLat < 0.04) {
+      layer = 10;
+    } else if (dLat < 0.3) {
+      layer = 15;
     } else {
-      layer = 6;
+      layer = 25;
     }
 
     return layer;

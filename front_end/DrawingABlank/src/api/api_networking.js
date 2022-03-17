@@ -57,10 +57,6 @@ export const deleteToken = () => {
   return SecureStorage.deleteItemAsync(TOKEN_KEY_NAME);
 }
 
-export const getUsername = () =>{
-    return SecureStorage.getItemAsync(USERNAME_KEY_NAME);
-}
-
 export const setUsername = (username) =>{
     SecureStorage.setItemAsync(USERNAME_KEY_NAME,username);
 }

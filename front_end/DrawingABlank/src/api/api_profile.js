@@ -54,18 +54,6 @@ export const getProfile = (username) => {
     });
 };
 
-export const getProfile = username => {
-  query = '?username=' + username;
-  return getToken()
-    .then(token => request('GET', 'user', query, '', token))
-    .then(response => {
-      if (response.status != 200 && response.status != 201) {
-        throw new Error('Could not obtain profile.');
-      }
-      return response.json();
-    });
-};
-
 export const getUserWorkouts = () => {
   return getToken()
     .then(token =>

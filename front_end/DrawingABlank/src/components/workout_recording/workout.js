@@ -127,16 +127,7 @@ export class Workout{
     toJSON(){
         return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":this.type};
     }
-  }
-
-  toJSON() {
-    return {
-      start: this.date_start,
-      end: this.date_end,
-      coordinates: this.coordinates,
-      type: 'walk',
-    };
-  }
+  
   /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.
     */

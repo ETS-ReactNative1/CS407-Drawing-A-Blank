@@ -118,7 +118,8 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
         result[event.id] = converted_result;
       }
     });
-    setEventScores(result);
+    //TODO FIX EVENT SCORES
+    //setEventScores(result);
     console.log(result);
   }
 
@@ -204,23 +205,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
   function handleRegionChange(newRegion) {
     debouncedsetRegion(newRegion);
     return;
-
-    const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
-    // console.log('new', newRegion);
-    const zoom = {longitudeDelta, latitudeDelta};
-    //setGridDrawScale(zoom);
-    setZoomLevel(zoom);
-    return;
-
-    // zoom = convertZoomRepresentation({longitudeDelta, latitudeDelta});
-    // setGridDrawScale(zoom);
-
-    function convertZoomRepresentation(RNM_Zoom) {
-      // #1 Converting map zoom level to backend zoom arg type
-      // #2 Managing the frequency of requests made for a new zoom level/tile size
-
-      const {longitudeDelta, latitudeDelta} = RNM_Zoom;
-    }
   }
   console.log('showing location', region);
   return (
