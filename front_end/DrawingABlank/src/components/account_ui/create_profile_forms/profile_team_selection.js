@@ -39,7 +39,6 @@ class ProfileTeamSelection extends Component{
         var verification = this.detailsComplete();
         if(verification[0]){
             createUser(username,email,password,team).then(_ => {
-                setUsername(username);
                 this.moveToDetails();
             }).catch(err => { 
                 console.log("ERROR:"+err)
