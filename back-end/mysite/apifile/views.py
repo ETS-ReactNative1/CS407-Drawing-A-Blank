@@ -129,7 +129,7 @@ class UserProfile(viewsets.ViewSet):
 
         return Response({'token': token.key}, status=status.HTTP_201_CREATED)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['patch'], detail=False)
     def change_details(self, request):
         data = request.data
         user = request.user
@@ -154,7 +154,7 @@ class UserProfile(viewsets.ViewSet):
 
         return Response("User details updated", status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['patch'], detail=False)
     def change_pass(self, request):
         data = request.data
         user = request.user
@@ -162,24 +162,6 @@ class UserProfile(viewsets.ViewSet):
         user.set_password(data["new_password"])
 
         return Response("Password changed", status=status.HTTP_200_OK)
-
-    @action(methods=['get'], detail=False)
-    def workout_history(self, request):
-        data = request.GET
-        request_user = data["username"]
-        ret_val = stats.all_user_workouts(request_user)
-
-        return Response(ret_val, status=status.HTTP_200_OK)
-
-    @action(methods=['get'], detail=False)
-    def specific_workout(self, request):
-        data = request.GET
-        user = request.user
-
-        workout_id = data["id"]
-        ret_val = stats.workoutpoints_details(workout_id, user.player)
-
-        return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=False)
     def stats(self, request):
@@ -196,7 +178,7 @@ class UserProfile(viewsets.ViewSet):
         return Response(ret_val, status=status.HTTP_200_OK)
 
     @action(methods=['delete'], detail=False)
-    def delete_user(self, request):
+    def delete(self, request):
         user = request.user
         user.delete()
 
@@ -206,7 +188,7 @@ class GridView(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     @action(methods=['post'], detail=False)
-    def report_grids(self, request):
+    def report(self, request):
         data = request.data
         user = request.user
         reasoning = data["reason"]
@@ -294,6 +276,23 @@ class WorkoutSubmission(viewsets.ViewSet):
         player.save()
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
+    @action(methods=['get'], detail=False)
+    def history(self, request):
+        data = request.GET
+        request_user = data["username"]
+        ret_val = stats.all_user_workouts(request_user)
+
+        return Response(ret_val, status=status.HTTP_200_OK)
+
+    def list(self, request):
+        data = request.GET
+        user = request.user
+
+        workout_id = data["id"]
+        ret_val = stats.workoutpoints_details(workout_id, user.player)
+
+        return Response(ret_val, status=status.HTTP_200_OK)
+
     @staticmethod
     def add_participation(player, tile):
         closest_event = Event.get_closest_active_event(tile)
@@ -335,7 +334,7 @@ class ObtainExpAuthToken(ObtainAuthToken):
     def get_extra_actions(cls):
         return []
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         # authenticates username + password
         serializer = self.get_serializer(data=request.data)
 
