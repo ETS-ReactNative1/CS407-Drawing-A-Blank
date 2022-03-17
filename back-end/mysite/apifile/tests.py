@@ -406,3 +406,25 @@ class EventDetailsTests(TestCase):
         test_return = Event.event_scores(self.test_date - datetime.timedelta(days=10), self.p_windy)
 
         self.assertEqual(1, len(test_return))
+
+    def test_return_values(self):
+        test_return = Event.event_scores(self.test_date - datetime.timedelta(days=10), self.p_terra)
+
+        self.assertEqual(2, len(test_return))
+
+        # test first return
+        event = test_return[0]
+        self.assertEqual(event['id'], self.old_event2.id)
+        self.assertEqual(2, event['performance']['user'])
+        self.assertEqual(2, event['performance']['terra'])
+        self.assertEqual(3, event['performance']['windy'])
+        self.assertEqual(1, event['performance']['ocean'])
+
+        # test second return
+        event = test_return[1]
+        self.assertEqual(event['id'], self.old_event1.id)
+        self.assertEqual(3, event['performance']['user'])
+        self.assertEqual(3, event['performance']['terra'])
+        self.assertEqual(0, event['performance']['windy'])
+        self.assertEqual(1, event['performance']['ocean'])
+
