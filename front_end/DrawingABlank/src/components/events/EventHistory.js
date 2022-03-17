@@ -89,6 +89,44 @@ class EventHistory extends Component{
         });
     }
 
+    getEventProps = (id) =>{
+        var event = this.state.obtainedEvents.filter(event => event.id==id)[0];
+        console.log("FOUND EVENT " + JSON.stringify(event));
+        var points = event.performance;
+        var sortedPerformance = [];
+        for(var team in points){
+            if(team!="user")
+                sortedPerformance.push([team, points[team]]);
+        }
+        console.log("SORTED PERFORMANCE:"+JSON.stringify(sortedPerformance));
+        sortedPerformance.sort(function(x,y){
+            return x[1] - y[1];
+        });
+        var teamsArray = [];
+        var pointsArray = [];
+        
+        sortedPerformance.forEach(function(team){
+            teamsArray.push(team[0]);
+            pointsArray.push(team[1]);
+        });
+        
+        return [teamsArray.reverse(),pointsArray.reverse(),event.performance.user];
+    }
+
+    showEventSummary = (id) =>{
+        console.log("SWITCHING TO SUMMARY WITH ID:"+id);
+        var [teamsArray, pointsArray,userPoints] = this.getEventProps(id);
+        console.log(teamsArray);
+        console.log(pointsArray);
+        this.props.navigation.navigate('event_summary',{
+            eventId:id,
+            teams:teamsArray,
+            points:pointsArray,
+            personal_team:this.state.userTeam,
+            personal_score:userPoints
+        })
+    }
+
     componentDidMount(){
         this.getEvents();
     }
@@ -119,8 +157,8 @@ class EventHistory extends Component{
                 </View>
                 <ScrollView style={styles.event_board}>
                     {(this.state.obtainedEvents.length > 0) ? this.state.obtainedEvents.map((info,index) => {
-                        return(<EventCard key={info.id} points_terra={info.performance.terra} points_ocean={info.performance.ocean} points_windy={info.performance.terra} points_user={info.performance.user} team_user={this.state.userTeam}
-                        date={this.getDateString(info.start,info.end)}/>);
+                        return(<EventCard key={info.id} points_terra={info.performance.terra} points_ocean={info.performance.ocean} points_windy={info.performance.windy} points_user={info.performance.user} team_user={this.state.userTeam}
+                        date={this.getDateString(info.start,info.end)} onPress={() => this.showEventSummary(info.id)}/>);
                     }) : <Text style={{fontFamily:'Ubuntu-Light',fontSize:24,color:'#fafafa'}}>We could not find any events within this time range. Go out there and take part in some!</Text>}
                 </ScrollView>
                 </View>) : <View><ActivityIndicator color="#fafafa" size="large"/></View>}

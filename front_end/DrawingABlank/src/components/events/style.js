@@ -52,17 +52,21 @@ export const styles = StyleSheet.create({
     },
     summary:{
         padding:20,
+        height:"100%",
+         backgroundColor:'#2179b8',
     },
     summary_title:{
     },
     summary_title_text:{
         fontSize:32,
-        color:"black",
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
         textAlign:"center"
     },
     summary_description_text:{
-        fontSize:20,
-        color:"black",
+        fontSize:20,        
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
         textAlign:"center"
     },
     summary_status:{
@@ -83,11 +87,14 @@ export const styles = StyleSheet.create({
         borderWidth:1,
         backgroundColor:"#6db0f6",
         width:"100%",
-        alignSelf:"center"
+        alignSelf:"center",
+        marginTop:"60%"
     },
 
     continue_button_text:{
         textAlign:"center",
-        fontSize:24
+        fontSize:24,
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
     },
 });

@@ -29,9 +29,11 @@ function SideBar(props) {
     },
     "Event History":function(){
       console.log("GETTING EVENT HISTORY");
+      navigation.navigate('event_history');
     },
     "Leaderboards":function(){
       console.log("GETTING LEADERBOARDS");
+      navigation.navigate('leaderboard');
     },
     "Logout":function(){
       console.log("LOGGING OUT");

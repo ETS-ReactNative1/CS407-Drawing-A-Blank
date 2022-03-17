@@ -36,6 +36,8 @@ export default function App() {
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
         <Stack.Screen name="leaderboard" component={Leaderboard}/>
         <Stack.Screen name="workout_history" component={WorkoutHistory} />
+        <Stack.Screen name="event_history" component={EventHistory}/>
+        <Stack.Screen name="event_summary" component={EventSummary}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
