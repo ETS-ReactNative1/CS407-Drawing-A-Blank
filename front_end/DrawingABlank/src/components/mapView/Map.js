@@ -35,8 +35,8 @@ const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
 const DEBUG_ZOOM_LEVEL = 0.01;
 
-function Map({setOverlayVisible, setOverlayContent}) {
-  const [region, setRegion] = useState(getInitialState().region);
+function Map({setOverlayVisible, setOverlayContent, eventsRetrieved, mapRetrieved, initialLocation}) {
+  const [region, setRegion] = useState(initialLocation);
   //const [markers, setMarkers] = useState([]);
   //const [colourSpaces, setColourSpaces] = useState(
   //  getInitialState().colourSpaces,
@@ -175,13 +175,16 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }
 
   function collectGrids() {
+    /*Geolocation.getCurrentPosition(({coords}) => {
+      getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL], 
     Geolocation.getCurrentPosition(({coords}) => {
       getGrids([coords.latitude - DEBUG_ZOOM_LEVEL, coords.longitude - DEBUG_ZOOM_LEVEL],
       [coords.latitude + DEBUG_ZOOM_LEVEL, coords.longitude + DEBUG_ZOOM_LEVEL])
-      .then(result => setGrids(result));
-    })
+      .then(result => {setGrids(result);console.log("GRID AMOUNT:"+result.length)});
+    });*/
+    setGrids(mapRetrieved);
   }
-
+  
   function collectEventScores(){
     console.log("CALCULATING SCORES");
     console.log("HAVE EVENTS:" + events);
@@ -206,6 +209,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
   }
 
   useEffect(() => {
+    console.log("INTIIAL REGION:"+JSON.stringify(initialLocation))
     // Get User permission for location tracking, and initialize map to listen
     // if user permission not given, map will default to initial state - could change to anything e.g. dont render map at all nd show hser dialog
     // (logic could be moved to "withPermissions" hoc)1
@@ -246,8 +250,9 @@ function Map({setOverlayVisible, setOverlayContent}) {
         distanceFilter: 5, // min moved distance before next data point
       },
     );
-
-    getEvents().then(result => setEvents(result));
+    //Does not amtter as changing
+    //getEvents().then(result => setEvents(result));
+    setEvents(eventsRetrieved);
     collectGrids();
     }, []);
 
@@ -256,6 +261,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
+        initialRegion={region}
         region={region}
         mapType={'standard'}
         showsUserLocation={true}>

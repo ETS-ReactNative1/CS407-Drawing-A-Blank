@@ -1,6 +1,6 @@
 import { NavigationRouteContext } from '@react-navigation/core';
 import React, {Component} from 'react';
-import {Text, View, TextInput, Button, TouchableOpacity, Touchable} from 'react-native';
+import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
@@ -9,7 +9,8 @@ import { setUsername } from '../../../api/api_networking.js';
 class LoginScreen extends Component{
     state = {
         email:"",
-        password:""
+        password:"",
+        loggingIn:false,
     }
 
     handleEmail = (text) => {
@@ -31,15 +32,17 @@ class LoginScreen extends Component{
         var verification = this.detailsComplete();
         if(!verification[0]){
             //Doing an alert for now, will change to UI later.
-            alert(verification[1]);
+            Alert.alert("Login Error",verification[1]);
             return;
         }
+        this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
+            this.props.navigation.navigate('loading_screen',{username:this.state.email});
             setUsername(this.state.email);
-            this.props.navigation.navigate('map_view_complete');
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);
-            alert(err);
+            Alert.alert("Login Error",err.toString());
+            this.setState({loggingIn:false});
         });
     }
 
@@ -52,7 +55,7 @@ class LoginScreen extends Component{
         return(
             <View style={styles.mainContainer}>
                 <View style={styles.titleBox}>
-                    <Text style={styles.title}>Fresgo!</Text>
+                    <Text style={styles.title}>Fresgo</Text>
                 </View>
                 <View style={styles.description}>
                     <Text style={styles.title}>Login</Text>
@@ -73,9 +76,11 @@ class LoginScreen extends Component{
                         textContentType="password"
                         onChangeText={this.handlePassword}/>
                     </View>
+                    {!this.state.loggingIn ? 
                     <TouchableOpacity style={buttons.loginFormButton}>
                         <Text style={buttons.buttonText} onPress={this.processLogin}>Login</Text>
                     </TouchableOpacity>
+                    : <ActivityIndicator style={buttons.loading} size='large' color='#6db0f6'/>}
                 </View>
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
