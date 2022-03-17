@@ -24,7 +24,7 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    /*<NavigationContainer>
+    <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
         screenOptions={{headerShown: false}}>
@@ -34,10 +34,9 @@ export default function App() {
           component={MapViewCompleteComponent}
         />
         <Stack.Screen name="post_workout_stats" component={WorkoutPostStats} />
-
+        <Stack.Screen name="leaderboard" component={Leaderboard}/>
         <Stack.Screen name="workout_history" component={WorkoutHistory} />
       </Stack.Navigator>
-    </NavigationContainer>*/
-    <Leaderboard/>
+    </NavigationContainer>
   );
 }

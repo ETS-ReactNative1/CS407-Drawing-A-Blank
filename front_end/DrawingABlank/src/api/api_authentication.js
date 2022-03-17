@@ -1,4 +1,3 @@
-import {RecyclerViewBackedScrollViewBase} from 'react-native';
 import {request, setToken, getToken, setUsername, setTeam} from './api_networking.js';
 import { getProfile } from './api_profile.js';
 

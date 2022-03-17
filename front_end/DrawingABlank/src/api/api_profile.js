@@ -33,7 +33,7 @@ export const updateProfile = (
   //Check this URL later
   return getToken()
     .then(token =>
-      request('POST', 'user/change_details/', '', JSON.stringify(body), token),
+      request('PATCH', 'user/change_details/', '', JSON.stringify(body), token),
     )
     .then(response => {
         if(response.status != 200 && response.status != 201){
@@ -57,7 +57,7 @@ export const getProfile = (username) => {
 export const getUserWorkouts = () => {
   return getToken()
     .then(token =>
-      request('GET', 'user/workout_history/?username=', 'cheese', '', token),
+      request('GET', 'workout/history/?username=', 'cheese', '', token),
     )
     .then(response => {
       if (response.status != 200) {
@@ -76,18 +76,13 @@ export const getUserWorkouts = () => {
 export const getUserWorkout = id => {
   return getToken()
     .then(token =>
-      request('GET', 'user/specific_workout/?id=', `${id}`, '', token),
+      request('GET', 'workout?id=', `${id}`, '', token),
     )
     .then(response => {
       if (response.status != 200) {
         throw new Error(`Could not obtain workout. ${response.status}`);
       }
+      console.log("RESPONSE IS HERE:"+JSON.stringify(response));
       return response.json();
-    })
-    .then(data => {
-      if (data) {
-        // console.log('workout Got:' + JSON.stringify(data));
-      }
-      return data;
     });
 };

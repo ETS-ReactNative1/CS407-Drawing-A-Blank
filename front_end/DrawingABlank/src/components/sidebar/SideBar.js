@@ -25,6 +25,13 @@ function SideBar(props) {
     },
     "Saved Workouts":function(){
       console.log("GETTING WORKOUTS");
+      navigation.navigate('workout_history');
+    },
+    "Event History":function(){
+      console.log("GETTING EVENT HISTORY");
+    },
+    "Leaderboards":function(){
+      console.log("GETTING LEADERBOARDS");
     },
     "Logout":function(){
       console.log("LOGGING OUT");

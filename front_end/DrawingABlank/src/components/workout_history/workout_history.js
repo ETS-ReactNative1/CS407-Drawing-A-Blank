@@ -25,6 +25,22 @@ const WorkoutHistory = () => {
     getUsername().then(result => setUsername(result));
   }, []);
 
+  useEffect(()=>{
+    // setup a recorder for the current selected workout
+    if(workout.length > 0){
+      const recorder = new Workout();
+      recorder.recording = true;
+      recorder.setWorkoutStartDate(workout[0].time);
+      workout.forEach(point => {
+        recorder.addCoordinateAtTime(point.latitude, point.longitude, point.time);
+      });
+      recorder.setWorkoutEndDate(workout[workout.length - 1].time);
+      recorder.recording = false;
+      console.log(recorder.toJSON());
+      navigation.navigate('post_workout_stats', {recorder: recorder});
+    }
+  },[workout])
+
   const prev_workouts = workouts.map((workout, index) => {
     return (
       <TouchableOpacity
@@ -46,9 +62,10 @@ const WorkoutHistory = () => {
     );
   });
   const onPress = async id => {
-    await getUserWorkout(id).then(result => setWorkout(result));
+    await getUserWorkout(id).then(result => {console.log("OBTAINED RESULT:"+JSON.stringify(result));setWorkout(result)});
 
     // setup a recorder for the current selected workout
+    /*
     const recorder = new Workout();
     recorder.recording = true;
     recorder.setWorkoutStartDate(workout[0].time);
@@ -59,6 +76,7 @@ const WorkoutHistory = () => {
     recorder.recording = false;
     console.log(recorder.toJSON());
     navigation.navigate('post_workout_stats', {recorder: recorder});
+    */
   };
 
   return (

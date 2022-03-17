@@ -98,6 +98,43 @@ export class Workout{
         }
       });
     }
+    setWorkoutEndDate(endDate) {
+      this.date_end = endDate;
+    }
+  
+    setWorkoutStartDate(startDate) {
+      this.date_start = startDate;
+    }
+    // Debug function for workout_history.js
+    getWorkoutEndDate() {
+      return this.date_end;
+    }
+    // Debug function for workout_history.js
+    getWorkoutStartDate() {
+      return this.date_start;
+    }
+    // Debug function for workout_history.js
+  addCoordinateDelay(latitude, longitude, delayMins) {
+    if (this.recording) {
+      var time = new Date();
+      var delayTime = new Date(time.getTime() + delayMins * 60000);
+      this.coordinates.push({
+        latitude: latitude,
+        longitude: longitude,
+        timestamp: delayTime,
+      });
+    }
+  }
+
+  addCoordinateAtTime(latitude, longitude, timestamp) {
+    if (this.recording) {
+      this.coordinates.push({
+        latitude: latitude,
+        longitude: longitude,
+        timestamp: timestamp,
+      });
+    }
+  }
   addCoordinate(latitude, longitude, isTracking) {
     if (this.recording) {
       var time = new Date();
