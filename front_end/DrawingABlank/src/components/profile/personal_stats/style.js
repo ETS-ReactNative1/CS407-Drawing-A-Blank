@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         
     },
     singleData:{
-        borderTopColor:"#979797",
+        borderTopColor:"#b5b5b5",
         borderTopWidth:1,
         display:"flex",
         padding:10,
@@ -25,7 +25,9 @@ const styles = StyleSheet.create({
         flex:0.3
     },
     singleDataText:{
-        fontSize:20
+        fontSize:20,
+        fontFamily:"Ubuntu-Light",
+        color:"#fafafa"
     }
 })
 export {styles}

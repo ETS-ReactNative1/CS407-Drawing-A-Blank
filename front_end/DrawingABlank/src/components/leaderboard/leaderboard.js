@@ -192,7 +192,7 @@ class Leaderboard extends Component{
             bio={'[USER.BIO]'}
             picture={this.getDefaultPicture(this.state.profileContent["team"])}
             gender={this.state.profileContent["gender"]}
-            /> : <ActivityIndicator size='large' color='black'/> //Maybe make this a more pretty loading screen later.
+            /> : <ActivityIndicator size='large' color='#6db0f6'/> //Maybe make this a more pretty loading screen later.
         );
     }
 

@@ -37,7 +37,7 @@ const WorkoutHistory = () => {
       recorder.setWorkoutEndDate(workout[workout.length - 1].time);
       recorder.recording = false;
       console.log(recorder.toJSON());
-      navigation.navigate('post_workout_stats', {recorder: recorder});
+      navigation.navigate('post_workout_stats', {recorder: recorder, upload:false});
     }
   },[workout])
 

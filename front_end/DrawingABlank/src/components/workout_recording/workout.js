@@ -148,23 +148,27 @@ export class Workout{
   }
 
   stopWorkout(){
-        if(this.recording){
-            //this.stopNotification();
-            this.date_end = new Date();
-            console.log("COMPLETED WORKOUT:"+JSON.stringify(this.toJSON()));
-            submit_workout(this.toJSON());
-            this.recording = false;
-            this.stopTracking();
-        }
-    }
-    changeTracking(newTracking){
-      console.log("UPDATING TRACKING");
-      this.tracking = newTracking;
-    }
-    toJSON(){
-        return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":this.type};
-    }
-  
+      if(this.recording){
+          //this.stopNotification();
+          this.date_end = new Date();
+          console.log("COMPLETED WORKOUT:"+JSON.stringify(this.toJSON()));
+          //submit_workout(this.toJSON());
+          this.recording = false;
+          this.stopTracking();
+      }
+  }
+  changeTracking(newTracking){
+    console.log("UPDATING TRACKING");
+    this.tracking = newTracking;
+  }
+  toJSON(){
+      return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":this.type};
+  }
+  uploadWorkout(){
+    console.log("HEINN??");
+    return submit_workout(this.toJSON());
+  }
+
   /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.
     */

@@ -161,7 +161,7 @@ class EventHistory extends Component{
                         date={this.getDateString(info.start,info.end)} onPress={() => this.showEventSummary(info.id)}/>);
                     }) : <Text style={{fontFamily:'Ubuntu-Light',fontSize:24,color:'#fafafa'}}>We could not find any events within this time range. Go out there and take part in some!</Text>}
                 </ScrollView>
-                </View>) : <View><ActivityIndicator color="#fafafa" size="large"/></View>}
+                </View>) : <View><ActivityIndicator color="#6db0f6" size="large"/></View>}
             </View>
         )
     }
