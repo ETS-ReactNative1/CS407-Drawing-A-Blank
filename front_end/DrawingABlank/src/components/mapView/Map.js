@@ -61,8 +61,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
 
   const [grids, setGrids] = useState([]);
 
-  const [eventScores, setEventScores] = useState({});
-
   function onRegionChange(region) {
     setRegion(region);
   }
@@ -88,11 +86,10 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
     // eventType, timeRemaining, radius, desc
     setOverlayContent(
       <EventDetails
-        eventType={"Event #" + type}
+        eventType={type}
         timeRemaining={time}
         radius={radius}
         desc={desc}
-        eventScoreData={eventScores[type]}
       />,
     );
     setOverlayVisible(true);
@@ -120,7 +117,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
         });
         result[event.id] = converted_result;
       }
-    }); 
+    });
     setEventScores(result);
     console.log(result);
   }
@@ -137,7 +134,6 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
         const oldUserPath = userPathRef.current;
         
         //recorder.addCoordinate(latitude,longitude);
-        
         userLocation.current = {latitude, longitude};
         //draw new user movement polygon - map their travelled path
         userPathRef.current = [
@@ -166,7 +162,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
         distanceFilter: 5, // min moved distance before next data point
       },
     );
-
+    //Does not amtter as changing
     //getEvents().then(result => setEvents(result));
     setEvents(eventsRetrieved);
     //collectGrids();
@@ -229,7 +225,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
   console.log('showing location', region);
   return (
     <View style={styles.mapContainer}>
-      <Animated 
+      <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={region}

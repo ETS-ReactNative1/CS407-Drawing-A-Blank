@@ -63,3 +63,4 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
     return generateRequest();
   }
 };
+}

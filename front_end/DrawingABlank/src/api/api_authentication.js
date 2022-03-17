@@ -1,5 +1,5 @@
-import { RecyclerViewBackedScrollViewBase } from "react-native";
-import { request, setToken, getToken } from "./api_networking.js";
+import {RecyclerViewBackedScrollViewBase} from 'react-native';
+import {request, setToken, getToken} from './api_networking.js';
 
 /*
     USER ACCOUNT LOGIN DETAILS FOR TESTING:

@@ -6,8 +6,8 @@ const API_PORT_NUMBER = '443';
 const API_SUFFIX = '/'; //Example only
 const API_URL = 'https://' + API_HOSTNAME + ':' + API_PORT_NUMBER + API_SUFFIX;
 const TOKEN_KEY_NAME = 'fresgo_access_token';
+const TEAM_KEY_NAME = 'fesgo_team';
 const USERNAME_KEY_NAME = 'fresgo_username';
-
 /**
  * Sends a request to the API at a specified endpoint and returns an async handler. This has not been tested yet, just writing this so that it is here.
  * @param {String} req_method The HTTP method you want to use.
@@ -28,7 +28,7 @@ export const request = (
     //For now let us just treat req_queries as a string, but later on we may want to use a more appropriate structure.
     full_URL += req_queries;
   }
-
+  console.log(full_URL);
   return fetch(full_URL, {
     method: req_method,
     headers: {
@@ -45,9 +45,13 @@ export const getToken = () => {
   return SecureStorage.getItemAsync(TOKEN_KEY_NAME);
 };
 
-export const setToken = (token) => {
-    SecureStorage.setItemAsync(TOKEN_KEY_NAME,token);
-}
+export const setToken = token => {
+  SecureStorage.setItemAsync(TOKEN_KEY_NAME, token);
+};
+
+export const getUsername = () => {
+  return SecureStorage.getItemAsync(USERNAME_KEY_NAME);
+};
 
 export const deleteToken = () => {
   return SecureStorage.deleteItemAsync(TOKEN_KEY_NAME);
@@ -63,4 +67,12 @@ export const setUsername = (username) =>{
 
 export const deleteUsername = (username) =>{
   return SecureStorage.deleteItemAsync(USERNAME_KEY_NAME);
+}
+
+export const setTeam = (team) => {
+    return SecureStorage.setItemAsync(TEAM_KEY_NAME,team);
+}
+
+export const getTeam = () => {
+    return SecureStorage.getItemAsync(TEAM_KEY_NAME);
 }

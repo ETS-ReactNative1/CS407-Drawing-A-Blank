@@ -127,7 +127,17 @@ export class Workout{
     toJSON(){
         return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":this.type};
     }
-    /*
+  }
+
+  toJSON() {
+    return {
+      start: this.date_start,
+      end: this.date_end,
+      coordinates: this.coordinates,
+      type: 'walk',
+    };
+  }
+  /*
         These functions may most likely be handled by the back-end, but I am putting these in the front-end for some demonstration purposes.
     */
   
@@ -194,7 +204,6 @@ export class Workout{
   }
   getDistanceVsTime() {
     if (this.coordinates.length <= 1) return [];
-
     var result = [{distance: 0.0, time: 0.0}];
     var seconds = 0.0;
     var current_distance = 0.0;
@@ -205,7 +214,6 @@ export class Workout{
     for (var c = 1; c < this.coordinates.length; c++) {
       if(subsample_factor!=1 && c%subsample_factor!=0)
         continue;
-
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
