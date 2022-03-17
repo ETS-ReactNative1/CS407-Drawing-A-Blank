@@ -290,6 +290,8 @@ class WorkoutSubmission(viewsets.ViewSet):
                     WorkoutSubmission.add_participation(player, tile)
         workout.calories = stats.calories_total(player.weight, workout)
         workout.save(update_fields=["calories"])
+        player.coins += workout.points
+        player.save()
         return Response("Workout added", status=status.HTTP_201_CREATED)
 
     @staticmethod
