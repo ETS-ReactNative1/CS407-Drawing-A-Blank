@@ -4,31 +4,30 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     leaderboard:{
         padding:15,
+        backgroundColor:'#2179b8',
+        height:"100%"
     },
     leaderboard_title:{
-        borderBottomColor:"#979797",
-        borderBottomWidth:1,
         paddingBottom:5
     },
     leaderboard_title_text:{
-        color:"black",
+        color:"#fafafa",
         fontSize:32,
+        fontFamily:"Ubuntu-Light",
         textAlign:'left'
     },
     leaderboard_entries:{
         paddingTop:15,
         height:"60%",
-        borderTopColor:"#979797",
-        borderTopWidth:1,
     },
     leaderboard_entry:{
-        borderBottomColor:"#979797",
+        borderBottomColor:"#fafafa",
         borderBottomWidth:1,
         flexDirection:'row',
         paddingBottom:2,
     },
     playercard:{
-        borderColor:"#979797",
+        borderColor:"#fafafa",
         borderWidth:1,
         flexDirection:'row',
         paddingLeft:10,
@@ -57,7 +56,8 @@ export const styles = StyleSheet.create({
     },  
     leaderboard_entry_rank_text:{
         fontSize:14,
-        color:"black",
+        fontFamily:"Ubuntu-Light",
+        color:"#fafafa",
     },
     leaderboard_entry_team:{
         justifyContent:"center",
@@ -68,7 +68,8 @@ export const styles = StyleSheet.create({
     },
     leaderboard_entry_team_text:{
         fontSize:14,
-        color:"black",
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
         position:'absolute'
     },
     leaderboard_entry_title:{
@@ -78,11 +79,13 @@ export const styles = StyleSheet.create({
     },
     leaderboard_entry_title_text:{
         fontSize:14,
-        color:"black",
+        fontFamily:"Ubuntu-Light",
+        color:"#fafafa",
     },
     leaderboard_entry_score_text:{
         fontSize:14,
-        color:"black",
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
         textAlign:'right'
     },
     summary:{
@@ -92,12 +95,12 @@ export const styles = StyleSheet.create({
     },
     summary_title_text:{
         fontSize:32,
-        color:"black",
+        color:"#fafafa",
         textAlign:"center"
     },
     summary_description_text:{
         fontSize:20,
-        color:"black",
+        color:"#fafafa",
         textAlign:"center"
     },
     summary_status:{
@@ -118,7 +121,7 @@ export const styles = StyleSheet.create({
         alignItems:"center",
         left:30,
         flexDirection:"row",
-        borderColor:"black",
+        borderColor:"#fafafa",
         borderWidth:1,
         borderTopLeftRadius:5,
         borderBottomLeftRadius:5
@@ -126,17 +129,18 @@ export const styles = StyleSheet.create({
     tab_button_selected:{
         width:150,
         borderRightWidth:1,
-        borderColor:"black",
+        borderColor:"#fafafa",
         backgroundColor:"#6db0f6",
     },
     tab_button_default:{
         width:150,
         borderRightWidth:1,
-        borderColor:"black",
+        borderColor:"#fafafa",
         backgroundColor:"#b0d2f5",
     },
     tab_text:{
-        color:"black",
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
         textAlign:"center"
     },
     filters:{
@@ -150,8 +154,15 @@ export const styles = StyleSheet.create({
         justifyContent:"center",
         paddingRight:20
     },
+    filter_date:{
+        top:5,
+        width:200,
+        justifyContent:"center",
+        paddingRight:20
+    },
     filter_text:{
-        color:"black",
+        color:"#fafafa",
+        fontFamily:"Ubuntu-Light",
         fontSize:14
     },
 
@@ -221,11 +232,12 @@ export const styles = StyleSheet.create({
   },
 
   search_bar_input:{
-    borderColor:"#e8e1df",
+    borderColor:"#fafafa",
     borderWidth:1,
     borderRadius:10,
     width:"95%",
     marginBottom:"5%",
-    color:"black",
+    color:"#fafafa",
+    fontFamily:"Ubuntu-Light"
   }
 });

@@ -23,7 +23,6 @@ export default function PlayerProfile({
         <View style={styles.headerContent}>
           <Image source={picture} style={styles.avatar} />
           <Text style={styles.name}>{username} </Text>
-          <Text style={styles.userInfo}>{email} </Text>
           <Text style={styles.userInfo}>{country}</Text>
         </View>
       </View>
@@ -42,7 +41,6 @@ export default function PlayerProfile({
             <Text style={styles.profileInfo}>Stats</Text>
             <Text style={styles.profileSubInfo}>Total distance: {totDist}</Text>
             <Text style={styles.profileSubInfo}>Total points: {totPoints}</Text>
-            <Text style={styles.profileSubInfo}>Total grids covered: {totGrids}</Text>
           </View>
         </View>
 
@@ -62,6 +60,7 @@ export default function PlayerProfile({
         </View>
 
         <View style={styles.profileItem}>
+          {/*}
           <View style={styles.profileIconContent}>
             <Image
               style={styles.profileIcon}
@@ -74,7 +73,7 @@ export default function PlayerProfile({
             <Text style={styles.profileInfo}>Bio</Text>
             <Text style={styles.profileSubInfo}>{gender}</Text>
             <Text style={styles.profileSubInfo}>{bio}</Text>
-          </View>
+            </View>*/}
         </View>
       </View>
     </View>
