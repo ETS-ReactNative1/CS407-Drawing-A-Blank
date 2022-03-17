@@ -1,16 +1,15 @@
-import { NavigationRouteContext } from '@react-navigation/core';
-import React, {Component} from 'react';
+import React, {Component, useCallback} from 'react';
 import {Text, View, TextInput, Button, TouchableOpacity, Touchable, ActivityIndicator, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import {styles, buttons} from './style.js';
 import * as Authentication from '../../../api/api_authentication.js';
-import { setUsername } from '../../../api/api_networking.js';
+import { getUsername, setUsername } from '../../../api/api_networking.js';
 
 class LoginScreen extends Component{
     state = {
         email:"",
         password:"",
         loggingIn:false,
+        checkedToken:false,
     }
 
     handleEmail = (text) => {
@@ -28,6 +27,18 @@ class LoginScreen extends Component{
         return [true, ""];
     }
 
+    verifyTokenOnStart = () =>{
+        Authentication.verifyToken().then(res => {
+            if(res==true){
+                getUsername().then(username => {
+                    if(username){
+                        this.props.navigation.navigate('loading_screen',{username:username});
+                    }
+                });
+            }
+        }).then(_ => this.setState({checkedToken:true}));
+    }
+
     processLogin = () =>{
         var verification = this.detailsComplete();
         if(!verification[0]){
@@ -37,6 +48,7 @@ class LoginScreen extends Component{
         }
         this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
+            setUsername(this.state.email);
             this.props.navigation.navigate('loading_screen',{username:this.state.email});
             setUsername(this.state.email);
         }).catch(err => {
@@ -51,9 +63,21 @@ class LoginScreen extends Component{
         this.props.navigation.navigate('create_account_screen');
     }
     
+    componentDidMount(){
+        this.verifyTokenOnStart();
+        this.navigationListener = this.props.navigation.addListener('blur',()=>{
+            this.setState({loggingIn:false});
+        })
+    }
+    componentWillUnmount(){
+        //L + ratio + Unsubscribed
+        this.navigationListener();
+    }
+
     render(){
         return(
             <View style={styles.mainContainer}>
+                {this.state.checkedToken ? <View>
                 <View style={styles.titleBox}>
                     <Text style={styles.title}>Fresgo</Text>
                 </View>
@@ -85,7 +109,7 @@ class LoginScreen extends Component{
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
                     <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerText} onPress={this.changeToRegister}>Sign up!</Text></Text>
-                </View>
+                </View></View> : <ActivityIndicator/>}
             </View>
         );
     }

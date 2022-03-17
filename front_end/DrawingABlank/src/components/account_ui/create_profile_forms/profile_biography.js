@@ -67,7 +67,6 @@ class ProfileBiography extends Component{
 
     render(){
         return(
-            <ScrollView>
             <View style={styles.main}>
                 <View style={styles.welcome_title}>
                     <Text style={styles.title_text}>Basic Details</Text>
@@ -76,14 +75,14 @@ class ProfileBiography extends Component{
                     <Text style={styles.body_text}>"So, tell me a bit about yourself."</Text>
                 </View>
                 <View style={styles.form_inputs}>
-                    <TextInput style={styles.form_input} placeholder="Name" ref="name" onChangeText={(text)=>this.setState({name:text})}/>
+                    <TextInput placeholderTextColor='#fafafa' style={styles.form_input} placeholder="Name" ref="name" onChangeText={(text)=>this.setState({name:text})}/>
                 </View>
                 <View style={styles.form_inputs}>
                     <View style={styles.form_input_title}>
-                        <Text>Date Of Birth</Text>
+                        <Text style={{color:'#fafafa'}}>Date Of Birth</Text>
                     </View>
                     <View>
-                        <DatePicker date={this.state.dateofbirth} onDateChange={(date)=>this.setState({dateofbirth:date})} mode="date" style={{height:50,width:350}}/>
+                        <DatePicker textColor="#fafafa" date={this.state.dateofbirth} onDateChange={(date)=>this.setState({dateofbirth:date})} mode="date" style={{height:50,width:350}}/>
                     </View>
                 </View>
                 <View style={styles.form_inputs}>
@@ -96,14 +95,16 @@ class ProfileBiography extends Component{
                         setValue={this.setValue}
                         style={styles.form_input}
                         dropDownContainerStyle={styles.form_input}
+                        textStyle={{color:"#fafafa"}}
                     />
                 </View>
                 <View style={styles.form_inputs}>
-                    <TextInput style={styles.form_input} keyboardType="number-pad" placeholder="Height (m)" ref="height" value={this.state.height} onChangeText={(text)=>this.setState({height:text})}/>
+                    <TextInput style={styles.form_input} placeholderTextColor='#fafafa' keyboardType="number-pad" placeholder="Height (m)" ref="height" value={this.state.height} onChangeText={(text)=>this.setState({height:text})}/>
                 </View>
                 <View style={styles.form_inputs}>
-                    <TextInput style={styles.form_input} keyboardType="number-pad" placeholder="Weight (kg)" ref="weight" value={this.state.weight} onChangeText={(text)=>this.setState({weight:text})}/>
+                    <TextInput style={styles.form_input} placeholderTextColor='#fafafa' keyboardType="number-pad" placeholder="Weight (kg)" ref="weight" value={this.state.weight} onChangeText={(text)=>this.setState({weight:text})}/>
                 </View>
+                
                 <View style={styles.form_inputs}>
                     <TextInput style={styles.form_input}
                             placeholder="Bio (Optional)"
@@ -112,6 +113,7 @@ class ProfileBiography extends Component{
                             numberOfLines={5}
                             maxLength={400}
                             textAlignVertical="top"
+                            placeholderTextColor='#fafafa'
                             onChangeText={(text)=>{this.counter=text.length;this.setState({bio:text})}}
                     />
                 </View>
@@ -120,11 +122,11 @@ class ProfileBiography extends Component{
                         {this.counter ? this.counter : 0}/400 characters used. 
                     </Text>
                 </View>
+                
                 <View style={styles.continue_button}>
                     <Button title="Continue" color="#6db0f6" onPress={this.nextScreen}/>
                 </View>
             </View>
-            </ScrollView>
         );
     }
 }

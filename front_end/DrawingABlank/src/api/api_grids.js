@@ -1,14 +1,65 @@
-import { request, getToken } from "./api_networking.js";
+import {request, getToken} from './api_networking.js';
+import {getCorners} from '../components/mapView/utils';
+export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
+  console.log(region);
+  const corners = getCorners(region);
+  console.log('buf region for girds', region);
+  const body = {
+    bottom_left: Object.values(corners[0]),
+    top_right: Object.values(corners[1]),
+    zoom,
+  };
 
-export const getGrids = (bottom_left, top_right) => {
-  //NOTE THIS IS NOT UP TO DATE, CHANGING WITH MERGE
-    query = "?bottom_left="+bottom_left+"&top_right="+top_right+"&zoom=10";
-    console.log("Sending grid window request with:"+query);
-    return getToken().then(token => request('GET','map',query,'',token))
-    .then(response => {
-        if(response.status != 200){
-            throw new Error('Could not retrieve grids.');
+  console.log(
+    'Sending grid window request with:' + JSON.stringify(body),
+    'is postponed ',
+    isPost,
+  );
+
+  function generateRequest() {
+    console.log(
+      'Requesting Grids',
+      '?bottom_left=' +
+        JSON.stringify(Object.values(corners[0])) +
+        '&top_right=' +
+        JSON.stringify(Object.values(corners[1])) +
+        '&zoom=' +
+        zoom +
+        '/',
+    );
+    return getToken()
+      .then(token =>
+        request(
+          'GET',
+          'map/',
+          '?bottom_left=' +
+            Object.values(corners[0]) +
+            '&top_right=' +
+            Object.values(corners[1]) +
+            '&zoom=' +
+            zoom +
+            '',
+          '',
+          //JSON.stringify(body),
+          token,
+        ),
+      )
+      .then(response => {
+        if (response.status != 200) {
+          console.log(response);
+          throw new Error('Could not retrieve grids.');
         }
+        console.log('RESP', response);
+        // console.log('JSON', response.json());
         return response.json();
-    });
-}
+      });
+  }
+
+  if (isPost) {
+    console.log('here1');
+    return (lat, long) => generateRequest();
+  } else {
+    console.log('here2');
+    return generateRequest();
+  }
+};

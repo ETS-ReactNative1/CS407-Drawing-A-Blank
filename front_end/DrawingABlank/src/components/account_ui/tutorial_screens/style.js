@@ -1,0 +1,62 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+    main:{
+        flex: 1,
+        backgroundColor: '#2179b8',
+        alignItems:"center",
+        alignContent:"center",
+        width:"100%",
+        height:"100%",
+        padding:"2.5%",
+        position:"absolute"
+    },
+    title:{
+        flexDirection:'row',
+        alignContent:'center', 
+        width:"100%",
+        justifyContent:'center',
+        alignItems:'center',
+        paddingBottom:20
+    },
+    title_text:{
+        fontSize:30,
+        color:"#fafafa",
+        textAlign:"justify",
+        fontFamily:'Ubuntu-Light',
+        textAlign:'center',
+        justifyContent:'center',
+    },
+    description:{
+        paddingBottom:30,
+        alignContent:"center"
+    },
+    description_text:{
+        fontFamily:'Ubuntu-Light',
+        color:'#fafafa',
+        fontSize:24,
+        textAlign:'center'
+    },
+    continue_button:{
+        paddingTop:20,
+        bottom:"2%",
+        width:"100%",
+        position:"absolute",
+        flexDirection:'row',
+        justifyContent:"center",
+    },
+    button_style:{
+        width:"50%",
+        paddingRight:10
+    }, 
+    titleContainer:{
+    },
+    icon:{
+        marginRight:'auto'
+    },
+    quit_button:{
+        position:"absolute",
+        right:0,
+        bottom:20,
+    }
+})

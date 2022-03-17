@@ -53,8 +53,16 @@ export const getUsername = () => {
   return SecureStorage.getItemAsync(USERNAME_KEY_NAME);
 };
 
-export const setToken = (token) => {
-    SecureStorage.setItemAsync(TOKEN_KEY_NAME,token);
+export const deleteToken = () => {
+  return SecureStorage.deleteItemAsync(TOKEN_KEY_NAME);
+}
+
+export const setUsername = (username) =>{
+    SecureStorage.setItemAsync(USERNAME_KEY_NAME,username);
+}
+
+export const deleteUsername = (username) =>{
+  return SecureStorage.deleteItemAsync(USERNAME_KEY_NAME);
 }
 
 export const setTeam = (team) => {
@@ -64,7 +72,3 @@ export const setTeam = (team) => {
 export const getTeam = () => {
     return SecureStorage.getItemAsync(TEAM_KEY_NAME);
 }
-
-export const setUsername = username => {
-  SecureStorage.setItemAsync(USERNAME_KEY_NAME, username);
-};

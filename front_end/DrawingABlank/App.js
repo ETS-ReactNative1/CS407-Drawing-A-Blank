@@ -10,6 +10,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import WorkoutPostStats from './src/components/workout_recording/workout_post_stats.js';
 import MapViewCompleteComponent from './src/components/mapView/MapViewCompleteComponent.js';
 import AccountAuthUI from './src/components/account_ui/account_ui.js';
+import MapTutorial from './src/components/account_ui/tutorial_screens/MapTutorial.js';
+import TutorialNavigation from './src/components/account_ui/tutorial_screens/TutorialNavigation.js';
 import EventPodium from './src/components/events/EventPodium.js';
 import EventSummary from './src/components/events/EventSummary.js';
 import EventHistory from './src/components/events/EventHistory.js';
@@ -21,7 +23,6 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    /*
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="account"
@@ -36,7 +37,5 @@ export default function App() {
         <Stack.Screen name="workout_history" component={WorkoutHistory} />
       </Stack.Navigator>
     </NavigationContainer>
-    */
-   <EventHistory/>
   );
 }
