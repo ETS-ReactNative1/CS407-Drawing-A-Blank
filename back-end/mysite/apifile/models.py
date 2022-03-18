@@ -377,7 +377,8 @@ class Workout(models.Model):
     points = models.PositiveIntegerField(default=0)  # number of grids touched in that workout
     date_recorded = models.DateTimeField(auto_now_add=True)
 
-    def user_workouts(self, username, date):
+    @staticmethod
+    def user_workouts(username, date):
         workouts = Workout.objects.filter(player__user__username=username, date_created__gte=date)
 
         return workouts
