@@ -14,6 +14,8 @@ from shapely.geometry import Point, Polygon
 
 from .constants import UNIT_TILE_SIZE
 
+from . import stats
+
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
@@ -381,7 +383,16 @@ class Workout(models.Model):
     def user_workouts(username, date):
         workouts = Workout.objects.filter(player__user__username=username, date_recorded__gte=date)
 
-        return workouts
+        ret_val = []
+        for workout in workouts:
+            workout_points = workout.workoutpoint_set.all()
+            if len(workout_points) > 0:
+                ret_val.append(
+                    {"id": workout.id, "date": workout.date_recorded, "duration": workout.duration,
+                    "calories": workout.calories, "type": workout.type, "distance": stats.calc_workout_distance(workout),
+                    "points": workout.points})
+
+        return ret_val
 
 
 class WorkoutPoint(models.Model):
