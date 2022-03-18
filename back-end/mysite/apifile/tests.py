@@ -34,14 +34,12 @@ class LeaderboardTests(TestCase):
 
         # Workout 1 - Player 1, Team red, 1/1/2022
         self.workout1 = Workout.objects.create(player=self.player, duration=120, calories=0,type="run")
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=100, northing=100, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=150, northing=150, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=300, northing=300, ghost=False)
+        eastings = [100,150,300]
+        northings = [100,150,300]
+        minutes = [0,1,2]
+        for i in range(len(minutes)):
+            time = datetime.datetime(2022, 1, 1, hour=1, minute=minutes[i], second=0, tzinfo=pytz.UTC)
+            WorkoutPoint.objects.create(workout=self.workout1, time=time, easting=eastings[i], northing=northings[i], ghost=False)
 
         self.workout1.calories = stats.calories_total(self.player.weight,self.workout1)
         self.workout1.save(update_fields=['calories'])

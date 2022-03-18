@@ -195,7 +195,7 @@ class GridView(viewsets.ViewSet):
         coords = data["coordinates"]
         area = data["area"]
         east, north = grids.latlong_to_grid(coords)
-        ReportGrids.objects.create(easting=east, northing=north,area=area time=datetime.datetime.utcnow(),
+        ReportGrids.objects.create(easting=east, northing=north,area=area, time=datetime.datetime.utcnow(),
                                    reported_by=user.username, reason=reasoning)
         return Response("Grids reported", status=status.HTTP_200_OK)
 
