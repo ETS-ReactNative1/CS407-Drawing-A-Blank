@@ -7,7 +7,7 @@ import mahotas
 import numpy as np
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import F, Q, Count
+from django.db.models import F, Q, Count, Sum
 from django.db.models.functions import Cast
 from django.utils import timezone
 from shapely.geometry import Point, Polygon
@@ -57,9 +57,14 @@ class Player(models.Model):
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
-        players = Player.objects.values('user__username').filter(
-            workout__workoutpoint__time__gte=time, team__name__in=teams).distinct().annotate(
-            points=Count('workout__points'))
+        workouts = Workout.objects.values('player__user__username', 'points').filter(workoutpoint__time__gte=time).distinct()
+        
+        players = {}
+        for w in workouts:
+            try:
+                players[w["player__user__username"]] += w["points"]
+            except:
+                players[w["player__user__username"]] = w["points"]
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
@@ -71,8 +76,8 @@ class Player(models.Model):
             score = 0
 
             try:
-                score = players.get(user__username=name)["points"]
-            except Player.DoesNotExist:
+                score = players[name]
+            except:
                 pass
 
             res = {"name": name,
@@ -392,3 +397,4 @@ class ReportGrids(models.Model):
     time = models.DateTimeField()
     reported_by = models.ForeignKey(Player, on_delete=models.CASCADE)
     reason =models.CharField(max_length=100)
+    area = models.PositiveIntegerField()

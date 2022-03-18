@@ -86,7 +86,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # }
 
 
-# DCS CONNECTION
+# # DCS CONNECTION
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',

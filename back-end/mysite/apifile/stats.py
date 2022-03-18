@@ -5,7 +5,15 @@ from datetime import datetime
 
 
 def all_user_workouts(input_name):
+    """
+    Input: Username
+    Output: {id, date, duration, calories, type(exercise), distance, points} for each workout.
+    """
+
+
+    #Get all workouts from a username
     workouts = Workout.objects.filter(player__user__username=input_name)
+
     ret_val = []
     for workout in workouts:
         workout_points = workout.workoutpoint_set.all()
@@ -19,11 +27,12 @@ def all_user_workouts(input_name):
 
 
 def workoutpoints_details(workout_id, player):
+
+    #get a specific workout for a player
     workout = Workout.objects.get(id=workout_id, player=player)
     workout_points = workout.workoutpoint_set.all()
 
     ret_val = []
-
     for point in workout_points:
         try:
             convert = CoordsConvert.objects.get(easting=point.easting, northing=point.northing)
@@ -44,6 +53,11 @@ def profile_info(input_name):
 
 
 def user_total_distance(input_name):
+    """
+    Input: username
+    Output: Total distance the user has travelled.
+    """
+
     workouts = Workout.objects.filter(player__user__username=input_name)
 
     total_distance = 0.0
@@ -85,6 +99,9 @@ Kcal ~= METS * bodyMassKg * timePerformingHours
 METS = metabolic equivalents
 https://sites.google.com/site/compendiumofphysicalactivities/Activity-Categories
 https://golf.procon.org/met-values-for-800-activities/
+
+
+METS calculated using linear regression on existing data to allow support for any speed, since the speeds submitted will be continuous rather than discrete values.
 """
 
 def calories_total(bodymass,input_workout):
@@ -120,7 +137,7 @@ def select_ex_type(bodymass, avg_speed, time_secs,ex_type):
     return calories_burned_run(bodymass, avg_speed, time_secs)
 
 def calories_burned_run(bodymass, avg_speed, time_secs):
-
+    
     #https://www.desmos.com/calculator/sruqcotkrt using mets data to determine mets ~=~ X * m/s 
     mets = avg_speed*3.452
     return mets*bodymass*(time_secs/3600)
