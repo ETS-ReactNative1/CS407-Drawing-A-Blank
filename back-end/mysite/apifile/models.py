@@ -67,8 +67,6 @@ class Player(models.Model):
             except:
                 points[w.player.user.username] = w.points
 
-        return points
-
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
         ret_val = []
