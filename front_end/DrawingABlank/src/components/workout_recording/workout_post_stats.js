@@ -1,23 +1,30 @@
 import React, {Component, useState} from 'react';
-import {Button, StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {ActivityIndicator, Button, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
 import {Workout} from './workout';
 import {styles} from './workout_style';
 import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import ExtraData from '../profile/personal_stats/extra_data.js';
+import { getTeam } from '../../api/api_networking';
 
 class WorkoutPostStats extends Component {
   recorder = this.props.route.params.recorder;
   state = {
-    recording: false,
-    button_text: 'Start workout',
     extra_data: [],
     speed_time: this.recorder.getSpeedvsTime(),
     distance_time: this.recorder.getDistanceVsTime(),
     debug_text: '',
+    submittedWorkout:false,
+    team:""
   };
-  componentDidMount() {}
+  componentDidMount() {
+    console.log("RECORDER:"+JSON.stringify(this.props.route.params.recorder));
+    getTeam().then(team => {
+      this.setState({team:team})
+    })
+    this.submitWorkout();
+  }
   switchBackToMap() {
     this.props.navigation.navigate('map_view_complete');
   }
@@ -47,27 +54,6 @@ class WorkoutPostStats extends Component {
     console.log('Returning ' + JSON.stringify(result));
     return result;
   }
-  updateButton() {
-    if (!this.state.recording) {
-      recorder.startWorkout();
-      this.setState({
-        recording: true,
-        button_text: 'Stop workout',
-      });
-      Geolocation.getCurrentPosition(({coords}) =>
-        recorder.addCoordinate(coords.latitude, coords.longitude),
-      );
-    } else {
-      recorder.stopWorkout();
-      this.setState({
-        recording: false,
-        button_text: 'Start workout',
-        extra_data: this.getExtraData(),
-        speed_time: recorder.getSpeedvsTime(),
-        distance_time: recorder.getDistanceVsTime(),
-      });
-    }
-  }
   getSpeedVsTimeGraph() {
     this.state.speed_time = this.recorder.getSpeedvsTime();
     return (
@@ -78,6 +64,7 @@ class WorkoutPostStats extends Component {
           this.state.speed_time[index].time.toFixed(1)
         }
         height={250}
+        team={this.state.team}
       />
     );
   }
@@ -91,21 +78,33 @@ class WorkoutPostStats extends Component {
           this.state.distance_time[index].time.toFixed(1)
         }
         height={250}
+        team={this.state.team}
       />
     );
+  }
+  generateTip(){
+    var quotes = ["After each workout, be sure to stretch your muscles in order to prevent injury.","Make sure to stay hydrated and cool yourself down.","A workout a day keeps the doctor away.","Did you know? The world's strongest man eats over 12000 calories a day."]
+    return quotes[Math.floor(Math.random()*quotes.length)]
   }
   renderExtraData() {
     this.state.extra_data = this.getExtraData();
     return <ExtraData data={this.state.extra_data} />;
   }
+  submitWorkout(){
+    if(this.props.route.params.upload){
+      this.recorder.uploadWorkout().then(_ => {
+          this.setState({submittedWorkout:true});
+      })
+    }
+  }
   render() {
     return (
-      <ScrollView style={{paddingBottom: 40}}>
+      <ScrollView style={{paddingBottom: 40,  backgroundColor:'#2179b8'}}>
+        {this.state.submittedWorkout ? 
         <View style={{alignItems: 'center', marginTop: 20, paddingBottom: 10}}>
           <Text style={styles.workout_button_text}>Post-Workout Summary</Text>
-          <Text style={{fontSize: 16}}>
-            Workout completed! Good job, your workout has been saved to Fresgo's
-            servers. Here are your post-workout statistics.
+          <Text style={{fontSize: 16, fontFamily:"Ubuntu-Light",color:"#fafafa"}}>
+            Workout complete! Your results have been saved to Fresgo's servers.
           </Text>
           <View style={{marginTop: 20, width: '90%'}}>
             {this.getSpeedVsTimeGraph()}
@@ -120,6 +119,12 @@ class WorkoutPostStats extends Component {
             </Text>
           </TouchableOpacity>
         </View>
+        : 
+        <View style={styles.activity_loader}>
+          <Text style={styles.loading_text}>Submitting your workout</Text>
+          <ActivityIndicator size="large" color="#6db0f6"/>
+          <Text style={styles.quote_text}>{this.generateTip()}</Text>
+        </View>}
       </ScrollView>
     );
   }

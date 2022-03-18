@@ -5,14 +5,24 @@ export default [
     iconName: 'user',
   },
   {
-    label: 'Settings',
-    iconType: 'Feather',
-    iconName: 'settings',
-  },
-  {
     label: 'Saved Workouts',
     iconType: 'feather',
     iconName: 'activity', //sports
+  },
+  {
+    label: 'Event History',
+    iconType: 'feather',
+    iconName: 'flag'
+  },
+  {
+    label: 'Leaderboards',
+    iconType: 'feather',
+    iconName: 'trending-up'
+  },
+  {
+    label: 'Settings',
+    iconType: 'feather',
+    iconName: 'settings',
   },
   {
     label: 'Logout',

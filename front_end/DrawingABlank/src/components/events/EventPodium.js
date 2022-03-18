@@ -15,13 +15,17 @@ class EventPodium extends Component{
         IN ORDER OF FIRST,SECOND,LAST
         [teamName : String]
     */
+   //"My hope is this code is so awful that I am never allowed to write UI code again.."
+    normalizeScore = (points, lowest_points, highest_points) =>{
+        return 3*(points-lowest_points)/(highest_points-lowest_points)
+    }
     render() {
         //Based of the following example: https://github.com/JesperLekland/react-native-svg-charts-examples/blob/master/storybook/stories/bar-chart/vertical-with-labels.js
-        const TEAM_COLOURS = {"Terra":"#FF8C91","Windy":"#82FF8A","Ocean":"#47C4FF"}
-        const TEAM_AVATARS = {"Terra":require('../../assets/img/terra.png'),"Windy":require('../../assets/img/windy.png'),"Ocean":require('../../assets/img/ocean.png')}
+        const TEAM_COLOURS = {"terra":"#FF8C91","windy":"#82FF8A","ocean":"#47C4FF"}
+        const TEAM_AVATARS = {"terra":require('../../assets/img/terra.png'),"windy":require('../../assets/img/windy.png'),"ocean":require('../../assets/img/ocean.png')}
         const PODIUM_DATA = [
             {
-                value: 1,
+                value: this.normalizeScore(this.props.points[2],this.props.points[2],this.props.points[0]),
                 svg: {
                     fill: TEAM_COLOURS[this.props.teams[2]],
                 },
@@ -29,7 +33,7 @@ class EventPodium extends Component{
                 points:this.props.points[2]
             },
             {
-                value: 3,
+                value: this.normalizeScore(this.props.points[0],this.props.points[2],this.props.points[0]),
                 svg: {
                     fill: TEAM_COLOURS[this.props.teams[0]],
                 },
@@ -37,7 +41,7 @@ class EventPodium extends Component{
                 points:this.props.points[0]
             },
             {
-                value: 2,
+                value: this.normalizeScore(this.props.points[1],this.props.points[2],this.props.points[0]),
                 svg: {
                     fill: TEAM_COLOURS[this.props.teams[1]],
                 },
@@ -63,6 +67,7 @@ class EventPodium extends Component{
                     </SVGImage>
                 ))
         )
+
 
         return (
             <View style={{height: this.props.height}}>

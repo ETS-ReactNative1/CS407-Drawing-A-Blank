@@ -192,7 +192,7 @@ class Leaderboard extends Component{
             bio={'[USER.BIO]'}
             picture={this.getDefaultPicture(this.state.profileContent["team"])}
             gender={this.state.profileContent["gender"]}
-            /> : <ActivityIndicator/> //Maybe make this a more pretty loading screen later.
+            /> : <ActivityIndicator size='large' color='#6db0f6'/> //Maybe make this a more pretty loading screen later.
         );
     }
 
@@ -229,7 +229,7 @@ class Leaderboard extends Component{
                     </TouchableOpacity>
                 </View>
                 <View style={styles.filters}>
-                    <View style={styles.filter}>
+                    <View style={styles.filter_date}>
                         <MultiSelect
                         hideTags
                         items={this.state.options}
@@ -238,17 +238,23 @@ class Leaderboard extends Component{
                         selectedItems={this.state.selectedOptions}
                         selectText="Filter by team"
                         onChangeInput={(text) => console.log(text)}
-                        tagRemoveIconColor="#CCC"
-                        tagBorderColor="#CCC"
-                        tagTextColor="#CCC"
+                        tagRemoveIconColor="#fafafa"
+                        tagBorderColor="#fafafa"
+                        tagTextColor="#fafafa"
                         selectedItemTextColor="#CCC"
                         selectedItemIconColor="#CCC"
-                        itemTextColor="#000"
+                        itemTextColor="#fafafa"
+                        itemFontFamily="Ubuntu-Light"
                         displayKey="name"
                         textInputProps={{ editable: false }}
                         searchInputPlaceholderText=""
                         searchIcon={false}
                         hideSubmitButton={true}
+                        styleItemsContainer={{backgroundColor:"#2179b8", borderColor:"#fafafa",borderWidth:1}}
+                        styleDropdownMenuSubsection={{backgroundColor:"#2179b8", borderWidth:0}}
+                        styleInputGroup={{backgroundColor:"#2179b8"}}
+                        styleTextDropdown={{color:"#fafafa",fontFamily:"Ubuntu-Light"}}
+                        styleTextDropdownSelected={{color:"#fafafa",fontFamily:"Ubuntu-Light"}}
                         />
                     </View>
                     <View style={styles.filter}>
@@ -260,7 +266,7 @@ class Leaderboard extends Component{
                 <View style={styles.search_bar}>
                     <TextInput style={styles.search_bar_input}
                         placeholder="Search user"
-                        placeholderTextColor="black"
+                        placeholderTextColor="#fafafa"
                         ref="usersearch"
                         onChangeText={this.handleUserSearch}    
                     />
@@ -288,7 +294,7 @@ class Leaderboard extends Component{
                         </View>
                     </View>
 
-                    {!(this.state.collectedLeaderboards) && <ActivityIndicator size='large'/>}
+                    {!(this.state.collectedLeaderboards) && <ActivityIndicator color="#fafafa" size='large'/>}
                     {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {{
                         if(info.name.includes(this.state.username_search)){
                         return (

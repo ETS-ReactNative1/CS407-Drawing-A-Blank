@@ -1,5 +1,5 @@
-import {RecyclerViewBackedScrollViewBase} from 'react-native';
-import {request, setToken, getToken} from './api_networking.js';
+import {request, setToken, getToken, setUsername, setTeam} from './api_networking.js';
+import { getProfile } from './api_profile.js';
 
 /*
     USER ACCOUNT LOGIN DETAILS FOR TESTING:
@@ -38,7 +38,12 @@ export const authenticateUser = (username,password) => {
             throw new Error('Incorrect credentials.');
         }
         return response.json();
-    }).then(res => setToken(res.token));
+    }).then(res => setToken(res.token)).then(_ => setUsername(username))
+    .then(_ => {
+      getProfile(username).then(res => {
+        setTeam(res.team);
+      });
+    });
 }
 
 export const verifyToken = () => {

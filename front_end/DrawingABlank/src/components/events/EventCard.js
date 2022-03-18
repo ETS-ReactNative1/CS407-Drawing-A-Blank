@@ -29,7 +29,7 @@ class EventCard extends Component{
     }
     render(){
         return(
-            <TouchableOpacity style={styles.event_card}>
+            <TouchableOpacity style={styles.event_card} onPress={this.props.onPress}>
                 <View style={styles.winning_team}>
                     <Image
                         source={this.getWinnerImage()}

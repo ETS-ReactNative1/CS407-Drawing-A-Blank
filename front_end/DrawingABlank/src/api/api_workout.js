@@ -6,6 +6,6 @@ export const submit_workout = (workout_json) => {
         if(response.status != 201){
             throw new Error('Failed to add workout.');
         }
-        response.json()
+        return response.json();
     });
 } 

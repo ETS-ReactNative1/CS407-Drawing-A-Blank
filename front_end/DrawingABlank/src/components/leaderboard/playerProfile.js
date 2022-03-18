@@ -1,24 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  Button,
-} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, Image} from 'react-native';
 import Overlay from '../../containers/Overlay';
 
 import {styles} from './style.js';
 import EventDetails from '../events/EventDetails';
-import {getUsername} from '../../api/api_networking';
-import {
-  getUserWorkouts,
-  updateProfile,
-  updateProfileQuick,
-} from '../../api/api_profile';
-import DatePicker from 'react-native-date-picker';
 
 export default function PlayerProfile({
   username,
@@ -100,7 +85,6 @@ export default function PlayerProfile({
           )}
           <Image source={pic} style={styles.avatar} />
           <Text style={styles.name}>{username} </Text>
-          <Text style={styles.userInfo}>{email} </Text>
           <Text style={styles.userInfo}>{country}</Text>
         </View>
       </View>
@@ -133,9 +117,7 @@ export default function PlayerProfile({
           </View>
           <View style={styles.profileInfoContent}>
             <Text style={styles.profileInfo}>Team</Text>
-            <Text style={styles.profileSubInfo}>
-              {team.charAt(0).toUpperCase() + team.slice(1)}
-            </Text>
+            <Text style={styles.profileSubInfo}>{team}</Text>
           </View>
         </View>
 

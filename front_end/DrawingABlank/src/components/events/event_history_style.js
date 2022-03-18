@@ -18,9 +18,7 @@ export const styles = StyleSheet.create({
     },
     score_summary:{
         flexDirection:'row',
-        paddingBottom:25,
-        borderBottomColor:'#fafafa',
-        borderBottomWidth:1
+        paddingBottom:10,
     },
     score_victories:{
         color:'#0fd945',
@@ -123,5 +121,20 @@ export const styles = StyleSheet.create({
         fontSize:14,
         fontFamily:'Ubunutu-Light',
         color:'#fafafa'
+    },
+    filter:{
+
+        borderBottomColor:'#fafafa',
+        borderBottomWidth:1,
+        paddingBottom:25,
+        textAlign:"center",
+        justifyContent:"center"
+    },
+    filter_text:{
+        fontFamily:"Ubuntu-Light",
+        color:"#fafafa",
+        fontSize:24,
+        textAlign:"center",
+        justifyContent:"center"
     }
 });

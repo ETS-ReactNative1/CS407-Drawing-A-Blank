@@ -48,9 +48,7 @@ class LoginScreen extends Component{
         }
         this.setState({loggingIn:true});
         Authentication.authenticateUser(this.state.email,this.state.password).then(_ => {
-            setUsername(this.state.email);
             this.props.navigation.navigate('loading_screen',{username:this.state.email});
-            setUsername(this.state.email);
         }).catch(err => {
             console.log("ERROR LOGGING IN:"+err);
             Alert.alert("Login Error",err.toString());
@@ -109,7 +107,7 @@ class LoginScreen extends Component{
                 <View style={styles.footer}>
                     {/* In the second text tag, an onPress function be added for switching to the signup page. */}
                     <Text style={styles.footerText}>Don't have an account? <Text style={styles.footerText} onPress={this.changeToRegister}>Sign up!</Text></Text>
-                </View></View> : <ActivityIndicator/>}
+                </View></View> : <ActivityIndicator color="#6db0f6"/>}
             </View>
         );
     }

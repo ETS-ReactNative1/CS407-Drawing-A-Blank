@@ -120,8 +120,7 @@ export const getEvents = () => {
 }//Check this
 
 export const getEventHistory = (date="") => {
-  //TOKEN IS DEBUG FOR NOW
-  return getToken().then(tok => request('GET','/events/history',`?date=${date}`,'',"a030b2abd4a648da870cab0814dd73c945b480ac"))
+  return getToken().then(tok => request('GET','/events/history',`?date=${date}`,'',tok))
   .then(resp => {
     if(resp.status!=200){
       throw new Error('Could not obtain event history.')

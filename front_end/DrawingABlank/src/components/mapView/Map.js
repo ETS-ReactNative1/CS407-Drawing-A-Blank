@@ -96,7 +96,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
   }
 
   function changeToStats() {
-    navigation.navigate('post_workout_stats', {recorder: recorder});
+    navigation.navigate('post_workout_stats', {recorder: recorder,upload:true});
   }
 
   function collectEventScores(){

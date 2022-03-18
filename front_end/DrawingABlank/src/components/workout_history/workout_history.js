@@ -38,6 +38,23 @@ const WorkoutHistory = () => {
     return new Date(workout.date).getTime() <= date.getTime();
   });
   const prev_workouts = filtered_workouts.map((workout, index) => {
+  useEffect(()=>{
+    // setup a recorder for the current selected workout
+    if(workout.length > 0){
+      const recorder = new Workout();
+      recorder.recording = true;
+      recorder.setWorkoutStartDate(workout[0].time);
+      workout.forEach(point => {
+        recorder.addCoordinateAtTime(point.latitude, point.longitude, point.time);
+      });
+      recorder.setWorkoutEndDate(workout[workout.length - 1].time);
+      recorder.recording = false;
+      console.log(recorder.toJSON());
+      navigation.navigate('post_workout_stats', {recorder: recorder, upload:false});
+    }
+  },[workout])
+
+  const prev_workouts = workouts.map((workout, index) => {
     return (
       <TouchableOpacity
         key={index}
@@ -58,9 +75,10 @@ const WorkoutHistory = () => {
     );
   });
   const onPress = async id => {
-    await getUserWorkout(id).then(result => setWorkout(result));
+    await getUserWorkout(id).then(result => {console.log("OBTAINED RESULT:"+JSON.stringify(result));setWorkout(result)});
 
     // setup a recorder for the current selected workout
+    /*
     const recorder = new Workout();
     recorder.recording = true;
     recorder.setWorkoutStartDate(workout[0].time);
@@ -71,6 +89,7 @@ const WorkoutHistory = () => {
     recorder.recording = false;
     console.log(recorder.toJSON());
     navigation.navigate('post_workout_stats', {recorder: recorder});
+    */
   };
 
   return (
@@ -99,11 +118,7 @@ const WorkoutHistory = () => {
             }}
           />
           <Text style={styles.name}>{username}: workout history</Text>
-          <TouchableOpacity onPress={() => setOpen(true)}>
-            <Text style={styles.info}>
-              Filter by date: {date.toDateString()}
-            </Text>
-          </TouchableOpacity>
+          <Text style={styles.info}>Filter by date [DATEPICKER]</Text>
           <Text style={styles.description}>
             Take a look back at some of your previous workouts!
           </Text>
