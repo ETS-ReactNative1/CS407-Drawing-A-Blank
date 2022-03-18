@@ -44,60 +44,58 @@ class LeaderboardTests(TestCase):
         self.workout1.calories = stats.calories_total(self.player.weight,self.workout1)
         self.workout1.save(update_fields=['calories'])
         # Workout 2 - Player 2, Team red, 1/1/2020
+
+
+        eastings = [0,100,0]
+        northings = [50,100,0]
+        minutes = [0,1,2]
         self.workout2 = Workout.objects.create(player=self.player2, duration=120, calories=0)
-        time = datetime.datetime(2020, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=50, ghost=False)
+        for i in range(len(minutes)):
+            time = datetime.datetime(2022, 1, 1, hour=1, minute=minutes[i], second=0, tzinfo=pytz.UTC)
+            WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=eastings[i], northing=northings[i], ghost=False)
 
-        time = datetime.datetime(2020, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=100, northing=100, ghost=False)
-
-        time = datetime.datetime(2020, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout2, time=time, easting=0, northing=0, ghost=False)
         self.workout2.calories = stats.calories_total(self.player2.weight,self.workout2)
+        self.workout2.save(update_fields=['calories'])
+
 
         # Workout 3 - Player 2, Team red, 1/1/2022.
+        eastings = [0,100,0]
+        northings = [0,0,0]
+        minutes = [0,1,2]
         self.workout3 = Workout.objects.create(player=self.player2, duration=120, calories=0)
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=100, northing=0, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=0, northing=0, ghost=False)
+        for i in range(len(minutes)):
+            time = datetime.datetime(2022, 1, 1, hour=1, minute=minutes[i], second=0, tzinfo=pytz.UTC)
+            WorkoutPoint.objects.create(workout=self.workout3, time=time, easting=eastings[i], northing=northings[i], ghost=False)
+        
         self.workout3.calories = stats.calories_total(self.player2.weight,self.workout3)
+
         # Workout 4 - Player 3, Team Blue, 1/1/2022.
+        eastings = [50,100,50]
+        northings = [1000,1000,1000]
+        minutes = [0,1,2]
         self.workout4 = Workout.objects.create(player=self.player3, duration=120, calories=0)
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=100, northing=1000, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=50, northing=1000, ghost=False)
+        for i in range(len(minutes)):
+            time = datetime.datetime(2022, 1, 1, hour=1, minute=minutes[i], second=0, tzinfo=pytz.UTC)
+            WorkoutPoint.objects.create(workout=self.workout4, time=time, easting=eastings[i], northing=northings[i], ghost=False)
 
         # Workout 5 - Player 4, Team Green, 1/1/2022.
+        eastings = [0,200,50]
+        northings = [1000,1000,1000]
+        minutes = [0,1,2]
         self.workout5 = Workout.objects.create(player=self.player4, duration=120, calories=0)
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=0, northing=1000, ghost=False)
+        for i in range(len(minutes)):
+            time = datetime.datetime(2022, 1, 1, hour=1, minute=minutes[i], second=0, tzinfo=pytz.UTC)
+            WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=eastings[i], northing=northings[i], ghost=False)
 
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=200, northing=1000, ghost=False)
-
-        time = datetime.datetime(2022, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout5, time=time, easting=50, northing=1000, ghost=False)
 
         # Workout 6 - Player 1, Team red, 1/1/2000
+        eastings = [0,0,150]
+        northings = [0,150,0]
+        minutes = [0,1,2]
         self.workout6 = Workout.objects.create(player=self.player, duration=120, calories=0)
-        time = datetime.datetime(2000, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=0, ghost=False)
-
-        time = datetime.datetime(2000, 1, 1, hour=1, minute=1, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=0, northing=150, ghost=False)
-
-        time = datetime.datetime(2000, 1, 1, hour=1, minute=2, second=0, tzinfo=pytz.UTC)
-        WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=150, northing=0, ghost=False)
+        for i in range(len(minutes)):
+            time = datetime.datetime(2022, 1, 1, hour=1, minute=minutes[i], second=0, tzinfo=pytz.UTC)
+            WorkoutPoint.objects.create(workout=self.workout6, time=time, easting=eastings[i], northing=northings[i], ghost=False)
 
     def test_players(self):
         time = datetime.datetime(2021, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
