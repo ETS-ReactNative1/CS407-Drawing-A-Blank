@@ -102,23 +102,25 @@ class LeaderboardTests(TestCase):
 
         print("Calories")
         print(self.workout1.calories)
-        
+        print(" ")
+
         print("2021")
         print(leaderboards.distance_leaderboard(time, []))
         print(leaderboards.distance_leaderboard(time, ["Green", "Blue"]))
-
+        print(" ")
 
 
         time = datetime.datetime(2019, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
         print("2019")
         print(leaderboards.distance_leaderboard(time, []))
         print(leaderboards.distance_leaderboard(time, ["Red"]))
+        print(" ")
         print(stats.profile_info("testuser"))
-
+        print(" ")
         print("workout history:")
         print(stats.all_user_workouts(self.user))
         print(stats.all_user_workouts(self.user2))
-
+        print(" ")
         print(stats.workoutpoints_details(1, self.player))
 
     def test_points(self):
