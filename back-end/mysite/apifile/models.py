@@ -57,11 +57,13 @@ class Player(models.Model):
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
-        workouts = Workout.objects.distinct()
+        workouts = Workout.objects.filter(workoutpoint__time__gte=time).distinct()
         
         ids = []
         for w in workouts:
             ids.append(w.id)
+
+        return ids
 
 
         players = Player.objects.values('user__username').filter(team__name__in=teams, workout__id__in=ids).distinct().annotate(
