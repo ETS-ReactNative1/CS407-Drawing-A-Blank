@@ -369,6 +369,7 @@ class Workout(models.Model):
     calories = models.PositiveIntegerField(default=0)
     type = models.CharField(max_length=10)  # e.g. walk, run
     points = models.PositiveIntegerField(default=0)  # number of grids touched in that workout
+    date_recorded = models.DateTimeField(auto_now_add=True)
 
 
 class WorkoutPoint(models.Model):
