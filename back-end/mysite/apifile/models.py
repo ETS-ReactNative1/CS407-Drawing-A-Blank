@@ -3,14 +3,14 @@ import math
 import operator
 from functools import reduce
 
-# import mahotas
+import mahotas
 import numpy as np
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import F, Q, Count, Sum
 from django.db.models.functions import Cast
 from django.utils import timezone
-# from shapely.geometry import Point, Polygon
+from shapely.geometry import Point, Polygon
 
 from .constants import UNIT_TILE_SIZE
 
@@ -64,9 +64,8 @@ class Player(models.Model):
             ids.append(w.id)
 
 
-        players = Player.objects.values('user__username').filter(team__name__in=teams, workout__id__in=ids).distinct()
-
-        print(players)
+        players = Player.objects.values('user__username').filter(team__name__in=teams, workout__id__in=ids).distinct().annotate(
+            points=Sum('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
