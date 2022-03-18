@@ -65,8 +65,6 @@ class Player(models.Model):
                 players[w["player__user__username"]] += w["points"]
             except:
                 players[w["player__user__username"]] = w["points"]
-        
-        return players
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
@@ -78,7 +76,7 @@ class Player(models.Model):
             score = 0
 
             try:
-                score = players["name"]
+                score = players[name]
             except:
                 pass
 
