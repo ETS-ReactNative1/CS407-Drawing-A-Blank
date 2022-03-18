@@ -63,7 +63,7 @@ class Player(models.Model):
         for w in workouts:
             ids.append(w.points)
 
-        return points
+        return ids
 
         players = Player.objects.values('user_username').filter(team__name__in=teams)
 
