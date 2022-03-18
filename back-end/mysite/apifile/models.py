@@ -78,7 +78,7 @@ class Player(models.Model):
 
             try:
                 score = points[name]
-            except Player.DoesNotExist:
+            except:
                 pass
 
             res = {"name": name,
