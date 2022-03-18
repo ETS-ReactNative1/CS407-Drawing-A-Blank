@@ -379,7 +379,7 @@ class Workout(models.Model):
 
     @staticmethod
     def user_workouts(username, date):
-        workouts = Workout.objects.filter(player__user__username=username, date_recorded__gte=date)
+        workouts = Workout.objects.filter(player__user__username=username, date_created__gte=date)
 
         ret_val = []
         for workout in workouts:
