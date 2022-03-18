@@ -7,7 +7,7 @@ import mahotas
 import numpy as np
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import F, Q, Count
+from django.db.models import F, Q, Count, Sum
 from django.db.models.functions import Cast
 from django.utils import timezone
 from shapely.geometry import Point, Polygon
@@ -57,9 +57,15 @@ class Player(models.Model):
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
-        players = Player.objects.values('user__username').filter(
-            workout__workoutpoint__time__gte=time, team__name__in=teams).distinct().annotate(
-            points=Count('workout__points'))
+        workouts = Workout.objects.filter(workoutpoint__time__gte=time).distinct()
+        
+        ids = []
+        for w in workouts:
+            ids.append(w.id)
+
+
+        players = Player.objects.values('user__username').filter(team__name__in=teams, workout__id__in=ids).distinct().annotate(
+            points=Sum('workout__points'))
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 

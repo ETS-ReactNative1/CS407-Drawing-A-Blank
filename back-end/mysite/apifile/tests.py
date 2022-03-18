@@ -125,6 +125,12 @@ class LeaderboardTests(TestCase):
 
         print(stats.workoutpoints_details(1, self.player))
 
+    def test_points(self):
+        time = datetime.datetime(2021, 1, 1, hour=1, minute=0, second=0, tzinfo=pytz.UTC)
+        print("2021")
+        print(Player.points(time, []))
+        print(Player.points(time, ["Green", "Blue"]))
+
 
 class EventBoundTests(TestCase):
     def setUp(self):
