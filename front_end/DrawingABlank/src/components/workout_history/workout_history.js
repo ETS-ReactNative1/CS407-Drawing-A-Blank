@@ -37,22 +37,29 @@ const WorkoutHistory = () => {
   const filtered_workouts = workouts.filter(workout => {
     return new Date(workout.date).getTime() <= date.getTime();
   });
-  const prev_workouts = filtered_workouts.map((workout, index) => {
-  useEffect(()=>{
+
+  useEffect(() => {
     // setup a recorder for the current selected workout
-    if(workout.length > 0){
+    if (workout.length > 0) {
       const recorder = new Workout();
       recorder.recording = true;
       recorder.setWorkoutStartDate(workout[0].time);
       workout.forEach(point => {
-        recorder.addCoordinateAtTime(point.latitude, point.longitude, point.time);
+        recorder.addCoordinateAtTime(
+          point.latitude,
+          point.longitude,
+          point.time,
+        );
       });
       recorder.setWorkoutEndDate(workout[workout.length - 1].time);
       recorder.recording = false;
       console.log(recorder.toJSON());
-      navigation.navigate('post_workout_stats', {recorder: recorder, upload:false});
+      navigation.navigate('post_workout_stats', {
+        recorder: recorder,
+        upload: false,
+      });
     }
-  },[workout])
+  }, [workout]);
 
   const prev_workouts = workouts.map((workout, index) => {
     return (
@@ -75,7 +82,10 @@ const WorkoutHistory = () => {
     );
   });
   const onPress = async id => {
-    await getUserWorkout(id).then(result => {console.log("OBTAINED RESULT:"+JSON.stringify(result));setWorkout(result)});
+    await getUserWorkout(id).then(result => {
+      console.log('OBTAINED RESULT:' + JSON.stringify(result));
+      setWorkout(result);
+    });
 
     // setup a recorder for the current selected workout
     /*

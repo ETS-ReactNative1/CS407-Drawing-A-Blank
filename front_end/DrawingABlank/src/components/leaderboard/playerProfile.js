@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {View, Text, Image} from 'react-native';
-import Overlay from '../../containers/Overlay';
+import React, {useEffect, useState} from 'react';
+import {Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 import {styles} from './style.js';
-import EventDetails from '../events/EventDetails';
+import {updateProfileQuick} from '../../api/api_profile';
+import DatePicker from 'react-native-date-picker';
 
 export default function PlayerProfile({
   username,
@@ -31,7 +31,7 @@ export default function PlayerProfile({
   });
 
   //date picker states
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date(dob));
   const [open, setOpen] = useState(false);
 
   const handleChange = (caller, e) => {
@@ -41,7 +41,9 @@ export default function PlayerProfile({
     } else if (caller === 'weight') {
       oldEdits.weight = e;
     } else if (caller === 'DOB') {
-      oldEdits.dob = date;
+      // YYYY-MM-DD
+      console.log(date.toISOString().slice(0, 10));
+      oldEdits.dob = date.toISOString().slice(0, 10);
     }
     setEdits(oldEdits);
   };
@@ -138,12 +140,13 @@ export default function PlayerProfile({
                   modal
                   open={open}
                   textColor="#000000"
-                  date={new Date(dob)}
+                  date={new Date(edits.dob)}
                   onDateChange={DOBN => handleChange('DOB', DOBN)}
                   mode="date"
                   onConfirm={date => {
                     setOpen(false);
                     setDate(date);
+                    handleChange('DOB', '');
                   }}
                   onCancel={() => {
                     setOpen(false);
@@ -164,7 +167,7 @@ export default function PlayerProfile({
                     editable={false}
                     selectTextOnFocus={false}
                     style={styles.profileSubInfoEditing}
-                    placeholder={`DOB: ${dob}`}
+                    placeholder={`DOB: ${edits.dob}`}
                   />
                 </TouchableOpacity>
               </View>

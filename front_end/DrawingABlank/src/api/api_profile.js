@@ -1,4 +1,4 @@
-import {request, getToken} from './api_networking';
+import { request, getToken, getUsername } from "./api_networking";
 
 /*
         username = data["username"]
@@ -45,12 +45,18 @@ export const updateProfile = (
     });
 };
 
-export const getProfile = (username) => {
-    query = "?username=" + username;
-    return getToken().then(token => request('GET','user',query,'',token))
+export const updateProfileQuick = body => {
+  //https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
+  body = Object.fromEntries(Object.entries(body).filter(([_, v]) => v != ''));
+  console.log('Sending profile update with:' + JSON.stringify(body));
+  //Check this URL later
+  return getToken()
+    .then(token =>
+      request('PATCH', 'user/change_details/', '', JSON.stringify(body), token),
+    )
     .then(response => {
       if (response.status != 200 && response.status != 201) {
-        console.log(response.status)
+        console.log(response.status);
         throw new Error('Could not update profile.');
       }
       console.log('updated?');
@@ -64,8 +70,10 @@ export const getProfile = username => {
     .then(token => request('GET', 'user', query, '', token))
     .then(response => {
       if (response.status != 200 && response.status != 201) {
-        throw new Error('Could not obtain profile.');
+        console.log(response.status);
+        throw new Error('Could not update profile.');
       }
+      console.log('updated?');
       return response.json();
     });
 };
@@ -98,14 +106,11 @@ export const getUserWorkouts = () => {
 export const getUserWorkout = id => {
   return getToken()
     .then(token => request('GET', 'workout?id=', `${id}`, '', token))
-    .then(token =>
-      request('GET', 'workout?id=', `${id}`, '', token),
-    )
     .then(response => {
       if (response.status != 200) {
         throw new Error(`Could not obtain workout. ${response.status}`);
       }
-      console.log("RESPONSE IS HERE:"+JSON.stringify(response));
+      console.log('RESPONSE IS HERE:' + JSON.stringify(response));
       return response.json();
     });
 };
