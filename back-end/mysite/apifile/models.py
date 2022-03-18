@@ -57,10 +57,15 @@ class Player(models.Model):
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
-        workouts = Workout.objects.values('player__user__username').filter(
+        workouts = Workout.objects.filter(
             date_recorded__gte=time, player__team__name__in=teams)
 
-        return workouts
+        points = {}
+        for w in workouts:
+            try: 
+                points[w.player] += w.points
+            except:
+                points[w.player] = w.points
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
@@ -72,7 +77,7 @@ class Player(models.Model):
             score = 0
 
             try:
-                score = players.get(user__username=name)["points"]
+                score = points[name]
             except Player.DoesNotExist:
                 pass
 
