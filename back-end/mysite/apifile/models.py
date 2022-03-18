@@ -58,8 +58,9 @@ class Player(models.Model):
             teams = ['terra', 'windy', 'ocean']
 
         players = Player.objects.values('user__username').filter(
-            workout__date_recorded__gte=time, team__name__in=teams).distinct().annotate(
-            points=Sum('workout__points'))
+            workout__date_recorded__gte=time, team__name__in=teams)
+
+        return players
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
