@@ -282,7 +282,7 @@ class WorkoutSubmission(viewsets.ViewSet):
         data = request.GET
         request_user = request.user.username
         date = datetime.datetime.strptime(request.GET.get('date', ''), "%d/%m/%Y").date()
-        ret_val = Workout.user_workouts(request_user, date)
+        ret_val = stats.user_workouts(request_user, date)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 
