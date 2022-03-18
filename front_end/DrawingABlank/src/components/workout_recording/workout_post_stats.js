@@ -15,7 +15,7 @@ class WorkoutPostStats extends Component {
     speed_time: this.recorder.getSpeedvsTime(),
     distance_time: this.recorder.getDistanceVsTime(),
     debug_text: '',
-    submittedWorkout:false,
+    submittedWorkout:!this.props.route.params.upload,
     team:""
   };
   componentDidMount() {
