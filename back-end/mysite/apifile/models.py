@@ -414,3 +414,4 @@ class ReportGrids(models.Model):
     reported_by = models.ForeignKey(Player, on_delete=models.CASCADE)
     reason =models.CharField(max_length=100)
     area = models.PositiveIntegerField()
+    
