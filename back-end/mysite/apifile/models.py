@@ -57,10 +57,10 @@ class Player(models.Model):
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
-        players = Player.objects.values('user__username').filter(
-            workout__date_recorded__gte=time, team__name__in=teams)
+        workouts = Workout.objects.values('player__user__username').filter(
+            date_recorded__gte=time, player__team__name__in=teams)
 
-        return players
+        return workouts
 
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
