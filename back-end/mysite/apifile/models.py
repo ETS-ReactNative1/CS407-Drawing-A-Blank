@@ -63,9 +63,9 @@ class Player(models.Model):
         points = {}
         for w in workouts:
             try: 
-                points[w.player] += w.points
+                points[w.player.user.username] += w.points
             except:
-                points[w.player] = w.points
+                points[w.player.user.username] = w.points
 
         return points
 
