@@ -57,13 +57,16 @@ class Player(models.Model):
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
-        workouts = Workout.objects.filter(workoutpoint__time__gte=time).distinct()
+        workouts = Workout.objects.values('player__user__username', 'points').filter(workoutpoint__time__gte=time).distinct()
         
-        ids = []
+        players = {}
         for w in workouts:
-            ids.append(w)
-
-        return ids
+            try:
+                players[w["player__user__username"]] += w["points"]
+            except:
+                players[w["player__user__username"]] = w["points"]
+        
+        return players
 
 
         
