@@ -71,8 +71,8 @@ class Player(models.Model):
             score = 0
 
             try:
-                score = players[name]
-            except:
+                score = players.get(user__username=name)["points"]
+            except Player.DoesNotExist:
                 pass
 
             res = {"name": name,
