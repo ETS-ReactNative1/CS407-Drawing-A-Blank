@@ -64,7 +64,9 @@ class Player(models.Model):
             ids.append(w.id)
 
 
-        players = Player.objects.values('user__username').filter(team__name__in=teams, workout__id__in=ids)
+        players = Player.objects.values('user__username', 'workout__id').filter(team__name__in=teams, workout__id__in=ids).distinct()
+
+
 
         return players
 
