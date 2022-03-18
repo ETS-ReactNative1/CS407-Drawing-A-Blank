@@ -128,7 +128,11 @@ const WorkoutHistory = () => {
             }}
           />
           <Text style={styles.name}>{username}: workout history</Text>
-          <Text style={styles.info}>Filter by date [DATEPICKER]</Text>
+          <TouchableOpacity onPress={() => setOpen(true)}>
+            <Text style={styles.info}>
+              Filter by date: {date.toDateString()}
+            </Text>
+          </TouchableOpacity>
           <Text style={styles.description}>
             Take a look back at some of your previous workouts!
           </Text>

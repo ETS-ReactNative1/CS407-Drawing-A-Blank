@@ -61,6 +61,14 @@ function SideBar(props) {
       console.log('GETTING WORKOUTS');
       navigation.navigate('workout_history');
     },
+    'Event History': function () {
+      console.log('GETTING EVENT HISTORY');
+      navigation.navigate('event_history');
+    },
+    Leaderboards: function () {
+      console.log('GETTING LEADERBOARDS');
+      navigation.navigate('leaderboard');
+    },
     Logout: function () {
       console.log('LOGGING OUT');
       Alert.alert(
