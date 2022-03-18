@@ -381,16 +381,16 @@ class Workout(models.Model):
     def user_workouts(username, date):
         workouts = Workout.objects.filter(player__user__username=username, date_recorded__gte=date)
 
-        # ret_val = []
-        # for workout in workouts:
-        #     workout_points = workout.workoutpoint_set.all()
-        #     if len(workout_points) > 0:
-        #         ret_val.append(
-        #             {"id": workout.id, "date": workout.date_recorded, "duration": workout.duration,
-        #             "calories": workout.calories, "type": workout.type, "distance": 0,
-        #             "points": workout.points})
+        ret_val = []
+        for workout in workouts:
+            workout_points = workout.workoutpoint_set.all()
+            if len(workout_points) > 0:
+                ret_val.append(
+                    {"id": workout.id, "date": workout.date_recorded, "duration": workout.duration,
+                    "calories": workout.calories, "type": workout.type, "distance": 0,
+                    "points": workout.points})
 
-        return workouts
+        return ret_val
 
 
 class WorkoutPoint(models.Model):
