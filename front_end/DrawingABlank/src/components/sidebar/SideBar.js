@@ -29,7 +29,7 @@ function SideBar(props) {
 
   return (
     <View style={styles.sidebarContainer}>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.menu_container}
         onPress={props.toggle && props.toggle()}>
         <View style={styles.menu}>
@@ -37,11 +37,11 @@ function SideBar(props) {
             name={'menu'}
             type={'feather'}
             iconStyle={styles.menuIcon}
-            containerStyle={styles.menu}
+            //containerStyle={styles.menu}
             size={30}
           />
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {props.DrawItems.filter(a => !a.isFoot).map(entry => {
         return drawEntry(entry);

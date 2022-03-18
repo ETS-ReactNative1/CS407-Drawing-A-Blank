@@ -17,12 +17,12 @@ export default [
   {
     label: 'Logout',
     iconType: 'feather',
-    iconName: 'logout',
+    iconName: 'log-out',
     isFoot: true,
   },
   {
     label: 'Refer a Friend!',
-    iconType: 'material',
+    iconType: 'feather',
     iconName: 'user-plus',
     isFoot: false,
   },

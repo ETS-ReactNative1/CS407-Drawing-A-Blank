@@ -8,6 +8,7 @@ import SideBar from '../sidebar/SideBar';
 import Drawer from 'react-native-drawer';
 import DrawItems from '../sidebar/DrawItems.js';
 import {Icon} from 'react-native-elements';
+import useRegion from './useRegion.js';
 
 function MapViewComplete() {
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -15,6 +16,10 @@ function MapViewComplete() {
   const [overlayContent, setOverlayContent] = useState();
   const drawRef = useRef();
   const isSideBarOpen = useRef();
+
+  const viewRegionRef = useRef([]);
+  const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
+    useRegion(viewRegionRef);
 
   const toggleSidebar = () => {
     isOpen = isSideBarOpen.current;
@@ -29,18 +34,17 @@ function MapViewComplete() {
 
   return (
     <View style={styles.mapContainer}>
-      {/* <Button
-        title="Burger"
-        onPress={() => {
-          drawRef.current.open();
-        }}
-      />
-      <Button
-        title="Close"
-        onPress={() => {
-          drawRef.current.close();
-        }} */}
-
+      <TouchableOpacity onPress={toggleSidebar}>
+        <View style={styles.menu}>
+          <Icon
+            name={'menu'}
+            type={'feather'}
+            iconStyle={styles.menuIcon}
+            containerStyle={styles.menu}
+            size={30}
+          />
+        </View>
+      </TouchableOpacity>
       <Drawer
         ref={drawRef}
         type={'overlay'}
@@ -56,6 +60,10 @@ function MapViewComplete() {
         <Map
           setOverlayVisible={setOverlayVisible}
           setOverlayContent={setOverlayContent}
+          region={region}
+          setRegion={setRegion}
+          regionFeatures={regionFeatures}
+          DrawRenderRegionFeatures={DrawRenderRegionFeatures}
         />
         <Overlay
           visible={overlayVisible}

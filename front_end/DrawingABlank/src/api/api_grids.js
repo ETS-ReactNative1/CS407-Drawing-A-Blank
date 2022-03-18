@@ -3,7 +3,7 @@ import {getCorners} from '../components/mapView/utils';
 
 export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
   const corners = getCorners(region);
-  console.log('buf region for girds', region);
+
   const body = {
     bottom_left: Object.values(corners[0]),
     top_right: Object.values(corners[1]),
@@ -49,7 +49,7 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
           console.log(response);
           throw new Error('Could not retrieve grids.');
         }
-        console.log('RESP', response);
+        //console.log('RESP', response);
         // console.log('JSON', response.json());
         return response.json();
       });

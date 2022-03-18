@@ -30,13 +30,15 @@ const INIT_ZOOM = {
 //   return r;
 // };
 
+const initRegion = {
+  latitude: 0,
+  longitude: 0,
+  ...INIT_ZOOM,
+};
+
 // "What is the user looking at"
-export default function useRegion() {
-  const initRegion = {
-    latitude: 0,
-    longitude: 0,
-    ...INIT_ZOOM,
-  };
+export default function useRegion(focusRegionRef) {
+  // pass view region
 
   const deviceLocation = useGeoLocation();
   const [zoomLayer, setZoomLayer] = useState(1);
@@ -44,7 +46,8 @@ export default function useRegion() {
     regionTools.buildRegion(initRegion, RENDER_REGION_SCALING_FACTOR),
   );
   const [focusRegion, _setFocusRegion] = useState(initRegion); // technically jsut a render trigger for below ref
-  const focusRegionRef = useRef(focusRegion); // tracks current user view
+  if (!focusRegionRef.current.latitude) focusRegionRef.current = initRegion; // make sure proper init value used
+  // const focusRegionRef = useRef(focusRegion); // tracks current user view
   const setFocusRegion = region => {
     focusRegionRef.current = region;
     _setFocusRegion(region);
@@ -64,6 +67,7 @@ export default function useRegion() {
 
   // Set !inital! map location to user device location
   useDidUpdateEffect(() => {
+    console.log('setting view location to init zoom');
     uLoc = deviceLocation.current;
     r = regionTools.buildRegion({...INIT_ZOOM, ...deviceLocation.current});
     setFocusRegion(r);
@@ -131,7 +135,7 @@ export default function useRegion() {
    *
    */
   const updateRegion = (displayRegion, isFocusJob = false) => {
-    focusRegionRef.current = displayRegion;
+    // focusRegionRef.current = displayRegion;
     if (isFocusJob) {
       setFocusRegion(displayRegion);
       return; // dont need to compute new render region if we are still inside "best" one
@@ -149,6 +153,7 @@ export default function useRegion() {
 
     // if current user view can see outside their render region, update the render region
     // to cover the wider view
+    //console.log('render', renderRegion, 'display', displayRegion);
     if (!regionTools.checkRegionCoverage(renderRegion, displayRegion)) {
       const new_renderRegion = regionTools.buildRegion(
         displayRegion, // have managed to completly disregard zoomlevel when picking render region zoom level
@@ -158,16 +163,18 @@ export default function useRegion() {
     }
 
     // change of zoom layer, so re render zoomlayer dependent components
+    //console.log('renderzoom', zoomLayer, 'displayzoom', displayZoomLayer);
     if (zoomLayer != displayZoomLayer) {
       // if current user zoom level is outisde current level limits,
       // set new zoom level
       // affects rendering level-of-detail components
+      console.log('set zoom layer', displayZoomLayer);
       setZoomLayer(displayZoomLayer);
     }
   };
 
   return [
-    focusRegionRef.current, // left as ref for now, to be made properly handled state - or maybe not
+    focusRegionRef, // left as ref for now, to be made properly handled state - or maybe not
     updateRegion,
     regionFeatures,
     DrawRenderRegionFeatures,

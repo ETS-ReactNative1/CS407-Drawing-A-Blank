@@ -27,6 +27,7 @@ import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
 import useZoomLevel from './useZoomLevel';
 
 import {debounce} from './utils';
+import setupGeolocation from './geoLocation';
 
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
@@ -48,17 +49,75 @@ const DEBUG_ZOOM_LEVEL = {
 // mostly just memoize
 // and perhaps clustering
 
-function Map({setOverlayVisible, setOverlayContent}) {
-  const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
-    useRegion();
+function Map({
+  setOverlayVisible,
+  setOverlayContent,
+  region,
+  setRegion,
+  regionFeatures,
+  DrawRenderRegionFeatures,
+}) {
+  // const viewRegion = useRef([]);
+  //const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
+  //  useRegion(viewRegion);
   console.log('Regions Setup');
-  const [
-    DrawUserPath,
-    startWorkout,
-    stopWorkout,
-    addPathPoint,
-    workout_active,
-  ] = useUserPath();
+
+  const workout_active = useRef(false);
+  const [userPath, setUserPath] = useState([]);
+  function clearPath() {
+    setUserPath([]);
+  }
+  function addPathPoint(latLngPoint, isTracking) {
+    // add latlng point to path
+    //console.log('adding points', userPath, latLngPoint, workout_active.current);
+    if (workout_active.current) setUserPath(path => [...path, latLngPoint]);
+    //setUserPath([...userPath, latLngPoint]);
+    //console.log('Added Points', userPath);
+    // add point to workout recorder / exercise computer
+    recorder.addCoordinate(
+      latLngPoint.latitude,
+      latLngPoint.longitude,
+      isTracking,
+    );
+  }
+  const startWorkout = () => {
+    console.log('Starting Workout...');
+    const {latitude, longitude} = userLocation.current;
+
+    clearPath();
+    recorder.startWorkout();
+    recorder.addCoordinate(latitude, longitude);
+    workout_active.current = true;
+  };
+  function stopWorkout() {
+    console.log('Stopping Workout...');
+
+    recorder.stopWorkout();
+    workout_active.current = false;
+    clearPath();
+  }
+  function DrawUserPath() {
+    if (workout_active) {
+      // console.log('drawing path,', userPath);
+      return (
+        <Polyline
+          coordinates={userPath}
+          strokeWidth={3 || USER_DRAW_DIAMETER}
+          strokeColor={USER_INK_COLOUR}
+        />
+      );
+    } else {
+      return false;
+    }
+  }
+
+  // const [
+  //   DrawUserPath,
+  //   startWorkout,
+  //   stopWorkout,
+  //   addPathPoint,
+  //   workout_active,
+  // ] = useUserPath();
   // need the region ref out here so other states can update
   const navigation = useNavigation();
 
@@ -70,11 +129,29 @@ function Map({setOverlayVisible, setOverlayContent}) {
 
   const bottomSheetRef = useRef(null);
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
+  const [isMapTrackingState, setIsMapTrackingState] = useState(
+    isMapTracking.current,
+  );
 
-  const userLocation = useGeoLocation(location => {
-    console.log('gel');
-    addPathPoint(location, isMapTracking.current);
-  });
+  const locationConfig = {
+    enableHighAccuracy: true,
+    timeout: 200, // max time for location request duration
+    maximumAge: 1000, // max age before it will refresh cache
+    distanceFilter: 5, // min moved distance before next data point
+  };
+
+  useEffect(() => {
+    console.log(
+      'FIrst render setup ###############################################',
+    );
+    setupGeolocation(userLocation => {
+      // Listens to userlocation changes
+      console.log('User Movment Detected!', userLocation);
+      addPathPoint(userLocation, isMapTracking.current);
+    }, locationConfig);
+  }, []);
+
+  const userLocation = useGeoLocation();
 
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc
@@ -100,25 +177,27 @@ function Map({setOverlayVisible, setOverlayContent}) {
     1000,
   );
 
-  useDidUpdateEffect(() => {
-    // set to map to user location when user location known (second userLocation change (init state -> actual))
-    if (isMapTracking.current) {
-      const {latitude, longitude} = userLocation.current;
-      console.log('region change', region);
-      setRegion({
-        // !! No longer doing following a user on map !!
-        //...region, //take previous zoom level
-        // ...zoomLevel, //take zoom level from constant
-        ...MAP_ZOOMLEVEL_CLOSE,
-        latitude,
-        longitude,
-        //longitudeDelta: region.longitudeDelta,
-        //latitudeDelta: region.latitudeDelta,
-      });
-    }
-  }, [userLocation.current]);
+  // useDidUpdateEffect(() => {
+  //   // set to map to user location when user location known (second userLocation change (init state -> actual))
+  //   if (isMapTracking.current) {
+  //     const {latitude, longitude} = userLocation.current;
+  //     console.log('region change', region);
+  //     setRegion({
+  //       // !! No longer doing following a user on map !!
+  //       //...region, //take previous zoom level
+  //       // ...zoomLevel, //take zoom level from constant
+  //       ...MAP_ZOOMLEVEL_CLOSE,
+  //       latitude,
+  //       longitude,
+  //       //longitudeDelta: region.longitudeDelta,
+  //       //latitudeDelta: region.latitudeDelta,
+  //     });
+  //   }
+  // }, [userLocation.current]);
 
   function handleRegionChange(newRegion) {
+    console.log('set ref', newRegion);
+    region.current = newRegion; // panning will interuppt a focus
     debouncedsetRegion(newRegion);
     return;
 
@@ -139,13 +218,13 @@ function Map({setOverlayVisible, setOverlayContent}) {
       const {longitudeDelta, latitudeDelta} = RNM_Zoom;
     }
   }
-  console.log('showing location', region);
+  console.log('showing location', region.current);
   return (
     <View style={styles.mapContainer}>
       <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        region={region}
+        region={region.current}
         // initialRegion={viewRegion}
         mapType={'standard'}
         showsUserLocation={true}
@@ -163,6 +242,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
       <MapControls
         toggleGhostMode={() => {
           isMapTracking.current = !isMapTracking.current;
+          setIsMapTrackingState(!isMapTrackingState);
           console.log('Enabling Ghost mode...');
         }}
         toggleShowEventsList={() => {
@@ -182,6 +262,7 @@ function Map({setOverlayVisible, setOverlayContent}) {
         workout_active={workout_active.current}
         workoutText={workout_button_text}
         drawGridsFunction={() => {}}
+        ghost_active={isMapTrackingState}
         // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}
       />
 

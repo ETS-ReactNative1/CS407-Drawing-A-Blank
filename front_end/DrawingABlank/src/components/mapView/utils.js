@@ -9,8 +9,6 @@ export const getCorners = region => {
   dLat = dLat / 2 || 0;
   dLong = dLong / 2 || 0;
 
-  console.log('dlatlng', dLat, dLong, lat, long);
-
   const bottomLeft = {
     latitude: lat - dLat,
     longitude: long - dLong,

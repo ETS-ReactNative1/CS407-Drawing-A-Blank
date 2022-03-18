@@ -18,9 +18,9 @@ export default function useGeoLocation(callback) {
       const {ID} = await setupGeolocation(userLocation => {
         // Listens to userlocation changes
         // setLocation(userLocation);
+
         location.current = userLocation;
-        callback ? console.log('true clb') : console.log('false clb');
-        if (callback) callback(userLocation);
+        // if (callback) callback(userLocation);
       }, locationConfig);
       watchId.current = ID;
     }

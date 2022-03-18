@@ -11,12 +11,12 @@ const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 export default function useUserPath() {
   const workout_active = useRef(false);
   const userLocation = useGeoLocation();
-  const [userPath, setUserPath] = useState([]); // dont want re redners if userpath not being shown - only show path if workout is active
+  const [userPath, setUserPath] = useState([]);
 
   // might have to be careful about init userlocation being tracked i.e. (0,0)
-  useEffect(() => {
-    if (workout_active.current) addPathPoint(userLocation.current);
-  }, [userLocation.current]);
+  // useEffect(() => {
+  //   if (workout_active.current) addPathPoint(userLocation.current);
+  // }, [userLocation.current]);
 
   function removePathPoint(id) {
     userPath.current = userPath.current.pop();
@@ -24,8 +24,10 @@ export default function useUserPath() {
 
   function addPathPoint(latLngPoint, isTracking) {
     // add latlng point to path
-    setUserPath([...userPath, latLngPoint]);
-    console.log('adding points');
+    //console.log('adding points', userPath, latLngPoint);
+    if (workout_active.current) setUserPath([...userPath, latLngPoint]);
+    //setUserPath([...userPath, latLngPoint]);
+    //console.log('Added Points', userPath);
     // add point to workout recorder / exercise computer
     recorder.addCoordinate(
       latLngPoint.latitude,
@@ -35,7 +37,7 @@ export default function useUserPath() {
   }
 
   function clearPath() {
-    userPath = [];
+    setUserPath([]);
   }
 
   function toggleWorkoutActive() {
@@ -47,6 +49,7 @@ export default function useUserPath() {
     console.log('Starting Workout...');
     const {latitude, longitude} = userLocation.current;
 
+    clearPath();
     recorder.startWorkout();
     recorder.addCoordinate(latitude, longitude);
     workout_active.current = true;
@@ -62,6 +65,7 @@ export default function useUserPath() {
 
   function DrawUserPath() {
     if (workout_active) {
+      // console.log('drawing path,', userPath);
       return (
         <Polyline
           coordinates={userPath}
