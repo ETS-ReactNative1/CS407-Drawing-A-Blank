@@ -66,7 +66,6 @@ class Player(models.Model):
             except:
                 players[w["player__user__username"]] = w["points"]
         
-
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
         ret_val = []
@@ -77,8 +76,8 @@ class Player(models.Model):
             score = 0
 
             try:
-                score = players.get(user__username=name)["points"]
-            except Player.DoesNotExist:
+                score = players["name"]
+            except:
                 pass
 
             res = {"name": name,
