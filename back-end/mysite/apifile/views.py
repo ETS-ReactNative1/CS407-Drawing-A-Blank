@@ -330,8 +330,9 @@ class WorkoutSubmission(viewsets.ViewSet):
     @action(methods=['get'], detail=False)
     def history(self, request):
         data = request.GET
-        request_user = data["username"]
-        ret_val = stats.all_user_workouts(request_user)
+        request_user = request.user.username
+        date = datetime.datetime.strptime(request.GET.get('date', ''), "%d/%m/%Y").date()
+        ret_val = stats.user_workouts(request_user, date)
 
         return Response(ret_val, status=status.HTTP_200_OK)
 

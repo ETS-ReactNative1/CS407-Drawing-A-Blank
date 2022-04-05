@@ -19,7 +19,7 @@ def all_user_workouts(input_name):
         workout_points = workout.workoutpoint_set.all()
         if len(workout_points) > 0:
             ret_val.append(
-                {"id": workout.id, "date": workout_points[0].time.strftime("%Y-%m-%d"), "duration": workout.duration,
+                {"id": workout.id, "date": workout.date_recorded, "duration": workout.duration,
                  "calories": workout.calories, "type": workout.type, "distance": calc_workout_distance(workout),
                  "points": workout.points})
 
@@ -94,6 +94,21 @@ def calc_workout_distance(input_workout):
         return dist
     except:
         return 0
+
+
+def user_workouts(username, date):
+    workouts = Workout.objects.filter(player__user__username=username, date_recorded__gte=date)
+
+    ret_val = []
+    for workout in workouts:
+        workout_points = workout.workoutpoint_set.all()
+        if len(workout_points) > 0:
+            ret_val.append(
+                {"id": workout.id, "date": workout.date_recorded, "duration": workout.duration,
+                "calories": workout.calories, "type": workout.type, "distance": calc_workout_distance(workout),
+                "points": workout.points})
+
+    return ret_val
 
 
 """
