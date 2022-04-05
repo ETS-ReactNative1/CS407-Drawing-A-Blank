@@ -30,6 +30,7 @@ the bng coordinates work)
 def distance(point_a, point_b):
     a_east, a_north = point_a
     b_east, b_north = point_b
+    # return euclidean distance between points
     return math.sqrt((a_east - b_east) ** 2 + (a_north - b_north) ** 2)
 
 
@@ -44,8 +45,8 @@ def calculate_speed(point_a, point_b, time_in_between):
 
 
 def calculate_radius(speed):
-    # https://www.desmos.com/calculator/hhnpngcpsr
-    return max(1, math.floor(-0.1000 * speed * speed + 1.500 * speed))
+    # https://www.desmos.com/calculator/gtr1xnk13d
+    return max(1, math.floor((-0.1000 * speed * speed + 1.500 * speed) * UNIT_TILE_SIZE / 2))
 
 
 def grid_to_latlong(grid):
