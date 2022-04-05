@@ -45,8 +45,8 @@ def calculate_speed(point_a, point_b, time_in_between):
 
 
 def calculate_radius(speed):
-    # https://www.desmos.com/calculator/gtr1xnk13d
-    return max(1, math.floor((-0.1000 * speed * speed + 1.500 * speed) * UNIT_TILE_SIZE / 2))
+    # https://www.desmos.com/calculator/5vfy0mxn6o
+    return max(UNIT_TILE_SIZE / 2, math.floor((-0.1000 * speed * speed + 1.500 * speed) * UNIT_TILE_SIZE / 2))
 
 
 def grid_to_latlong(grid):
@@ -60,12 +60,8 @@ def grid_to_latlong(grid):
     # defines the transformation from UK ordinance survey to lat long
     transformer = Transformer.from_crs("EPSG:27700", "EPSG:4326")
 
-    # converts to numeric only grid references
-    if type(grid) == str:
-        x, y = bng.to_osgb36(grid)
-    else:
-        x, y = grid
-    return transformer.transform(x, y)
+    easting, northing = grid
+    return transformer.transform(easting, northing)
 
 
 def latlong_to_grid(latlong):
@@ -75,11 +71,16 @@ def latlong_to_grid(latlong):
     """
     # defines the transformation from lat long to UK ordinance survey
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:27700")
+    # convert to easting northings
     grid = transformer.transform(latlong[0], latlong[1])
+
+    # round to nearest easting and floor to closest multiple of UNIT_TILE_SIZE
     easting = round(grid[0])
     easting = easting - (easting % UNIT_TILE_SIZE)
+    # round to nearest northing and floor to closest multiple of UNIT_TILE_SIZE
     northing = round(grid[1])
     northing = northing - (northing % UNIT_TILE_SIZE)
+
     return easting, northing
 
 
@@ -92,30 +93,38 @@ def bounds_of_grid(location, size=1):
     converted latitude and longitude coordinates for all 4 corners of the current grid.
     """
 
+    # scale the grid size by the parameter and unit size
     dist = int(size) * UNIT_TILE_SIZE
 
     easting, northing = location
 
+    # search the coordinate conversion table to check if the points exist (allows for fast conversion)
     # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids coordinates.
     tiles = CoordsConvert.objects.filter(Q(easting=easting, northing=northing) |
                                          Q(easting=easting + dist, northing=northing) |
                                          Q(easting=easting, northing=northing + dist) |
-                                         Q(easting=easting + dist, northing=northing + dist)).order_by("easting", "northing")
+                                         Q(easting=easting + dist, northing=northing + dist)).order_by("easting",
+                                                                                                       "northing")
+    # check all points were found
     if len(tiles) != 4:
+        # not all points found so calculate latitude longitude for corners and add to the conversion table
         coordinates = []
 
         # grid references refer to the bottom left corner of the grid so need to get positively adjacent grids
         # coordinates.
         grid_diffs = [(0, 0), (dist, 0), (dist, dist), (0, dist)]
         for diff in grid_diffs:
+            # get easting and northing to calculate latlong for
             new_easting = easting + diff[0]
             new_northing = northing + diff[1]
 
             # convert to latlong
             latitude, longitude = grid_to_latlong((new_easting, new_northing))
+            # if this point isn't in conversion table, add it
             if not CoordsConvert.objects.filter(easting=new_easting, northing=new_northing).exists():
                 CoordsConvert.objects.create(easting=new_easting, northing=new_northing,
                                              longitude=longitude, latitude=latitude)
+
             coordinates.append({"latitude": latitude, "longitude": longitude})
 
         return coordinates
@@ -132,7 +141,6 @@ def points_in_circle_np(radius, x0=0, y0=0):
     x_ = np.arange(x0 - radius - 1, x0 + radius + 1, dtype=int)
     y_ = np.arange(y0 - radius - 1, y0 + radius + 1, dtype=int)
     x, y = np.where((x_[:, np.newaxis] - x0) ** 2 + (y_ - y0) ** 2 <= radius ** 2)
-    # x, y = np.where((np.hypot((x_-x0)[:,np.newaxis], y_-y0)<= radius)) # alternative implementation
     for x, y in zip(x_[x], y_[y]):
         yield x, y
 
@@ -148,7 +156,6 @@ def grids_in_radius(position, radius=4):
     grids = points_in_circle_np(radius, x, y)
     grids = [(x[0] - (x[0] % UNIT_TILE_SIZE), x[1] - (x[1] % UNIT_TILE_SIZE)) for x in grids]
 
-    # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
     return set(grids)
 
 
@@ -167,16 +174,14 @@ def grids_in_path(point_a, point_b):
     grids = list(bresenham(east_a, north_a, east_b, north_b))
     grids = [(x[0] - (x[0] % UNIT_TILE_SIZE), x[1] - (x[1] % UNIT_TILE_SIZE)) for x in grids]
 
-    # https://stackoverflow.com/questions/10212445/map-list-item-to-function-with-arguments
-    # grids = list(map(lambda p: bng.from_osgb36(p, figs=10), grids))
-
     # convert to set to remove duplicate grids from modulo op
     return set(grids)
 
 
 def all_grids_with_path(point_a, point_b, radius):
     """
-    All grids in the path given the old and current easting and northings including the radius around the path to colour in.
+    All grids in the path given the old and current easting and northings including the radius around the path to
+    colour in.
     """
     grids_path = grids_in_path(point_a, point_b)
 
@@ -197,17 +202,21 @@ def sub_sample(coords, sub_dimension=1):
         also considers the colours and finds the average colour for that larger grid.
     """
 
+    # if no subsampling is not needed then use faster query
     if sub_dimension == 1:
         return grids_visible(coords)
 
     zoom_level = int(sub_dimension) * UNIT_TILE_SIZE
 
+    # get coordinates to capture tiles within
     bottom_left = coords[0]
     top_right = coords[1]
 
+    # convert coordinates to easting northings
     lower_east, lower_north = latlong_to_grid(bottom_left)
     upper_east, upper_north = latlong_to_grid(top_right)
 
+    # get tiles subsampled at correct level using mode average
     tiles = Grid.objects.raw('''SELECT
                                     id,
                                     east,
@@ -235,6 +244,7 @@ def sub_sample(coords, sub_dimension=1):
                                 GROUP BY east, north ORDER BY east, north;''')
 
     all_coords = []
+    # for each tile get its bounds and colour
     for tile in tiles:
         bounds = bounds_of_grid((tile.east * zoom_level, tile.north * zoom_level), size=sub_dimension)
         if bounds:
@@ -247,18 +257,17 @@ def grids_visible(coords):
     Function input: 4 longitude/latitude coordinates that the screen can see
     Function output: coordinates of every grid that is visible.
     """
-    # if quadrilateral and bottomleft < topRight then only need two coords.
+    # get coordinates to capture tiles within
     bottom_left = coords[0]
     top_right = coords[1]
 
+    # convert coordinates to easting northings
     lower_east, lower_north = latlong_to_grid(bottom_left)
     upper_east, upper_north = latlong_to_grid(top_right)
 
     all_coords = []
 
-    # this is quite slow: zooming out means theres a lot of grids and repeated coordinates/calculations Could fix by
-    # "super sampling" grids e.g. 4 1x1m grids average their colour to make 1 4x4m grid. (only need to access colour)
-    # or by saving coordinates to not calculate again. Then you can access less coordinates and do less calculations.
+    # get tiles within capture window
     tiles = Grid.objects.filter(northing__range=(lower_north, upper_north),
                                 easting__range=(lower_east, upper_east))
 

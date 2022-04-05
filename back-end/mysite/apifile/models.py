@@ -7,7 +7,7 @@ import mahotas
 import numpy as np
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import F, Q, Count, Sum
+from django.db.models import F, Q, Count
 from django.db.models.functions import Cast
 from django.utils import timezone
 from shapely.geometry import Point, Polygon
@@ -17,6 +17,9 @@ from .constants import UNIT_TILE_SIZE
 
 # 'python manage.py makemigrations' 'python manage.py migrate'
 # run in terminal after changing/making new model, then register in admin.py
+
+
+# stores conversions between easting/northing and lat/long for efficiency
 class CoordsConvert(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
@@ -24,14 +27,17 @@ class CoordsConvert(models.Model):
     longitude = models.FloatField()
 
     class Meta:
+        # ensure points are unique
         unique_together = (("easting", "northing"), ("latitude", "longitude"),)
 
 
+# store team name and colour
 class Team(models.Model):
     name = models.CharField(max_length=10, unique=True)
     colour = models.CharField(max_length=6)  # hex colour
 
 
+# store items
 class Item(models.Model):
     asset = models.FilePathField(path="items/asset")  # temp file paths
     thumbnail = models.FilePathField(path="items/thumbnail")  # temp file paths
@@ -39,8 +45,7 @@ class Item(models.Model):
     price = models.PositiveIntegerField()
 
 
-
-# alter the base django user table with extra fields
+# augment the base django user table with extra fields
 class Player(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_of_birth = models.DateField(null=True)
@@ -51,35 +56,40 @@ class Player(models.Model):
     items = models.ManyToManyField(Item)
     coins = models.PositiveIntegerField(default=0)
 
+    # calculate the number of points all users have scored since time
     @staticmethod
     def points(time, teams):
 
+        # check if team filter is empty
         if teams is None or teams == []:
             teams = ['terra', 'windy', 'ocean']
 
+        # filter workouts to ones from players in the team list and recorded since time
         workouts = Workout.objects.filter(
             date_recorded__gte=time, player__team__name__in=teams)
 
+        # collect sum of points for each user
         points = {}
         for w in workouts:
-            try: 
+            if w.player.user.username in points:
                 points[w.player.user.username] += w.points
-            except:
+            else:
                 points[w.player.user.username] = w.points
 
+        # get all players of the respective teams
         all_players = Player.objects.values('user__username', 'team__name').filter(team__name__in=teams)
 
         ret_val = []
+        # for each player return their name, team, and score
         for p in all_players:
             name = p["user__username"]
             team = p["team__name"]
 
-            score = 0
-
-            try:
+            # retrieve a user's points if they have any
+            if name in points:
                 score = points[name]
-            except:
-                pass
+            else:
+                score = 0
 
             res = {"name": name,
                    "team": team,
@@ -90,6 +100,7 @@ class Player(models.Model):
         return sorted(ret_val, key=lambda x: x["score"], reverse=True)
 
 
+# store information about the map game state
 class Grid(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
@@ -97,9 +108,11 @@ class Grid(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
 
+    # ensure only a single tile for each point can exist
     class Meta:
         unique_together = (("easting", "northing"),)
 
+    # check if a timestamp is more recent than the current tile's time
     def check_tile_override(self, date_time):
         if self.time < date_time:
             return True
@@ -107,20 +120,23 @@ class Grid(models.Model):
             return False
 
 
+# store info about an event's structure
 class Event(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     players = models.ManyToManyField(Player, through='EventPerformance')
     active = models.BooleanField(default=False)
 
+    # returns the closest event to a given point
     @staticmethod
     def get_closest_active_event(point):
-        return Event.get_current_events().annotate(
+        return Event.get_active_events().annotate(
             distance=((Cast(F('eventbounds__easting'), output_field=models.IntegerField())
                        - point[0]) ** 2
                       + (Cast(F('eventbounds__northing'), output_field=models.IntegerField())
                          - point[1]) ** 2)).order_by('distance').first()
 
+    # returns the list of active events within a distance
     @staticmethod
     def get_events_within_distance(centre, dist):
         centre_easting, centre_northing = centre
@@ -129,7 +145,7 @@ class Event(models.Model):
         upper_easting = centre_easting + dist
         upper_northing = centre_northing + dist
 
-        events = Event.get_current_events()
+        events = Event.get_active_events()
         events = events.filter(eventbounds__easting__gte=lower_easting,
                                eventbounds__northing__gte=lower_northing,
                                eventbounds__easting__lte=upper_easting,
@@ -140,13 +156,14 @@ class Event(models.Model):
             events = events.union(Event.objects.filter(id=closest_event.id))
         return events
 
+    # gets events with a true active flag
     @staticmethod
-    def get_current_events():
-        today = timezone.now()
-        curr_events = Event.objects.filter(start__lte=today, end__gte=today)
+    def get_active_events():
+        curr_events = Event.objects.filter(active=True)
 
         return curr_events
 
+    # open events that aren't active but start date has passed
     @staticmethod
     def open_events(date):
         to_start = Event.objects.filter(start__lte=date, end__gt=date, active=False)
@@ -158,6 +175,7 @@ class Event(models.Model):
             event.active = True
             event.save()
 
+    # close active events whose end date has passed
     @staticmethod
     def close_events(date):
         to_end = Event.objects.filter(end__lte=date, active=True)
@@ -169,6 +187,7 @@ class Event(models.Model):
                      "ocean": Team.objects.get(name="ocean"),
                      "windy": Team.objects.get(name="windy")}
 
+            # determine the place of each team
             if len(winners) >= 1:
                 first = (teams[winners[0]['name']], winners[0]['total'])
                 unseen_teams.remove(winners[0]['name'])
@@ -191,7 +210,7 @@ class Event(models.Model):
             EventStandings.objects.create(event=event, team=second[0], score=second[1])
             EventStandings.objects.create(event=event, team=third[0], score=third[1])
 
-            # rewards
+            # distribute rewards while accounting for ties
             if first[1] > second[1]:
                 # single first
                 players = EventPerformance.objects.filter(event=event, player__team=first[0])
@@ -244,15 +263,19 @@ class Event(models.Model):
             event.active = False
             event.save()
 
+    # get the scores for events that finished after date that player participated in
     @staticmethod
     def event_scores(date, player):
         # get finished events
         today = datetime.date.today()
+        # get only events that have ended and are not active and the player has participated in
+        # get all events
         if date != '':
             events = Event.objects.filter(
                 end__gte=date, end__lte=today, active=False,
                 eventperformance__player=player).prefetch_related('eventperformance_set',
                                                                   'eventstandings_set').order_by('-end')
+        # get only events that finished after date
         else:
             events = Event.objects.filter(
                 end__lte=today, active=False,
@@ -276,18 +299,23 @@ class Event(models.Model):
 
         return ret
 
+    # check a point is within this event
     def check_within(self, point):
         """
         Input: list of events, point to test if inside an event polygon. Assumes no events overlap.
         Output: If point is in an event then that event otherwise None.
 
         """
+        # calculate tile centre
         point = (point[0] + (UNIT_TILE_SIZE / 2), point[1] + (UNIT_TILE_SIZE / 2))
         point = Point(point)
+        # define polygon using event bounds
         bounds = self.get_bounds()
         polygon = Polygon(bounds)
+        # check if tile in within polygon bounds
         return polygon.contains(point)
 
+    # get boundary points of this event
     def get_bounds(self):
         bounds = EventBounds.objects.filter(event_id=self.id).order_by('id')
         bounds_list = []
@@ -295,6 +323,7 @@ class Event(models.Model):
             bounds_list.append((bound.easting, bound.northing))
         return bounds_list
 
+    # get all grids within this event
     def all_grids(self):
         """
         Input: Event object
@@ -327,6 +356,7 @@ class Event(models.Model):
                  ((x + minx - 1) % UNIT_TILE_SIZE == 0 and (y + miny) % UNIT_TILE_SIZE == 0)]
         return grids
 
+    # delete all grids within the event
     def clear_area(self):
         """
         Input: event to clear grids in
@@ -336,6 +366,7 @@ class Event(models.Model):
         if all_grids is not None:
             Grid.objects.filter(reduce(operator.or_, (Q(easting=i, northing=j) for i, j in all_grids))).delete()
 
+    # calculate the number of tiles each team owns within the event
     def winner(self):
         """
         Input: Event object
@@ -348,6 +379,7 @@ class Event(models.Model):
                 reduce(operator.or_, (Q(player__grid__easting=i, player__grid__northing=j) for i, j in all_grids)))
             return teams.values('name').annotate(total=Count('name')).order_by('-total')
 
+    # get the centre of an event
     def center(self):
         """
         Input: Tuple of coordinates for polygon
@@ -357,18 +389,21 @@ class Event(models.Model):
         return poly_bounds.centroid.x, poly_bounds.centroid.y
 
 
+# store information about event boundary points
 class EventBounds(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
 
 
+# store information about how well each team did in a closed event
 class EventStandings(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     score = models.PositiveIntegerField()
 
 
+# store information about a user's workout
 class Workout(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     duration = models.PositiveIntegerField()  # in seconds
@@ -378,6 +413,7 @@ class Workout(models.Model):
     date_recorded = models.DateTimeField(auto_now_add=True)
 
 
+# store the points a user traveled through during a workout
 class WorkoutPoint(models.Model):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
     time = models.DateTimeField()
@@ -386,16 +422,18 @@ class WorkoutPoint(models.Model):
     ghost = models.BooleanField(default=False)
 
 
+# store the user's contribution to an event
 class EventPerformance(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    contribution = models.PositiveIntegerField()  # work out what we want to track when we develop events further
+    contribution = models.PositiveIntegerField()
 
 
+# store the details of an offensive map report
 class ReportGrids(models.Model):
     easting = models.PositiveIntegerField()
     northing = models.PositiveIntegerField()
     time = models.DateTimeField()
     reported_by = models.ForeignKey(Player, on_delete=models.CASCADE)
-    reason =models.CharField(max_length=100)
+    reason = models.CharField(max_length=100)
     area = models.PositiveIntegerField()
