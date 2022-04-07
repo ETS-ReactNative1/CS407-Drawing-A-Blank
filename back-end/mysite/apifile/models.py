@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import F, Q, Count
 from django.db.models.functions import Cast
-from django.utils import timezone
 from shapely.geometry import Point, Polygon
 
 from .constants import UNIT_TILE_SIZE
