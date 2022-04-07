@@ -1,11 +1,12 @@
 import math
-import bng
+
 import numpy as np
 from bresenham import bresenham
 from django.db.models import Q
 from pyproj import Transformer
-from .models import Grid, CoordsConvert
+
 from .constants import UNIT_TILE_SIZE
+from .models import Grid, CoordsConvert
 
 """
 bng is main library used: https://pypi.org/project/bng/
