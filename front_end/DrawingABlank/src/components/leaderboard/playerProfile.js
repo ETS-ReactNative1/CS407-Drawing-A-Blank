@@ -18,6 +18,7 @@ export default function PlayerProfile({
   gender,
   weight,
   dob,
+  height,
 }) {
   const [pic, setPic] = useState(require('../../assets/img/ocean.png'));
 
@@ -28,6 +29,7 @@ export default function PlayerProfile({
     weight: weight,
     gender: gender,
     date_of_birth: dob,
+    height: height,
   });
 
   //date picker states
@@ -40,6 +42,8 @@ export default function PlayerProfile({
       oldEdits.gender = e;
     } else if (caller === 'weight') {
       oldEdits.weight = e;
+    } else if (caller === 'height') {
+      oldEdits.height = e;
     } else if (caller === 'DOB') {
       // YYYY-MM-DD
       console.log(date.toISOString().slice(0, 10));
@@ -159,7 +163,12 @@ export default function PlayerProfile({
                 <TextInput
                   style={styles.profileSubInfoEditing}
                   onChangeText={weightN => handleChange('weight', weightN)}
-                  placeholder={`Weight: ${weight}`}
+                  placeholder={`Weight: ${weight}kg`}
+                />
+                <TextInput
+                  style={styles.profileSubInfoEditing}
+                  onChangeText={heightN => handleChange('height', heightN)}
+                  placeholder={`Height: ${height}m`}
                 />
                 <TouchableOpacity onPress={() => setOpen(true)}>
                   <TextInput
@@ -176,9 +185,14 @@ export default function PlayerProfile({
                   Gender: {edits.gender}
                 </Text>
                 <Text style={styles.profileSubInfo}>
-                  Weight: {edits.weight}
+                  Weight: {edits.weight}kg
                 </Text>
-                <Text style={styles.profileSubInfo}>DOB: {edits.date_of_birth}</Text>
+                <Text style={styles.profileSubInfo}>
+                  Height: {edits.height}m
+                </Text>
+                <Text style={styles.profileSubInfo}>
+                  DOB: {edits.date_of_birth}
+                </Text>
               </View>
             )}
           </View>

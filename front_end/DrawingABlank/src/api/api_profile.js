@@ -74,7 +74,7 @@ export const getProfile = username => {
         console.log(response.status);
         throw new Error('Could not update profile.');
       }
-      console.log('updated?');
+      console.log('profile rcvd');
       return response.json();
     });
 };

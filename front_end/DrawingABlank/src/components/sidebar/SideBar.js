@@ -50,6 +50,7 @@ function SideBar(props) {
           gender={profileContent.gender}
           weight={profileContent.weight}
           dob={profileContent.dob}
+          height={profileContent.height}
         />,
       );
       props.setOverlayVisible(true);
