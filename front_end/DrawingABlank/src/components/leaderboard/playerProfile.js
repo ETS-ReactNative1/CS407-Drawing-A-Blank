@@ -27,7 +27,7 @@ export default function PlayerProfile({
     user: username,
     weight: weight,
     gender: gender,
-    dob: dob,
+    date_of_birth: dob,
   });
 
   //date picker states
@@ -43,7 +43,7 @@ export default function PlayerProfile({
     } else if (caller === 'DOB') {
       // YYYY-MM-DD
       console.log(date.toISOString().slice(0, 10));
-      oldEdits.dob = date.toISOString().slice(0, 10);
+      oldEdits.date_of_birth = date.toISOString().slice(0, 10);
     }
     setEdits(oldEdits);
   };
@@ -103,7 +103,7 @@ export default function PlayerProfile({
           </View>
           <View style={styles.profileInfoContent}>
             <Text style={styles.profileInfo}>Stats</Text>
-            <Text style={styles.profileSubInfo}>Total distance: {totDist}</Text>
+            <Text style={styles.profileSubInfo}>Total distance: {totDist.toFixed(1)}</Text>
             <Text style={styles.profileSubInfo}>Total points: {totPoints}</Text>
           </View>
         </View>
@@ -140,13 +140,12 @@ export default function PlayerProfile({
                   modal
                   open={open}
                   textColor="#000000"
-                  date={new Date(edits.dob)}
+                  date={new Date(edits.date_of_birth)}
                   onDateChange={DOBN => handleChange('DOB', DOBN)}
                   mode="date"
                   onConfirm={date => {
-                    setOpen(false);
                     setDate(date);
-                    handleChange('DOB', '');
+                    setOpen(false);
                   }}
                   onCancel={() => {
                     setOpen(false);
@@ -167,7 +166,7 @@ export default function PlayerProfile({
                     editable={false}
                     selectTextOnFocus={false}
                     style={styles.profileSubInfoEditing}
-                    placeholder={`DOB: ${edits.dob}`}
+                    placeholder={`DOB: ${edits.date_of_birth}`}
                   />
                 </TouchableOpacity>
               </View>
@@ -179,7 +178,7 @@ export default function PlayerProfile({
                 <Text style={styles.profileSubInfo}>
                   Weight: {edits.weight}
                 </Text>
-                <Text style={styles.profileSubInfo}>DOB: {edits.dob}</Text>
+                <Text style={styles.profileSubInfo}>DOB: {edits.date_of_birth}</Text>
               </View>
             )}
           </View>
