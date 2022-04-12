@@ -16,7 +16,7 @@ import Sheet from '../bottomSheet/Sheet';
 import {getInitialStateAnimated as getInitialState} from './testData';
 import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
-import EventDetails from '../events/EventDetails';
+
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import useGeoLocation from './useGeoLocation';
@@ -49,6 +49,10 @@ const DEBUG_ZOOM_LEVEL = {
 // mostly just memoize
 // and perhaps clustering
 
+// map snapping issue blocker
+// https://stackoverflow.com/questions/61107376/react-native-maps-marker-change-destroys-map-state
+
+
 function Map({
   setOverlayVisible,
   setOverlayContent,
@@ -60,7 +64,7 @@ function Map({
   // const viewRegion = useRef([]);
   //const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
   //  useRegion(viewRegion);
-  console.log('Regions Setup');
+  
 
   const workout_active = useRef(false);
   const [userPath, setUserPath] = useState([]);
@@ -85,9 +89,10 @@ function Map({
     const {latitude, longitude} = userLocation.current;
 
     clearPath();
+    workout_active.current = true;
     recorder.startWorkout();
     recorder.addCoordinate(latitude, longitude);
-    workout_active.current = true;
+    
   };
   function stopWorkout() {
     console.log('Stopping Workout...');
@@ -128,6 +133,7 @@ function Map({
     useState(workout_button_start);
 
   const bottomSheetRef = useRef(null);
+  const mapRef = useRef(null)
   const isMapTracking = useRef(true); // flag: detaches map from listening to user location
   const [isMapTrackingState, setIsMapTrackingState] = useState(
     isMapTracking.current,
@@ -153,18 +159,7 @@ function Map({
 
   const userLocation = useGeoLocation();
 
-  function onEventPress(type, time, radius, desc) {
-    // eventType, timeRemaining, radius, desc
-    setOverlayContent(
-      <EventDetails
-        eventType={type}
-        timeRemaining={time}
-        radius={radius}
-        desc={desc}
-      />,
-    );
-    setOverlayVisible(true);
-  }
+  
 
   function changeToStats() {
     navigation.navigate('post_workout_stats', {recorder: recorder});
@@ -174,7 +169,7 @@ function Map({
     // set ref renderRegion
     // only update state of updateRegion if old region is "far away enough" from old point
     newRegion => setRegion(newRegion),
-    1000,
+    1000, //1000
   );
 
   // useDidUpdateEffect(() => {
@@ -197,39 +192,24 @@ function Map({
 
   function handleRegionChange(newRegion) {
     console.log('set ref', newRegion);
-    region.current = newRegion; // panning will interuppt a focus
+    //region.current = newRegion; // panning will interuppt a focus
     debouncedsetRegion(newRegion);
     return;
-
-    const {longitude, latitude, longitudeDelta, latitudeDelta} = newRegion;
-    // console.log('new', newRegion);
-    const zoom = {longitudeDelta, latitudeDelta};
-    //setGridDrawScale(zoom);
-    setZoomLevel(zoom);
-    return;
-
-    // zoom = convertZoomRepresentation({longitudeDelta, latitudeDelta});
-    // setGridDrawScale(zoom);
-
-    function convertZoomRepresentation(RNM_Zoom) {
-      // #1 Converting map zoom level to backend zoom arg type
-      // #2 Managing the frequency of requests made for a new zoom level/tile size
-
-      const {longitudeDelta, latitudeDelta} = RNM_Zoom;
-    }
   }
-  console.log('showing location', region.current);
+
+  
   return (
     <View style={styles.mapContainer}>
       <Animated
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        region={region.current}
-        // initialRegion={viewRegion}
+        //region={region}
+        initialRegion={region}
         mapType={'standard'}
         showsUserLocation={true}
         //onRegionChangeComplete={r => setRegion(r)}
         onRegionChange={r => handleRegionChange(r)}
+        ref={mapRef}
         // minZoomLevel={5}
         // maxZoomLevel={10}
       >
@@ -269,8 +249,13 @@ function Map({
       <Sheet
         ref={bottomSheetRef}
         localEvents={regionFeatures.events}
-        onEventClick={eventRegion =>
-          setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
+        onEventClick={eventRegion => {
+          const cam = mapRef.getCamera()
+          cam.center.latitude = eventRegion.latitude
+          cam.center.longitude = eventRegion.longitude
+          mapRef.animateCamera(cam)
+          // setRegion({...MAP_ZOOMLEVEL_CLOSE, ...eventRegion})
+          }
         }
         // will probably need to redo how this works too at the same time
         calculateDistanceToUser={useCallback(dest => {

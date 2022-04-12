@@ -52,6 +52,7 @@ export default function useLocalGrids(
   }
 
   useEffect(() => {
+    console.log("updating local gridss")
     reScaleGrids(); // front end grid draw scaling - tiles draw style
     reSampleGrids(useCache); // cached vs live updates - tiles objects fetch
   }, [zoomLayer, renderRegion]);

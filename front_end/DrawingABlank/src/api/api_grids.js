@@ -1,5 +1,5 @@
 import {request, getToken} from './api_networking.js';
-import {getCorners} from '../components/mapView/utils';
+import {getCorners} from '../components/mapView/regionUtils';
 
 export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
   const corners = getCorners(region);

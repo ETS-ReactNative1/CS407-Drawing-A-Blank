@@ -9,7 +9,7 @@ const renderSidebar = () => {};
 const renderContent = () => {};
 
 function SideBar(props) {
-  console.log('prosp', Icon);
+  
 
   function drawEntry({label, iconType, iconName}) {
     return (

@@ -1,3 +1,5 @@
+import * as constants from "./constants"
+
 class regionUtils {
   constructor() {
     // console.log('r look', r);
@@ -7,8 +9,8 @@ class regionUtils {
   buildRegion = (r, scale = 1) => {
     return {
       ...r,
-      latitudeDelta: r.latitudeDelta * scale,
-      longitudeDelta: r.longitudeDelta * scale,
+      latitudeDelta: r.latitudeDelta * scale || constants.INIT_ZOOM.latitudeDelta,
+      longitudeDelta: r.longitudeDelta * scale || constants.INIT_ZOOM.longitudeDelta,
     };
   };
 

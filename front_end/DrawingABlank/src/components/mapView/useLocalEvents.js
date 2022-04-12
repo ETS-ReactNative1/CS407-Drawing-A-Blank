@@ -2,19 +2,34 @@ import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {getEvents} from '../../api/api_events';
 import useGeoLocation from './useGeoLocation';
 import {Marker, Polygon, Circle} from 'react-native-maps';
+import EventDetails from '../events/EventDetails';
 
 import Cache from './SimpleCache';
 export default function useEvents(
   initEvents,
   {renderRegion, zoomLayer},
-  {useCache} = {},
+  {useCache, setOverlayVisible, setOverlayContent} = {},
 ) {
   const [events, setEvents] = useState([]);
   const eventCache = useRef(new Cache({}));
 
   useEffect(() => {
+    console.log("updatng local events")
     getEvents().then(result => setEvents(result || []));
   }, []);
+
+  function onEventPress(type, time, radius, desc) {
+    // eventType, timeRemaining, radius, desc
+    setOverlayContent(
+      <EventDetails
+        eventType={type}
+        timeRemaining={time}
+        radius={radius}
+        desc={desc}
+      />,
+    );
+    setOverlayVisible(true);
+  }
 
   function DrawEventsBounds() {
     return events.map((space, i) => {
