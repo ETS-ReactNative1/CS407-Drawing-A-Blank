@@ -257,7 +257,7 @@ class WorkoutSubmission(viewsets.ViewSet):
         end = data["end"][:-1]
         workout_type = data["type"]
 
-        # get teh player object
+        # get the player object
         player = Player.objects.get(user=user)
 
         # convert dates to seconds
