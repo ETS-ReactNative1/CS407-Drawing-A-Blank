@@ -324,7 +324,7 @@ class WorkoutSubmission(viewsets.ViewSet):
         # reward player with coins for each tile they convert
         player.coins += workout.points
         player.save()
-        return Response("Workout added", status=status.HTTP_201_CREATED)
+        return Response({"calories": workout.calories}, status=status.HTTP_201_CREATED)
 
     # return a list of the user's previous workouts
     @action(methods=['get'], detail=False)
