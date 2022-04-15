@@ -5,9 +5,10 @@ import {styles} from './style.js';
 
 class WorkoutLineGraph extends Component{
     render(){
-        const axesSvg = { fontSize: 12, fill: 'grey' };
+        const axesSvg = { fontSize: 12, fill: '#fafafa' };
         const verticalContentInset = { top: 10, bottom: 10 }
         const xAxisHeight = 30
+        const TEAM_COLOURS = {"terra":"rgb(255, 140, 145)","windy":"rgb(130, 255, 138)","ocean":"rgb(71, 196, 255)"}
         return(
             <View>
                 <Text style={styles.title}>{this.props.graphTitle}</Text>
@@ -23,9 +24,9 @@ class WorkoutLineGraph extends Component{
                             style={{ flex: 1 }}
                             data={this.props.yData}
                             contentInset={verticalContentInset}
-                            svg={{ stroke: 'rgb(134, 65, 244)' }}
+                            svg={{ stroke: TEAM_COLOURS[this.props.team] }}
                         >
-                            <Grid/>
+                            <Grid svg={{stroke:"#b5b5b5"}}/>
                         </LineChart>
                         <XAxis
                             style={{ marginHorizontal: -10, height: xAxisHeight }}

@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {StyleSheet, Text, View, Button, TextInput,Alert, BackHandler, TouchableOpacity, Image} from "react-native";
 import { styles } from "./style.js";
 import { createUser } from '../../../api/api_authentication.js';
+import { setToken, setUsername } from "../../../api/api_networking.js";
 
 class ProfileTeamSelection extends Component{
     state={
@@ -40,7 +41,8 @@ class ProfileTeamSelection extends Component{
             createUser(username,email,password,team).then(_ => {
                 this.moveToDetails();
             }).catch(err => { 
-                alert(err);
+                console.log("ERROR:"+err)
+                Alert.alert("Error","We were unable to create your account, this may mean your username or email has already been used. Please try again.");
                 this.props.navigation.navigate("login_screen");
             });
         }else{
@@ -64,7 +66,7 @@ class ProfileTeamSelection extends Component{
                 </View>
                 <View style={styles.mascots}>
                     {/* Would maybe make more sense to put this in a component, but for the moment, it's fine */}
-                    <TouchableOpacity style={[styles.mascot_terra,{backgroundColor:this.state.teamSelection === "terra" ? "#ff8178" : "#edf5f3"}]} key="terra" onPress={()=>{this.updateSelection("terra")}}>
+                    <TouchableOpacity style={[styles.mascot_terra,{backgroundColor:this.state.teamSelection === "terra" ? "#ff8178" : "#57aae6"}]} key="terra" onPress={()=>{this.updateSelection("terra")}}>
                         <View style={styles.mascot_container}>
                             <View style={styles.mascot_information}>
                                 <View style={styles.mascot_title}>
@@ -83,7 +85,7 @@ class ProfileTeamSelection extends Component{
                     </TouchableOpacity>
                 </View>
                 <View style={styles.mascots}>
-                    <TouchableOpacity style={[styles.mascot_ocean,{backgroundColor:this.state.teamSelection === "ocean" ? "#78e6ff" : "#edf5f3"}]} key="ocean" onPress={()=>{this.updateSelection("ocean")}}>
+                    <TouchableOpacity style={[styles.mascot_ocean,{backgroundColor:this.state.teamSelection === "ocean" ? "#78e6ff" : "#57aae6"}]} key="ocean" onPress={()=>{this.updateSelection("ocean")}}>
                         <View style={styles.mascot_container}>
                             <View style={styles.mascot_information}>
                                 <View style={styles.mascot_title}>
@@ -102,7 +104,7 @@ class ProfileTeamSelection extends Component{
                     </TouchableOpacity>
                 </View>
                 <View style={styles.mascots}>
-                    <TouchableOpacity style={[styles.mascot_windy,{backgroundColor:this.state.teamSelection === "windy" ? "#78ff86" : "#edf5f3"}]} key="windy" onPress={()=>{this.updateSelection("windy")}}>
+                    <TouchableOpacity style={[styles.mascot_windy,{backgroundColor:this.state.teamSelection === "windy" ? "#78ff86" : "#57aae6"}]} key="windy" onPress={()=>{this.updateSelection("windy")}}>
                         <View style={styles.mascot_container}>
                             <View style={styles.mascot_information}>
                                 <View style={styles.mascot_title}>

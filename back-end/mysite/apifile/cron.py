@@ -28,4 +28,3 @@ def purge_tokens():
     # if token.created is older than 7 days, delete
     authentication.ExpTokenAuthentication().get_model().objects.filter(
         created__lt=time_now-datetime.timedelta(days=7)).delete()
-
