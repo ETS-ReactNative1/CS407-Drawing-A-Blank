@@ -1,8 +1,9 @@
 import {request, getToken} from './api_networking.js';
-import {getCorners} from '../components/mapView/regionUtils';
+import utils from '../components/mapView/regionUtils';
 
 export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
-  const corners = getCorners(region);
+  //console.log("Region COrners", a, getRegionCorners)
+  const corners = utils.getRegionCorners(region);
 
   const body = {
     bottom_left: Object.values(corners[0]),
@@ -49,7 +50,7 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
           console.log(response);
           throw new Error('Could not retrieve grids.');
         }
-        //console.log('RESP', response);
+        console.log('RESP', response);
         // console.log('JSON', response.json());
         return response.json();
       });

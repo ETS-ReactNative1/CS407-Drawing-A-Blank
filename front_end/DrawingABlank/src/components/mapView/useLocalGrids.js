@@ -85,8 +85,8 @@ export default function useLocalGrids(
       // should ideally use existing ones if user enters back into already cahced bound area
 
       const key = zoomLayer;
-      const tileSize = zoomLayer * 5;
-      //console.log('getting grids with tilesize', tileSize);
+      const tileSize = zoomLayer;
+      console.log('getting grids with tilesize from cache', tileSize);
       grids = await gridZoomCache.getEntryContent(key, 0, (key, entry) => {
         const renderRegionCentre = {
           latitude: renderRegion[latitude],
@@ -131,7 +131,7 @@ export default function useLocalGrids(
     requestsInFlight.current -= 1;
     //console.log('rif', requestsInFlight.current);
     //if (requestsInFlight.current > 0) return; // dont update if there is a future update expected
-    // console.log('setting grids', grids);
+    //console.log('setting grids', grids);
     setLocalGrids(grids);
   };
 

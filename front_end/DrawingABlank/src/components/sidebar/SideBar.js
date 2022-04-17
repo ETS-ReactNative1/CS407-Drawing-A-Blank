@@ -13,13 +13,13 @@ function SideBar(props) {
 
   function drawEntry({label, iconType, iconName}) {
     return (
-      <TouchableOpacity style={styles.entry_click}>
+      <TouchableOpacity style={styles.entry_click} key={label}>
         <View style={styles.entry}>
           <Icon
             name={iconName}
             type={iconType}
             iconStyle={styles.icon}
-            size={30}
+            size={30}            
           />
           <Text style={styles.label}>{label}</Text>
         </View>

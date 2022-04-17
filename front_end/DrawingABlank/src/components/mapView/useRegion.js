@@ -33,7 +33,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
   // pass view region
   console.log("Init UseRegion Hook")
 
-  const [zoomLayer, setZoomLayer] = useState(1);
+  const [zoomLayer, setZoomLayer] = useState(6);
   const [viewRegion, setViewRegion] = useState(initRegion); // want view region to be more passive(state->ref) to stop snaps from setting stete too often
   //const viewRegion = useRef()
   const [renderRegion, setRenderRegion] = useState(
@@ -58,6 +58,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
   useEffect(() => {
     getCurrentPosition(position => {
       setViewRegion(regionTools.buildRegion(position)) // focus job equivalent
+      setRenderRegion(regionTools.buildRegion(position, RENDER_REGION_SCALING_FACTOR))
     })
   }, [])
 
@@ -71,7 +72,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
 
     layer = 1;
 
-    if (dLat < 0.00029) {
+    if (dLat < 0.0005) {
       layer = 1;
     } else if (dLat < 0.0024) {
       layer = 2;
@@ -130,7 +131,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
       setViewRegion(displayRegion);
       return; // dont need to compute new render region if we are still inside "best" one - must be true if we have focus job trigger (e.g. auto pan to clicked event mrker)
     }
-
+    console.log("zoomlayer", zoomLayer)
     setViewRegion(displayRegion) // "backup" current view region (for anticipated upcoming re render)
     
     const displayLocation = {
@@ -143,6 +144,9 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     };
     const displayZoomLayer = getZoomLayer(displayZoom);
 
+    // update zoomlayer if changed - for zoom depenednet features e.g. grids
+    setZoomLayer((z) => displayZoomLayer);
+
     // if current user view can see outside their render region, update the render region
     // to cover the wider view
     if (!regionTools.checkRegionCoverage(renderRegion, displayRegion)) {
@@ -153,8 +157,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
       setRenderRegion((r) => new_renderRegion);
     }
 
-      // update zoomlayer if changed - for zoom depenednet features e.g. grids
-      setZoomLayer((z) => displayZoomLayer);
+      
     
   };
 

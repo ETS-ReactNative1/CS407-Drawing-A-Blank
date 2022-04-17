@@ -1,35 +1,31 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {View} from 'react-native';
 import MapView, {
-  AnimatedRegion,
-  Marker,
   PROVIDER_GOOGLE,
   Animated,
-  Polygon,
-  Circle,
-  Polyline,
 } from 'react-native-maps';
-import {getDistance} from 'geolib';
+//import {getDistance} from 'geolib';
 
 import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
-import {getInitialStateAnimated as getInitialState} from './testData';
-import Geolocation from 'react-native-geolocation-service';
+//import {getInitialStateAnimated as getInitialState} from './testData';
+//import Geolocation from 'react-native-geolocation-service';
 import {styles} from './style.js';
 
-import {Workout} from '../workout_recording/workout';
+//import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
-import useGeoLocation from './useGeoLocation';
+//import useGeoLocation from './useGeoLocation';
 
-import useUserPath from './useUserPath';
-import useRegion from './useRegion';
-import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
-import useZoomLevel from './useZoomLevel';
+//import useUserPath from './_useUserPath';
+//import useRegion from './useRegion';
+//import {useDidUpdateEffect} from '../hooks/useDidUpdateEffect';
+//import useZoomLevel from './useZoomLevel';
 
 import {debounce} from './utils';
-import setupGeolocation from './geoLocation';
+import useUserPath from './useUserPath';
+//import setupGeolocation from './geoLocation';
 
-const recorder = new Workout();
+/* const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
 const MAP_ZOOMLEVEL_FAR = {latitudeDelta: 0.0922, longitudeDelta: 0.0421};
 
@@ -42,16 +38,7 @@ const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 const DEBUG_ZOOM_LEVEL = {
   latitudeDelta: 0.6039001489487674,
   longitudeDelta: 0.5393288657069206,
-};
-
-// needs optimizations - map can be slow
-// https://hackernoon.com/how-to-optimize-react-native-map-in-your-application-eeo3nib
-// mostly just memoize
-// and perhaps clustering
-
-// map snapping issue blocker
-// https://stackoverflow.com/questions/61107376/react-native-maps-marker-change-destroys-map-state
-
+}; */
 
 function Map({
   setOverlayVisible,
@@ -66,7 +53,7 @@ function Map({
   //  useRegion(viewRegion);
   
 
-  const workout_active = useRef(false);
+  /* const workout_active = useRef(false);
   const [userPath, setUserPath] = useState([]);
   function clearPath() {
     setUserPath([]);
@@ -114,7 +101,9 @@ function Map({
     } else {
       return false;
     }
-  }
+  } */
+
+   
 
   // const [
   //   DrawUserPath,
@@ -126,27 +115,19 @@ function Map({
   // need the region ref out here so other states can update
   const navigation = useNavigation();
 
-  const workout_button_start = 'Start Workout';
-  const workout_button_stop = 'Stop Workout';
-
-  const [workout_button_text, set_workout_button_text] =
-    useState(workout_button_start);
-
   const bottomSheetRef = useRef(null);
   const mapRef = useRef(null)
-  const isMapTracking = useRef(true); // flag: detaches map from listening to user location
-  const [isMapTrackingState, setIsMapTrackingState] = useState(
-    isMapTracking.current,
-  );
+  const [isMapTracking, setIsMapTracking] = useState(true);
+  const [DrawUserPath, toggleWorkout, workout_active] = useUserPath(isMapTracking)
 
-  const locationConfig = {
+  /* const locationConfig = {
     enableHighAccuracy: true,
     timeout: 200, // max time for location request duration
     maximumAge: 1000, // max age before it will refresh cache
     distanceFilter: 5, // min moved distance before next data point
-  };
+  }; */
 
-  useEffect(() => {
+  /* useEffect(() => {
     console.log(
       'FIrst render setup ###############################################',
     );
@@ -156,13 +137,13 @@ function Map({
       addPathPoint(userLocation, isMapTracking.current);
     }, locationConfig);
   }, []);
-
-  const userLocation = useGeoLocation();
+ */
+  // const userLocation = useGeoLocation();
 
   
 
-  function changeToStats() {
-    navigation.navigate('post_workout_stats', {recorder: recorder});
+  function changeToStats(recorder) {
+    navigation.navigate('post_workout_stats', {recorder});
   }
 
   const debouncedsetRegion = debounce(
@@ -172,42 +153,19 @@ function Map({
     1000, //1000
   );
 
-  // useDidUpdateEffect(() => {
-  //   // set to map to user location when user location known (second userLocation change (init state -> actual))
-  //   if (isMapTracking.current) {
-  //     const {latitude, longitude} = userLocation.current;
-  //     console.log('region change', region);
-  //     setRegion({
-  //       // !! No longer doing following a user on map !!
-  //       //...region, //take previous zoom level
-  //       // ...zoomLevel, //take zoom level from constant
-  //       ...MAP_ZOOMLEVEL_CLOSE,
-  //       latitude,
-  //       longitude,
-  //       //longitudeDelta: region.longitudeDelta,
-  //       //latitudeDelta: region.latitudeDelta,
-  //     });
-  //   }
-  // }, [userLocation.current]);
-
   function handleRegionChange(newRegion) {
-    console.log('set ref', newRegion);
-    //region.current = newRegion; // panning will interuppt a focus
     debouncedsetRegion(newRegion);
     return;
   }
-
   
   return (
     <View style={styles.mapContainer}>
       <Animated
         provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        //region={region}
+        style={styles.map}        
         initialRegion={region}
         mapType={'standard'}
-        showsUserLocation={true}
-        //onRegionChangeComplete={r => setRegion(r)}
+        showsUserLocation={true}        
         onRegionChange={r => handleRegionChange(r)}
         ref={mapRef}
         // minZoomLevel={5}
@@ -221,15 +179,15 @@ function Map({
 
       <MapControls
         toggleGhostMode={() => {
-          isMapTracking.current = !isMapTracking.current;
-          setIsMapTrackingState(!isMapTrackingState);
-          console.log('Enabling Ghost mode...');
+          //isMapTracking.current = !isMapTracking.current;
+          setIsMapTracking(!isMapTracking);          
         }}
         toggleShowEventsList={() => {
           console.log('Opening Events Bottom Tray...');
           bottomSheetRef.current.expand();
         }}
-        startWorkout={() => {
+        toggleWorkout={() => toggleWorkout(changeToStats)}
+        /* startWorkout={() => { // should be toggle 
           if (!workout_active.current) {
             startWorkout();
             set_workout_button_text(workout_button_stop);
@@ -238,11 +196,9 @@ function Map({
             set_workout_button_text(workout_button_start);
             changeToStats();
           }
-        }}
-        workout_active={workout_active.current}
-        workoutText={workout_button_text}
-        drawGridsFunction={() => {}}
-        ghost_active={isMapTrackingState}
+        }} */
+        workout_active={workout_active.current}    
+        ghost_active={isMapTracking}
         // drawGridsFunction={() => getGrids.then(grids => setGrids(grids))}
       />
 

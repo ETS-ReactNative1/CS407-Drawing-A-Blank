@@ -35,7 +35,7 @@ function MapViewComplete() {
 
   return (
     <View style={styles.mapContainer}>
-      {region.latitude == 0 ? <Text> Loading Location Information </Text> : 
+      {(region.latitude == 0 && region.longitude == 0)? <Text> Loading Location Information </Text> : 
       <Fragment>
         <TouchableOpacity onPress={toggleSidebar}>
           <View style={styles.menu}>

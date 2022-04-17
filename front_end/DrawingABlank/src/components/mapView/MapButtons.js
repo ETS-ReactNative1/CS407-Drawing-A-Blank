@@ -8,15 +8,12 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 export default function MapControls({
   toggleGhostMode,
-  startWorkout,
+  toggleWorkout,
   toggleShowEventsList,
-  workoutText,
-  drawGridsFunction,
   workout_active,
   ghost_active,
 }) {
-  toggle_workout = () => startWorkout();
-
+  
   return (
     <>
       <TouchableOpacity style={styles.settings_button}>
@@ -52,7 +49,7 @@ export default function MapControls({
                 iconStyle={styles.paused}
                 // containerStyle={styles.menu}
                 size={30}
-                onPress={toggle_workout}
+                onPress={toggleWorkout}
               />
             ) : (
               <Icon
@@ -61,7 +58,7 @@ export default function MapControls({
                 // iconStyle={styles.icon}
                 // containerStyle={styles.menu}
                 size={30}
-                onPress={toggle_workout}
+                onPress={toggleWorkout}
               />
             )}
           </TouchableOpacity>

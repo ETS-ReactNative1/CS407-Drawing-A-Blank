@@ -20,12 +20,12 @@ export default [
     iconName: 'log-out',
     isFoot: true,
   },
-  {
+  /* {
     label: 'Refer a Friend!',
     iconType: 'feather',
     iconName: 'user-plus',
     isFoot: false,
-  },
+  }, */
   {
     label: 'Report',
     iconType: 'material',
