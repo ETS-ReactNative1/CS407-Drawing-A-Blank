@@ -32,6 +32,8 @@ import {debounce} from './utils';
 const recorder = new Workout();
 const MAP_ZOOMLEVEL_CLOSE = {latitudeDelta: 0.0005, longitudeDelta: 0.0005};
 
+const haversine = require('haversine');
+
 // needs optimizations - map can be slow
 // https://hackernoon.com/how-to-optimize-react-native-map-in-your-application-eeo3nib
 // mostly just memoize
@@ -265,8 +267,7 @@ function Map({setOverlayVisible, setOverlayContent, eventsRetrieved}) {
         }
         // will probably need to redo how this works too at the same time
         calculateDistanceToUser={useCallback(dest => {
-          //To fix
-          return 0;
+          return haversine(userLocation.current, dest, {unit:'km'}).toFixed(2);
         })}
       />
     </View>
