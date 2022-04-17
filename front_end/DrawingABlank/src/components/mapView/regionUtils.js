@@ -1,11 +1,32 @@
 import * as constants from "./constants"
 
-class regionUtils {
-  constructor() {
-    // console.log('r look', r);
-    // this.bounds = this.buildRegionBounds(...r); //spread operator
-  }
+/**
+ * @typedef {Object} region
+ * @property {longlat} latitude latitude coordinate
+ * @property {longlatDelta} longitude latitude coordinate
+ */
 
+/**
+ * @typedef {Object} longlat
+ * @property {number} longitude coordinate
+ * @property {number} latitude  coordinate
+ */
+
+/**
+ * @typedef {Object} longlatDelta long lat deltas
+ * @property {number} longitudeDelta zoom
+ * @property {number} latitudeDelta zoom
+ */
+
+class regionUtils {
+  constructor() {}
+
+  /**
+   * Generates a region object from a  given centre, and optional scaling value
+   * @param {region} r region object
+   * @param {number=1} scale scaling factor applied to passed region 
+   * @returns {region} scale transformed region
+   */
   buildRegion = (r, scale = 1) => {
     return {
       ...r,
@@ -14,10 +35,12 @@ class regionUtils {
     };
   };
 
-  // setRegion = r => {
-  //   this.bounds = r;
-  // };
-
+  /**
+   * Compares two regions, determines if region 2 is inside region 1 by region centre and corners
+   * @param {region} region - region 1
+   * @param {region} compareToRegion - region 2 
+   * @returns {Boolean} true if region 2 is inside, else false
+   */
   checkRegionCoverage(region, compareToRegion) {
     const regionBounds = this.getRegionCorners(region);
     const compareCorners = this.getRegionCorners(compareToRegion);
@@ -26,8 +49,6 @@ class regionUtils {
       latitude: compareToRegion.latitude,
       longitude: compareToRegion.longitude,
     };
-
-    // if nay of the corners of the current region are outside the render region, re render
 
     // check if centre of compareregion is outside the region
     // for early exit before loop
@@ -40,18 +61,14 @@ class regionUtils {
     }
 
     return true;
-
-    //when finingd correct region from cache, need to find which regions
-    // have all corners of current view region inside
-
-    // if nay 4 points lay outside the render reigon, need new render region
-
-    return false;
-    // if one of the display 4 corners are outside the
-    // 4 corners of the render render region corners
-    // then need new render region
   }
 
+  /**
+   * Determines if a long-lat coordinate is inside of a region
+   * @param {region} region 
+   * @param {longlat} point 
+   * @returns {Boolean} True is longlat is insude region, else false
+   */
   checkPointInRegion(region, point) {
     const [bottomLeft, topRight] = this.getRegionCorners(region);
 
@@ -66,6 +83,12 @@ class regionUtils {
     return true;
   }
 
+
+  /**
+   * Returns the centre of a provided region
+   * @param {region} region 
+   * @returns {longlat} Centre of the region
+   */
   getRegionCentre = region => {
     let {
       latitude: lat,
@@ -79,6 +102,11 @@ class regionUtils {
     };
   };
 
+  /**
+   * Returns all four corners of a region
+   * @param {region} region 
+   * @returns {[longlat]} Region corners [bottomleft, topright, bottomright, top left]
+   */
   getRegionCorners = region => {
     let {
       latitude: lat,
@@ -114,9 +142,3 @@ class regionUtils {
   };
 }
 export default new regionUtils();
-// export default (...r) => new Region(r);
-
-// might be possible for this to = this.bounds
-// if we use a prototype for the function definitions
-// then prototype may be hidden in this
-//          wrong

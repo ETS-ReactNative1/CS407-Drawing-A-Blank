@@ -4,7 +4,7 @@ import MapView, {
   PROVIDER_GOOGLE,
   Animated,
 } from 'react-native-maps';
-import MapControls from './MapButtons';
+import MapControls from './controls/MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 import {styles} from './style.js';
 import {useNavigation} from '@react-navigation/native';
@@ -65,7 +65,7 @@ function Map({
       </Animated>
 
       <MapControls
-        ghost_active={isMapTracking}
+        ghost_inactive={isMapTracking}
         workout_active={workout_active.current}
         toggleWorkout={() => toggleWorkout(changeToStats)}
         toggleGhostMode={() => setIsMapTracking(!isMapTracking)}

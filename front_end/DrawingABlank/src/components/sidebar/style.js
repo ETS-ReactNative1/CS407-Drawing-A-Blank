@@ -70,7 +70,8 @@ export const styles = StyleSheet.create({
   },
   sidebarContainer: {
     flexGrow: 1,
-    backgroundColor: 'rgba(250,250,250,0.8)',
+    //backgroundColor: 'rgba(250,250,250,0.8)',
+    backgroundColor: 'rgba(250,250,250)',
   },
   sidebarContainer_footer: {
     flexGrow: 1,

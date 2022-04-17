@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View, Button} from 'react-native';
-import AbsoluteComponent from '../hocs/AbsoluteComponent';
+import AbsoluteComponent from '../../hocs/AbsoluteComponent';
 import {Icon} from 'react-native-elements';
 
-import {styles} from './style.js';
+import {styles} from '../style.js';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 export default function MapControls({
@@ -11,7 +11,7 @@ export default function MapControls({
   toggleWorkout,
   toggleShowEventsList,
   workout_active,
-  ghost_active,
+  ghost_inactive,
 }) {
   
   return (
@@ -23,9 +23,9 @@ export default function MapControls({
       <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity>
-            {ghost_active ? (
+            {ghost_inactive ? (
               <Icon
-                name={'ghost-outline'}
+                name={'ghost-off-outline'}
                 type={'material-community'}
                 // iconStyle={styles.icon}
                 // containerStyle={styles.menu}
@@ -34,7 +34,7 @@ export default function MapControls({
               />
             ) : (
               <Icon
-                name={'ghost-off-outline'}
+                name={'ghost-outline'}
                 type={'material-community'}
                 size={30}
                 onPress={toggleGhostMode}
