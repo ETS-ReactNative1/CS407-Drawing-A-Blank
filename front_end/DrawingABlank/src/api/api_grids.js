@@ -50,7 +50,7 @@ export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
           console.log(response);
           throw new Error('Could not retrieve grids.');
         }
-        console.log('RESP', response);
+        // console.log('RESP', response);
         // console.log('JSON', response.json());
         return response.json();
       });

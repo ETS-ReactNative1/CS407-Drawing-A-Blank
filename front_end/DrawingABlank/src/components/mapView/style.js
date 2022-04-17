@@ -53,4 +53,8 @@ export const styles = StyleSheet.create({
   menuIcon: {
     alignSelf: 'flex-start',
   },
+
+  centred_text: {
+    textAlign: 'center'
+  }
 });

@@ -63,11 +63,11 @@ export default function useEvents(
         key={event.id}
         coordinate={event.marker}
         title={event.title}
-        anchor={{x: 0, y: 1}}
+        /* anchor={{x: 0, y: 1}} */
         description={event.description}
-        image={{
+        /* image={{
           uri: 'http://clipart-library.com/data_images/165937.png',
-        }}
+        }} */
         onPress={() => {
           var current_date = new Date();
           var event_date = Date.parse(event.date_end);

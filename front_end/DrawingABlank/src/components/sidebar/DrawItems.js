@@ -15,6 +15,12 @@ export default [
     iconName: 'activity', //sports
   },
   {
+    label: 'Report',
+    iconType: 'material',
+    iconName: 'flag',
+    isFoot: true,
+  },
+  {
     label: 'Logout',
     iconType: 'feather',
     iconName: 'log-out',
@@ -26,10 +32,5 @@ export default [
     iconName: 'user-plus',
     isFoot: false,
   }, */
-  {
-    label: 'Report',
-    iconType: 'material',
-    iconName: 'flag',
-    isFoot: false,
-  },
+  
 ];

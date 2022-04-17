@@ -9,8 +9,8 @@ class regionUtils {
   buildRegion = (r, scale = 1) => {
     return {
       ...r,
-      latitudeDelta: r.latitudeDelta * scale || constants.INIT_ZOOM.latitudeDelta,
-      longitudeDelta: r.longitudeDelta * scale || constants.INIT_ZOOM.longitudeDelta,
+      latitudeDelta: r.latitudeDelta * scale || constants.INIT_ZOOM.latitudeDelta * scale,
+      longitudeDelta: r.longitudeDelta * scale || constants.INIT_ZOOM.longitudeDelta * scale,
     };
   };
 

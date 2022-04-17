@@ -144,8 +144,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     };
     const displayZoomLayer = getZoomLayer(displayZoom);
 
-    // update zoomlayer if changed - for zoom depenednet features e.g. grids
-    setZoomLayer((z) => displayZoomLayer);
+    
 
     // if current user view can see outside their render region, update the render region
     // to cover the wider view
@@ -157,7 +156,8 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
       setRenderRegion((r) => new_renderRegion);
     }
 
-      
+      // update zoomlayer if changed - for zoom depenednet features e.g. grids
+    setZoomLayer((z) => displayZoomLayer);
     
   };
 

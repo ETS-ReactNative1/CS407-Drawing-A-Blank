@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
   },
 
   iconContainer: {},
-  icon: {marginLeft: 'auto'},
+  icon: {marginLeft: 'auto', marginBottom: 10},
   label: {
     paddingLeft: 10,
     fontSize: 20,

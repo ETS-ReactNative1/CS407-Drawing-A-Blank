@@ -11,31 +11,33 @@ import {Icon} from 'react-native-elements';
 import useRegion from './useRegion.js';
 
 function MapViewComplete() {
+  // Overlay Container Visiblity and Content Hooks
   const [overlayVisible, setOverlayVisible] = useState(false);
-  // use setOverlayContent to change the content of the overlay
   const [overlayContent, setOverlayContent] = useState();
-  const drawRef = useRef();
-  const isSideBarOpen = useRef();
-  
+
+  // useRegion Hook - Controls user render and view regions via updates from map
   const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
-    useRegion(setOverlayVisible, setOverlayContent);
+    useRegion(setOverlayVisible, setOverlayContent);  
 
-  console.log("Init Map Complete", region)
-
+  // DOM Refs
+  const drawerRef = useRef();
+  
+  // Sidebar open-state ref & open-close toggle
+  const isSideBarOpen = useRef();
   const toggleSidebar = () => {
     isOpen = isSideBarOpen.current;
     if (isOpen) {
-      drawRef.current.close();
+      drawerRef.current.close();
       isSideBarOpen.current = false;
     } else {
-      drawRef.current.open();
+      drawerRef.current.open();
       isSideBarOpen.current = true;
     }
   };
 
   return (
     <View style={styles.mapContainer}>
-      {(region.latitude == 0 && region.longitude == 0)? <Text> Loading Location Information </Text> : 
+      {(region.latitude == 0 && region.longitude == 0) ? <Text style={styles.centred_text}> Loading Location Information </Text> : 
       <Fragment>
         <TouchableOpacity onPress={toggleSidebar}>
           <View style={styles.menu}>
@@ -49,13 +51,13 @@ function MapViewComplete() {
           </View>
         </TouchableOpacity>
         <Drawer
-          ref={drawRef}
+          ref={drawerRef}
           type={'overlay'}
           tapToClose={true}
           openDrawerOffset={0.2} // 20% gap on the right side of drawer
           panCloseMask={0.2}
           closedDrawerOffset={-3}
-          //styles={drawerStyles}
+          styles={drawerStyles}
           tweenHandler={ratio => ({
             main: {opacity: (2 - ratio) / 2},
           })}
