@@ -259,7 +259,9 @@ class Leaderboard extends Component{
                     </View>
                     <View style={styles.filter}>
                         <TouchableOpacity onPress={this.showDatePicker}>
-                            <Text style={styles.filter_text}>Filter by date</Text>
+                            <Text style={styles.filter_text}>
+                                Filter by date: {this.state.dateChosen == "" ? "None" : this.state.dateChosen.getDate() + "/" + (this.state.dateChosen.getMonth()+1) + "/" + this.state.dateChosen.getFullYear()}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
