@@ -16,7 +16,7 @@ class WorkoutPostStats extends Component {
     distance_time: this.recorder.getDistanceVsTime(),
     debug_text: '',
     submittedWorkout:false,
-    team:""
+    team:"",
   };
   componentDidMount() {
     console.log("RECORDER:"+JSON.stringify(this.props.route.params.recorder));
@@ -29,6 +29,11 @@ class WorkoutPostStats extends Component {
     this.props.navigation.navigate('map_view_complete');
   }
   getExtraData() {
+    var duration = (this.recorder.date_end.getTime() - this.recorder.date_start.getTime())/1000;
+    var minutes = Math.floor(duration/60);
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var seconds = (duration%60);
+    seconds = seconds < 10 ? '0'+seconds : seconds;
     var result = [
       {
         title: 'Average Speed',
@@ -41,15 +46,15 @@ class WorkoutPostStats extends Component {
         key: 1,
       },
       {
-        title: 'Started At',
-        value: this.recorder.date_start.toLocaleString(),
-        key: 2,
+        title: 'Duration (mm:ss)',
+        value: minutes + ":" + seconds.toFixed(0),
+        key: 4,
       },
       {
-        title: 'Finished At',
-        value: this.recorder.date_end.toLocaleString(),
-        key: 3,
-      },
+        title: 'Calories Burned',
+        value: this.recorder.getCalories() + " kcal",
+        key: 5
+      }
     ];
     console.log('Returning ' + JSON.stringify(result));
     return result;
@@ -92,7 +97,9 @@ class WorkoutPostStats extends Component {
   }
   submitWorkout(){
     if(this.props.route.params.upload){
-      this.recorder.uploadWorkout().then(_ => {
+      this.recorder.uploadWorkout().then(res => {
+          console.log("GOT WORKOUT RESULT:"+JSON.stringify(res));
+          this.recorder.setCalories(res.calories.toFixed(2));
           this.setState({submittedWorkout:true});
       })
     }
