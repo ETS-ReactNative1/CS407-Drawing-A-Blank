@@ -9,14 +9,14 @@ import Drawer from 'react-native-drawer';
 import DrawItems from '../sidebar/DrawItems.js';
 import {Icon} from 'react-native-elements';
 
-function MapViewComplete(props){    
+function MapViewComplete(props) {
   const [overlayVisible, setOverlayVisible] = useState(false);
   // use setOverlayContent to change the content of the overlay
   const [overlayContent, setOverlayContent] = useState();
 
-  useEffect(()=>{
-    console.log("LOCATION:"+JSON.stringify(props.props.location))
-  })
+  useEffect(() => {
+    console.log('LOCATION:' + JSON.stringify(props.props.location));
+  });
   const drawRef = useRef();
   const isSideBarOpen = useRef();
 
@@ -66,7 +66,13 @@ function MapViewComplete(props){
         tweenHandler={ratio => ({
           main: {opacity: (2 - ratio) / 2},
         })}
-        content={<SideBar DrawItems={DrawItems} />}>
+        content={
+          <SideBar
+            DrawItems={DrawItems}
+            setOverlayVisible={setOverlayVisible}
+            setOverlayContent={setOverlayContent}
+          />
+        }>
         <Map
           setOverlayVisible={setOverlayVisible}
           setOverlayContent={setOverlayContent}

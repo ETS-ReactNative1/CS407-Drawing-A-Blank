@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import {Workout} from '../workout_recording/workout';
 import {useNavigation} from '@react-navigation/native';
 import {getUserWorkout, getUserWorkouts} from '../../api/api_profile';
 import {authenticateUser} from '../../api/api_authentication';
 import {getUsername} from '../../api/api_networking';
+import DatePicker from 'react-native-date-picker';
 
 const WorkoutHistory = () => {
   const navigation = useNavigation();
@@ -20,26 +22,44 @@ const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState([]);
   const [workout, setWorkout] = useState([]);
 
+  //date picker states
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
+  const handleChange = e => {
+    console.log('fd');
+  };
+
   useEffect(() => {
     getUserWorkouts().then(result => setWorkouts(result));
     getUsername().then(result => setUsername(result));
   }, []);
 
-  useEffect(()=>{
+  const filtered_workouts = workouts.filter(workout => {
+    return new Date(workout.date).getTime() <= date.getTime();
+  });
+
+  useEffect(() => {
     // setup a recorder for the current selected workout
-    if(workout.length > 0){
+    if (workout.length > 0) {
       const recorder = new Workout();
       recorder.recording = true;
       recorder.setWorkoutStartDate(workout[0].time);
       workout.forEach(point => {
-        recorder.addCoordinateAtTime(point.latitude, point.longitude, point.time);
+        recorder.addCoordinateAtTime(
+          point.latitude,
+          point.longitude,
+          point.time,
+        );
       });
       recorder.setWorkoutEndDate(workout[workout.length - 1].time);
       recorder.recording = false;
       console.log(recorder.toJSON());
-      navigation.navigate('post_workout_stats', {recorder: recorder, upload:false});
+      navigation.navigate('post_workout_stats', {
+        recorder: recorder,
+        upload: false,
+      });
     }
-  },[workout])
+  }, [workout]);
 
   const prev_workouts = workouts.map((workout, index) => {
     return (
@@ -62,7 +82,10 @@ const WorkoutHistory = () => {
     );
   });
   const onPress = async id => {
-    await getUserWorkout(id).then(result => {console.log("OBTAINED RESULT:"+JSON.stringify(result));setWorkout(result)});
+    await getUserWorkout(id).then(result => {
+      console.log('OBTAINED RESULT:' + JSON.stringify(result));
+      setWorkout(result);
+    });
 
     // setup a recorder for the current selected workout
     /*
@@ -89,8 +112,27 @@ const WorkoutHistory = () => {
 
       <ScrollView style={styles.body}>
         <View style={styles.bodyContent}>
+          <DatePicker
+            modal
+            open={open}
+            textColor="#000000"
+            date={new Date(date)}
+            onDateChange={DOBN => handleChange('DOB', DOBN)}
+            mode="date"
+            onConfirm={date => {
+              setOpen(false);
+              setDate(date);
+            }}
+            onCancel={() => {
+              setOpen(false);
+            }}
+          />
           <Text style={styles.name}>{username}: workout history</Text>
-          <Text style={styles.info}>Filter by date [DATEPICKER]</Text>
+          <TouchableOpacity onPress={() => setOpen(true)}>
+            <Text style={styles.info}>
+              Filter by date: {date.toDateString()}
+            </Text>
+          </TouchableOpacity>
           <Text style={styles.description}>
             Take a look back at some of your previous workouts!
           </Text>
