@@ -77,17 +77,16 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 
 # LOCAL CONNECTION
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
-    }
-}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': str(os.path.join(BASE_DIR, "db.sqlite3")),
+#     }
+# }
 
 
-"""
-# DCS CONNECTION
+# # DCS CONNECTION
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -141,7 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'apifile.authentication.ExpTokenAuthentication',
     ],
 }
 
@@ -150,4 +149,4 @@ REST_FRAMEWORK = {
 # everytime a new job is added to this list
 # '0 0 * * 0' will run the test function every sunday at 00:00
 # * * * * * will run every minute (useful for debugging)
-CRONJOBS = [('* * * * *', 'apifile.cron.test')]
+CRONJOBS = [('0 0 * * *', 'apifile.cron.purge_tokens'), ('0 1 * * *', 'apifile.cron.event_check_today')]
