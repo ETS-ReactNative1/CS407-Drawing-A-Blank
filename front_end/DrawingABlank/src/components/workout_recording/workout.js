@@ -17,6 +17,7 @@ export class Workout{
         this.recording = false;
         this.tracking = true;
         this.type = 'walk';
+        this.calories = 0;
         PushNotification.createChannel(
             {
               channelId: "fresgo-workout", // (required)
@@ -113,6 +114,12 @@ export class Workout{
     getWorkoutStartDate() {
       return this.date_start;
     }
+    setCalories(calories){
+      this.calories = calories;
+    }
+    getCalories(){
+      return this.calories;
+    }
     // Debug function for workout_history.js
   addCoordinateDelay(latitude, longitude, delayMins) {
     if (this.recording) {
@@ -165,7 +172,6 @@ export class Workout{
       return {"start":this.date_start, "end":this.date_end, "coordinates":this.coordinates, "type":this.type};
   }
   uploadWorkout(){
-    console.log("HEINN??");
     return submit_workout(this.toJSON());
   }
 
