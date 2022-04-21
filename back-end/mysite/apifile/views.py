@@ -236,19 +236,18 @@ class GridView(viewsets.ViewSet):
 
     # show map tiles within given bounds at given subsample rate
     def list(self, request):
-        return Response("here", status=status.HTTP_200_OK)
-
         data = request.GET
         bl = data['bottom_left']
         tr = data['top_right']
         zoom = data['zoom']
+
         bl_lat, bl_long = bl.split(',')
         bl = [float(bl_lat), float(bl_long)]
         tr_lat, tr_long = tr.split(',')
         tr = [float(tr_lat), float(tr_long)]
 
         allGrids = grids.sub_sample((bl, tr), zoom)
-        return Response((bl,tr), status=status.HTTP_200_OK)
+        return Response(allGrids, status=status.HTTP_200_OK)
 
 
 class WorkoutSubmission(viewsets.ViewSet):
