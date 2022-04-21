@@ -34,12 +34,9 @@ export const styles = StyleSheet.create({
 
     elevation: 2,
   },
-  sidebarContainer: {
-    flexGrow: 1,
-    backgroundColor: 'rgba(250,250,250,0.8)',
-  },
+
   iconContainer: {},
-  icon: {marginLeft: 'auto'},
+  icon: {marginLeft: 'auto', marginBottom: 10},
   label: {
     paddingLeft: 10,
     fontSize: 20,
@@ -55,9 +52,36 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     flexDirection: 'row',
   },
+  menu_container: {
+    //flexShrink: 1,
+    //alignSelf: 'flex-start',
+    // position: 'absolute',
+    //elevation: 10,
+    backgroundColor: 'rgba(250,250,250,0.8)',
+    //left: 100,
+    //marginRight: 60,
+    marginLeft: 180,
+    borderBottomRightRadius: 4,
+  },
   menu: {
-    alignSelf: 'flex-start',
-    position: 'absolute',
+    //alignSelf: 'flex-start',
+    // position: 'absolute',
+    //left: 0,
+  },
+  sidebarContainer: {
+    flexGrow: 1,
+    //backgroundColor: 'rgba(250,250,250,0.8)',
+    backgroundColor: 'rgba(250,250,250)',
+  },
+  sidebarContainer_footer: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+
+    marginBottom: 20,
+  },
+  sidebarContainer_toggleButton: {
+    backgroundColor: 'black',
+    elevation: 10,
     left: 0,
   },
 });

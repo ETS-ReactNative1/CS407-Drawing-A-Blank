@@ -1,0 +1,29 @@
+Perisisting Issues
+
+Fix proper key usage in caaches
+    currently only works based on zoomLevel
+    needs to work for view location also
+        so 2 keys to an entry - or longlatzoomlevel as string and low precision long lat
+        can use less precision on location and make the area bounds be represneted in precision
+
+Determine best caching scheme
+    new entry for each location
+    fill a larger grid on globe, 
+        always issue of what to do on cache boundary
+        as should technically render from both regions 
+            perhaps best is just to minimize number of bounaries
+            i.e. bigger entry grids/ regions
+            OR
+            make cache entries smaller and just render ALL the cache entries in the region
+                just get the first grids at any tile size first (for immediate user progress)
+                then can async load the correct tilesize
+
+    Render all cached regions in the field of view
+    not just the best region
+                
+
+
+fix sticky map on tile render rendegion dependencies
+
+
+

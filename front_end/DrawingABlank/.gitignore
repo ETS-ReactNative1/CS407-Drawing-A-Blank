@@ -66,4 +66,8 @@ buck-out/
 
 # Local History
 *.history
+/.vs
+
+# lint
+/.eslintrc.js
 
