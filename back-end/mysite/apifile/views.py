@@ -83,7 +83,7 @@ class Events(viewsets.ViewSet):
 
         return Response(Event.event_scores(date, player), status=status.HTTP_200_OK)
 
-    @action(methods=['get'], detail=False)
+    @action(methods=['patch'], detail=False)
     def force(self, request):
         cron.event_check_today()
 
