@@ -5,11 +5,6 @@ export default [
     iconName: 'user',
   },
   {
-    label: 'Settings',
-    iconType: 'feather',
-    iconName: 'settings',
-  },
-  {
     label: 'Saved Workouts',
     iconType: 'feather',
     iconName: 'activity', //sports
@@ -32,5 +27,4 @@ export default [
     iconName: 'user-plus',
     isFoot: false,
   }, */
-  
 ];

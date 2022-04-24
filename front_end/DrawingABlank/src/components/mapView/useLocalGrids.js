@@ -43,6 +43,10 @@ export default function useLocalGrids(
     //  if only want to cache for region
   }, [zoomLayer]);
 
+  useEffect(() => {
+    collectEventScores();
+  }, [localGrids]);
+
   function buildCacheEntry(
     {latitude, longitude, latitudeDelta, longitudeDelta},
     tileSize,
@@ -52,10 +56,34 @@ export default function useLocalGrids(
   }
 
   useEffect(() => {
-    console.log("updating local gridss")
+    console.log('updating local gridss');
     reScaleGrids(); // front end grid draw scaling - tiles draw style
     reSampleGrids(useCache); // cached vs live updates - tiles objects fetch
   }, [zoomLayer, renderRegion]);
+
+  function collectEventScores() {
+    console.log('CALCULATING SCORES');
+    console.log('HAVE EVENTS:' + events);
+    result = {};
+    events.forEach(event => {
+      console.log('GOT EVENT:' + JSON.stringify(event));
+      var eventScore = getEventScores(grids, event['bounds']['coordinates']);
+      if (eventScore.length != 0) {
+        converted_result = [];
+        eventScore.forEach(score => {
+          converted_result.push({
+            title: score['details']['team'],
+            picture: score['details']['picture'],
+            points: score['count'],
+          });
+        });
+        result[event.id] = converted_result;
+      }
+    });
+    //TODO FIX EVENT SCORES
+    //setEventScores(result);
+    console.log(result);
+  }
 
   const reScaleGrids = () => {
     // subsamples grid based on zoom level
@@ -161,6 +189,22 @@ export default function useLocalGrids(
     });
   };
 
+  //Code taken from: https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
+  const hexToRGB = hex => {
+    var c;
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+      c = hex.substring(1).split('');
+      if (c.length == 3) {
+        c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+      }
+      c = '0x' + c.join('');
+      return (
+        'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',0.7)'
+      );
+    }
+    throw new Error('Bad Hex');
+  };
+
   const DrawGrids = () => {
     return localGrids.map((grid, i) => {
       if (grid.bounds.length > 0) {
@@ -168,7 +212,8 @@ export default function useLocalGrids(
           <Polygon
             coordinates={grid.bounds}
             strokeColor={'#000000'}
-            fillColor={'#' + grid.colour}
+            fillColor={hexToRGB('#' + grid.colour)}
+            fillOpacity={0.7}
             strokeWidth={1}
             key={i}></Polygon>
         );

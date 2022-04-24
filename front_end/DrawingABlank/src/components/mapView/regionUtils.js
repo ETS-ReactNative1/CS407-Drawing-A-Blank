@@ -137,7 +137,6 @@ class regionUtils {
       latitude: lat + dLat,
       longitude: long - dLong,
     };
-
     return [bottomLeft, topRight, bottomRight, topLeft];
   };
 }

@@ -19,7 +19,7 @@ const EventListComponent = ({event, onEventClick, distance}) => {
             <Text numberOfLines={2} ellipsizeMode="tail">
               {event.description}
             </Text>
-            <Text style={styles.text__distance}> {distance} metres</Text>
+            <Text style={styles.text__distance}> {distance} kilometres</Text>
           </View>
           <EventButtons style={styles.buttonsContainer} />
         </View>

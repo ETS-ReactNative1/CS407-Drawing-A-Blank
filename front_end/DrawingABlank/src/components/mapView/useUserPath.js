@@ -1,26 +1,26 @@
 import React, {useRef, useState} from 'react';
 import {Workout} from '../workout_recording/workout';
-import setupGeolocation, { getCurrentPosition } from './geoLocation';
-import { useEffect } from 'react';
-import {Polyline} from "react-native-maps"
+import setupGeolocation, {getCurrentPosition} from './geoLocation';
+import {useEffect} from 'react';
+import {Polyline} from 'react-native-maps';
 
-import locationConfig from "./constants"
+import locationConfig from './constants';
 
 const recorder = new Workout();
 
 const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
-export default function useUserPath(isTracking) {  
+export default function useUserPath(isTracking) {
   const [userPath, setUserPath] = useState([]);
-  const workout_active = useRef(false)
-  
+  const workout_active = useRef(false);
+
   // init location listener
   useEffect(() => {
-    setupGeolocation( userLoc => {
-      // Add every detected user location to path, conditionally on tracking 
-      addPathPoint(userLoc, isTracking)
-    }, locationConfig)
+    setupGeolocation(userLoc => {
+      // Add every detected user location to path, conditionally on tracking
+      addPathPoint(userLoc, isTracking);
+    }, locationConfig);
     return () => {};
   }, []);
 
@@ -33,9 +33,9 @@ export default function useUserPath(isTracking) {
     clearPath();
     workout_active.current = true;
     recorder.startWorkout();
-    getCurrentPosition( ({longitude, latitude}) => {
+    getCurrentPosition(({longitude, latitude}) => {
       recorder.addCoordinate(latitude, longitude);
-    })
+    });
   };
 
   function stopWorkout() {
@@ -61,9 +61,9 @@ export default function useUserPath(isTracking) {
   }
 
   function addPathPoint(latLngPoint, isTracking) {
-    // add latlng point to path - only if tracking mode enabled    
+    // add latlng point to path - only if tracking mode enabled
     if (workout_active.current) setUserPath(path => [...path, latLngPoint]);
-    
+
     // add point to workout recorder / exercise computer
     recorder.addCoordinate(
       latLngPoint.latitude,
@@ -72,14 +72,14 @@ export default function useUserPath(isTracking) {
     );
   }
 
-  function toggleWorkout(conclude_workout) {
+  function toggleWorkout(changeToStats, type) {
     if (!workout_active.current) {
-      startWorkout();
+      startWorkout(type);
     } else {
-      stopWorkout()
-      conclude_workout(recorder)
+      stopWorkout();
+      changeToStats(recorder);
     }
-  } 
+  }
 
   return [DrawUserPath, toggleWorkout, workout_active];
 }

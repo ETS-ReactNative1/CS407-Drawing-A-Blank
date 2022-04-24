@@ -1,4 +1,4 @@
-import React, {useState, Component, useRef, Fragment} from 'react';
+import React, {useState, Component, useRef, useEffect} from 'react';
 import Map from './Map.js';
 import {Button, StyleSheet, View, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -17,11 +17,11 @@ function MapViewComplete() {
 
   // useRegion Hook - Controls user render and view regions via updates from map
   const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
-    useRegion(setOverlayVisible, setOverlayContent);  
+    useRegion(setOverlayVisible, setOverlayContent);
 
   // DOM Refs
   const drawerRef = useRef();
-  
+
   // Sidebar open-state ref & open-close toggle
   const isSideBarOpen = useRef();
   const toggleSidebar = () => {
@@ -34,49 +34,57 @@ function MapViewComplete() {
       isSideBarOpen.current = true;
     }
   };
-
   return (
     <View style={styles.mapContainer}>
-      {(region.latitude == 0 && region.longitude == 0) ? <Text style={styles.centred_text}> Loading Location Information </Text> : 
-      <Fragment>
-        <TouchableOpacity onPress={toggleSidebar}>
-          <View style={styles.menu}>
-            <Icon
-              name={'menu'}
-              type={'feather'}
-              iconStyle={styles.menuIcon}
-              containerStyle={styles.menu}
-              size={30}
+      {region.latitude == 0 && region.longitude == 0 ? (
+        <Text style={styles.centred_text}> Loading Location Information </Text>
+      ) : (
+        <Fragment>
+          <TouchableOpacity onPress={toggleSidebar}>
+            <View style={styles.menu}>
+              <Icon
+                name={'menu'}
+                type={'feather'}
+                iconStyle={styles.menuIcon}
+                containerStyle={styles.menu}
+                size={30}
+              />
+            </View>
+          </TouchableOpacity>
+          <Drawer
+            ref={drawerRef}
+            type={'overlay'}
+            tapToClose={true}
+            openDrawerOffset={0.2} // 20% gap on the right side of drawer
+            panCloseMask={0.2}
+            closedDrawerOffset={-3}
+            styles={drawerStyles}
+            tweenHandler={ratio => ({
+              main: {opacity: (2 - ratio) / 2},
+            })}
+            content={
+              <SideBar
+                DrawItems={DrawItems}
+                setOverlayVisible={setOverlayVisible}
+                setOverlayContent={setOverlayContent}
+              />
+            }>
+            <Map
+              setOverlayVisible={setOverlayVisible}
+              setOverlayContent={setOverlayContent}
+              region={region}
+              setRegion={setRegion}
+              regionFeatures={regionFeatures}
+              DrawRenderRegionFeatures={DrawRenderRegionFeatures}
             />
-          </View>
-        </TouchableOpacity>
-        <Drawer
-          ref={drawerRef}
-          type={'overlay'}
-          tapToClose={true}
-          openDrawerOffset={0.2} // 20% gap on the right side of drawer
-          panCloseMask={0.2}
-          closedDrawerOffset={-3}
-          styles={drawerStyles}
-          tweenHandler={ratio => ({
-            main: {opacity: (2 - ratio) / 2},
-          })}
-          content={<SideBar DrawItems={DrawItems} />}>
-          <Map
-            setOverlayVisible={setOverlayVisible}
-            setOverlayContent={setOverlayContent}
-            region={region}
-            setRegion={setRegion}
-            regionFeatures={regionFeatures}
-            DrawRenderRegionFeatures={DrawRenderRegionFeatures}
-          />
-          <Overlay
-            visible={overlayVisible}
-            setVisible={setOverlayVisible}
-            children={overlayContent}
-          />
-        </Drawer> 
-      </Fragment>}
+            <Overlay
+              visible={overlayVisible}
+              setVisible={setOverlayVisible}
+              children={overlayContent}
+            />
+          </Drawer>
+        </Fragment>
+      )}
     </View>
   );
 }
