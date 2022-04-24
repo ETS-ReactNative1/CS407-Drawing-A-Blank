@@ -43,10 +43,6 @@ export default function useLocalGrids(
     //  if only want to cache for region
   }, [zoomLayer]);
 
-  useEffect(() => {
-    collectEventScores();
-  }, [localGrids]);
-
   function buildCacheEntry(
     {latitude, longitude, latitudeDelta, longitudeDelta},
     tileSize,
@@ -60,30 +56,6 @@ export default function useLocalGrids(
     reScaleGrids(); // front end grid draw scaling - tiles draw style
     reSampleGrids(useCache); // cached vs live updates - tiles objects fetch
   }, [zoomLayer, renderRegion]);
-
-  function collectEventScores() {
-    console.log('CALCULATING SCORES');
-    console.log('HAVE EVENTS:' + events);
-    result = {};
-    events.forEach(event => {
-      console.log('GOT EVENT:' + JSON.stringify(event));
-      var eventScore = getEventScores(grids, event['bounds']['coordinates']);
-      if (eventScore.length != 0) {
-        converted_result = [];
-        eventScore.forEach(score => {
-          converted_result.push({
-            title: score['details']['team'],
-            picture: score['details']['picture'],
-            points: score['count'],
-          });
-        });
-        result[event.id] = converted_result;
-      }
-    });
-    //TODO FIX EVENT SCORES
-    //setEventScores(result);
-    console.log(result);
-  }
 
   const reScaleGrids = () => {
     // subsamples grid based on zoom level

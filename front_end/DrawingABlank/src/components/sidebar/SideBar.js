@@ -108,6 +108,7 @@ function SideBar(props) {
             type={iconType}
             iconStyle={styles.icon}
             size={30}
+            key={label}
           />
           <Text style={styles.label}>{label}</Text>
         </View>

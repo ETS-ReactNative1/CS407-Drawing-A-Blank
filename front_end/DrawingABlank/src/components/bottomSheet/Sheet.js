@@ -6,7 +6,7 @@ import EventListComponent from './EventListComponent';
 
 const Sheet = forwardRef(
   ({localEvents, calculateDistanceToUser, onEventClick}, ref) => {
-    const snapPoints = useMemo(() => ['10%', '50%'], []);
+    const snapPoints = useMemo(() => ['50%'], []);
 
     const handleSheetChanges = useCallback(index => {
       console.log('handleSheetChanges', index);
@@ -16,7 +16,7 @@ const Sheet = forwardRef(
       // <View /*pointerEvents={'none'}*/ style={styles.container}>
       <BottomSheet
         ref={ref}
-        index={1}
+        index={-1}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
         onChange={handleSheetChanges}

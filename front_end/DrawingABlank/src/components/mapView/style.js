@@ -16,9 +16,32 @@ export const styles = StyleSheet.create({
     elevation: 1,
   },
   map: {...StyleSheet.absoluteFillObject},
+  small_buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignSelf: 'flex-start',
+    elevation: 1,
+    backgroundColor: 'rgba(255, 255 ,255, 0.9)',
+    alignItems: 'center',
+    marginLeft: 40,
+    marginRight: 40,
+    height: 40,
+    width: 40,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+
+    elevation: 2,
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    //alignSelf: 'flex-start',
     elevation: 1,
     backgroundColor: 'white',
     alignItems: 'center',
@@ -55,6 +78,6 @@ export const styles = StyleSheet.create({
   },
 
   centred_text: {
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });

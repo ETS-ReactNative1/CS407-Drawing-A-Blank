@@ -8,8 +8,15 @@ import {useNavigation} from '@react-navigation/native';
 import {debounce} from './utils';
 import {useThrottle} from 'rooks';
 import useUserPath from './useUserPath';
+import AbsoluteComponent from '../hocs/AbsoluteComponent';
 
-function Map({region, setRegion, regionFeatures, DrawRenderRegionFeatures}) {
+function Map({
+  region,
+  setRegion,
+  regionFeatures,
+  DrawRenderRegionFeatures,
+  toggleSidebar,
+}) {
   // Declaring Map State Hooks
   const [isMapTracking, setIsMapTracking] = useState(true);
   const [DrawUserPath, toggleWorkout, workout_active] =
@@ -48,19 +55,23 @@ function Map({region, setRegion, regionFeatures, DrawRenderRegionFeatures}) {
         showsUserLocation={true}
         onRegionChange={r => handleRegionChange(r)}
         ref={mapRef}
-        // minZoomLevel={5}
+        minZoomLevel={10}
         // maxZoomLevel={10}
       >
-        {<DrawRenderRegionFeatures showRegionOutline={true} />}
+        {<DrawRenderRegionFeatures showRegionOutline={false} />}
         <DrawUserPath />
       </Animated>
 
       <MapControls
         ghost_inactive={isMapTracking}
         workout_active={workout_active.current}
-        toggleWorkout={() => toggleWorkout(changeToStats, -1)}
+        toggleWorkout={workout_type =>
+          toggleWorkout(changeToStats, workout_type)
+        }
         toggleGhostMode={() => setIsMapTracking(!isMapTracking)}
         toggleShowEventsList={() => bottomSheetRef.current.expand()}
+        toggleSidebar={toggleSidebar}
+        refresh_map={() => setRegion(region)}
       />
 
       <Sheet

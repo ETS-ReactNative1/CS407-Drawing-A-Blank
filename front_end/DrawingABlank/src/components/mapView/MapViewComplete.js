@@ -1,4 +1,4 @@
-import React, {useState, Component, useRef, useEffect} from 'react';
+import React, {Fragment, useState, Component, useRef, useEffect} from 'react';
 import Map from './Map.js';
 import {Button, StyleSheet, View, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -40,7 +40,7 @@ function MapViewComplete() {
         <Text style={styles.centred_text}> Loading Location Information </Text>
       ) : (
         <Fragment>
-          <TouchableOpacity onPress={toggleSidebar}>
+          {/* <TouchableOpacity onPress={toggleSidebar}>
             <View style={styles.menu}>
               <Icon
                 name={'menu'}
@@ -50,7 +50,7 @@ function MapViewComplete() {
                 size={30}
               />
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Drawer
             ref={drawerRef}
             type={'overlay'}
@@ -76,6 +76,7 @@ function MapViewComplete() {
               setRegion={setRegion}
               regionFeatures={regionFeatures}
               DrawRenderRegionFeatures={DrawRenderRegionFeatures}
+              toggleSidebar={toggleSidebar}
             />
             <Overlay
               visible={overlayVisible}

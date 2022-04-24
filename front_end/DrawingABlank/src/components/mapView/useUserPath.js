@@ -5,6 +5,7 @@ import {useEffect} from 'react';
 import {Polyline} from 'react-native-maps';
 
 import locationConfig from './constants';
+import useGeoLocation from './useGeoLocation';
 
 const recorder = new Workout();
 
@@ -15,10 +16,14 @@ export default function useUserPath(isTracking) {
   const [userPath, setUserPath] = useState([]);
   const workout_active = useRef(false);
 
+  const userLocation = useGeoLocation();
+
   // init location listener
   useEffect(() => {
+    recorder.coordinates;
     setupGeolocation(userLoc => {
       // Add every detected user location to path, conditionally on tracking
+      console.log('movement');
       addPathPoint(userLoc, isTracking);
     }, locationConfig);
     return () => {};
@@ -28,11 +33,11 @@ export default function useUserPath(isTracking) {
     setUserPath([]);
   }
 
-  const startWorkout = () => {
+  const startWorkout = type => {
     console.log('Starting Workout...');
     clearPath();
     workout_active.current = true;
-    recorder.startWorkout();
+    recorder.startWorkout(type);
     getCurrentPosition(({longitude, latitude}) => {
       recorder.addCoordinate(latitude, longitude);
     });
@@ -73,6 +78,7 @@ export default function useUserPath(isTracking) {
   }
 
   function toggleWorkout(changeToStats, type) {
+    console.log('worlout active:', workout_active.current, type);
     if (!workout_active.current) {
       startWorkout(type);
     } else {

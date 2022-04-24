@@ -14,9 +14,37 @@ export default function useEvents(
   const eventCache = useRef(new Cache({}));
 
   useEffect(() => {
-    console.log("updatng local events")
+    console.log('updatng local events');
     getEvents().then(result => setEvents(result || []));
   }, []);
+
+  useEffect(() => {
+    collectEventScores();
+  }, [renderRegion]);
+
+  function collectEventScores() {
+    console.log('CALCULATING SCORES');
+    console.log('HAVE EVENTS:' + events);
+    result = {};
+    events.forEach(event => {
+      console.log('GOT EVENT:' + JSON.stringify(event));
+      var eventScore = getEventScores(grids, event['bounds']['coordinates']);
+      if (eventScore.length != 0) {
+        converted_result = [];
+        eventScore.forEach(score => {
+          converted_result.push({
+            title: score['details']['team'],
+            picture: score['details']['picture'],
+            points: score['count'],
+          });
+        });
+        result[event.id] = converted_result;
+      }
+    });
+    //TODO FIX EVENT SCORES
+    //setEventScores(result);
+    console.log(result);
+  }
 
   function onEventPress(type, time, radius, desc) {
     // eventType, timeRemaining, radius, desc

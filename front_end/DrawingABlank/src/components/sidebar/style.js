@@ -21,8 +21,8 @@ export const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     flexWrap: 'nowrap',
-    backgroundColor: '#f8f8ff',
-    borderRadius: 5,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 10,
     justifyContent: 'flex-start',
     shadowColor: '#000',
     shadowOffset: {
@@ -71,7 +71,8 @@ export const styles = StyleSheet.create({
   sidebarContainer: {
     flexGrow: 1,
     //backgroundColor: 'rgba(250,250,250,0.8)',
-    backgroundColor: 'rgba(250,250,250)',
+    //backgroundColor: '#2179b8',
+    backgroundColor: '#f8f8f8',
   },
   sidebarContainer_footer: {
     flexGrow: 1,
