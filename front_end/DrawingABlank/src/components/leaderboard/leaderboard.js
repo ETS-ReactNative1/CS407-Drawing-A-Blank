@@ -107,7 +107,6 @@ class Leaderboard extends Component {
         );
       });
   };
-
   getPlayerCardPoints = () => {
     getUsername().then(username => {
       console.log('OBTAINED USERNAME:' + username);
@@ -262,6 +261,9 @@ class Leaderboard extends Component {
     this.setState({username_search: text});
   };
 
+  componentDidMount() {
+    this.getLeaderboards();
+  }
     render(){
         const onPress = info => {
             this.setState({obtainedProfileContent:false});
@@ -328,9 +330,90 @@ class Leaderboard extends Component {
                         ref="usersearch"
                         onChangeText={this.handleUserSearch}    
                     />
-  componentDidMount() {
-    this.getLeaderboards();
-  }
+                </View>
+                <ScrollView style={styles.leaderboard_entries}
+                            showsVerticalScrollIndicator={false} 
+                            ref={(ref) => this.setReference(ref)}
+                >
+                    <View style={styles.leaderboard_entry}>
+                        <View style={styles.leaderboard_entry_rank}>
+                            <Text style={styles.leaderboard_entry_rank_text}>#</Text>
+                        </View>
+                        <View style={styles.leaderboard_entry_picture}>
+                                
+                            </View>
+                        <View style={styles.leaderboard_entry_title}>
+                            <Text style={styles.leaderboard_entry_title_text}>Username</Text>
+                        </View>
+                        <View style={styles.leaderboard_entry_team}>
+                            <Text style={styles.leaderboard_entry_team_text}>Team</Text>
+                        </View>
+                        <View style={styles.leaderboard_entry_score}>
+                            <Text style={styles.leaderboard_entry_score_text}>{this.state.points_selected ? "Score" : "Distance"}</Text>
+                        </View>
+                    </View>
+
+                    {!(this.state.collectedLeaderboards) && <ActivityIndicator color="#fafafa" size='large'/>}
+                    {(this.state.collectedLeaderboards) && ((this.state.points_selected) ? this.state.leaderboard_points.map((info,index) => {{
+                        if(info.name.includes(this.state.username_search)){
+                        return (
+                        <TouchableOpacity style={styles.leaderboard_entry} key={index} onPress={() => onPress(info)}>
+                            <View style={styles.leaderboard_entry_rank}>
+                                <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_picture}>
+                                <Image
+                                    source={this.getDefaultPicture(info.team)}
+                                    style={styles.leaderboard_entry_picture_params}
+                                />
+                            </View>
+                            <View style={styles.leaderboard_entry_title}>
+                                <Text style={styles.leaderboard_entry_title_text}>{info.name}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_team}>
+                                <Text style={styles.leaderboard_entry_team_text}>{this.state.api_to_label_teams[info.team]}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_score}>
+                                <Text style={styles.leaderboard_entry_score_text}>{info.score}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                }}) : this.state.leaderboard_distance.map((info,index) => {{
+                    if(info.name.includes(this.state.username_search)){
+                        return (
+                        <TouchableOpacity style={styles.leaderboard_entry} key={index} onPress={() => onPress(info)}>
+                            <View style={styles.leaderboard_entry_rank}>
+                                <Text style={styles.leaderboard_entry_rank_text}>{index+1}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_picture}>
+                                <Image
+                                    source={this.getDefaultPicture(info.team)}
+                                    style={styles.leaderboard_entry_picture_params}
+                                />
+                            </View>
+                            <View style={styles.leaderboard_entry_title}>
+                                <Text style={styles.leaderboard_entry_title_text}>{info.name}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_team}>
+                                <Text style={styles.leaderboard_entry_team_text}>{this.state.api_to_label_teams[info.team]}</Text>
+                            </View>
+                            <View style={styles.leaderboard_entry_score}>
+                                <Text style={styles.leaderboard_entry_score_text}>{info.score.toFixed(1)+"m"}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}}}))}
+                    <View style={{paddingBottom:20}}></View>
+                </ScrollView>
+                {/*Player card goes here*/}
+                {this.getPlayerCard()}
+                <Overlay
+                visible={this.state.overlayVisible}
+                setVisible={this.state.setOverlayVisible}
+                children={this.getOverlayContent()}
+                />
+            </View>
+        );
+    }
 }
 
 export default Leaderboard;
