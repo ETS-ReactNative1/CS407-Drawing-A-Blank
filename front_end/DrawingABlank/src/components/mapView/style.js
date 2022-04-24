@@ -5,16 +5,6 @@ export const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     flex: 1,
   },
-  settings_button: {
-    backgroundColor: 'rgba(250,250,250,0.8)',
-    marginLeft: 170,
-    marginRight: 180,
-
-    marginTop: 18,
-    left: -150,
-    borderRadius: 5,
-    elevation: 1,
-  },
   map: {...StyleSheet.absoluteFillObject},
   buttonContainer: {
     flexDirection: 'row',
@@ -43,18 +33,13 @@ export const styles = StyleSheet.create({
   },
   menu: {
     //position: 'absolute',
-    // backgroundColor: 'black',
+
     flexDirection: 'row',
     flexGrow: 0,
     flexShrink: 1,
     alignContent: 'flex-start',
   },
-
   menuIcon: {
     alignSelf: 'flex-start',
   },
-
-  centred_text: {
-    textAlign: 'center'
-  }
 });

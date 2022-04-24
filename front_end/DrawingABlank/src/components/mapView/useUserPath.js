@@ -1,53 +1,62 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
+
 import {Workout} from '../workout_recording/workout';
-import setupGeolocation, { getCurrentPosition } from './geoLocation';
-import { useEffect } from 'react';
-import {Polyline} from "react-native-maps"
+import useGeoLocation from './useGeoLocation';
+import {Polyline} from 'react-native-maps';
 
-import locationConfig from "./constants"
-
-const recorder = new Workout();
-
-const USER_DRAW_DIAMETER = 1; // metres
+const recorder = new Workout(); // maybe should be a ref, idk
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
 
-export default function useUserPath(isTracking) {  
-  const [userPath, setUserPath] = useState([]);
-  const workout_active = useRef(false)
-  
-  // init location listener
-  useEffect(() => {
-    setupGeolocation( userLoc => {
-      // Add every detected user location to path, conditionally on tracking 
-      addPathPoint(userLoc, isTracking)
-    }, locationConfig)
-    return () => {};
-  }, []);
+// normal path tracing vs workout path tracing
+export default function useUserPath() {
+  const workout_active = useRef(false);
+  const userLocation = useGeoLocation();
+  const [userPath, setUserPath] = useState([]); // dont want re redners if userpath not being shown - only show path if workout is active
 
-  function clearPath() {
-    setUserPath([]);
+  // might have to be careful about init userlocation being tracked i.e. (0,0)
+  useEffect(() => {
+    if (workout_active.current) addPathPoint(userLocation.current);
+  }, [userLocation.current]);
+
+  function removePathPoint(id) {
+    userPath.current = userPath.current.pop();
   }
 
-  const startWorkout = () => {
+  function addPathPoint(latLngPoint) {
+    // add latlng point to path
+    setUserPath(userPath.push(latLngPoint));
+
+    // add point to workout recorder / exercise computer
+    recorder.addCoordinate(
+      latLngPoint.latitude,
+      latLngPoint.longitude,
+      (isTracking = true),
+    );
+  }
+
+  function toggleWorkoutActive() {
+    if (workout_active.current) stopWorkout();
+    else startWorkout();
+  }
+
+  function startWorkout() {
     console.log('Starting Workout...');
-    clearPath();
-    workout_active.current = true;
+    const {latitude, longitude} = userLocation.current;
+
     recorder.startWorkout();
-    getCurrentPosition( ({longitude, latitude}) => {
-      recorder.addCoordinate(latitude, longitude);
-    })
-  };
+    recorder.addCoordinate(latitude, longitude);
+    workout_active.current = true;
+  }
 
   function stopWorkout() {
     console.log('Stopping Workout...');
+
     recorder.stopWorkout();
     workout_active.current = false;
-    clearPath();
   }
 
   function DrawUserPath() {
     if (workout_active) {
-      // console.log('drawing path,', userPath);
       return (
         <Polyline
           coordinates={userPath}
@@ -60,30 +69,5 @@ export default function useUserPath(isTracking) {
     }
   }
 
-  function addPathPoint(latLngPoint, isTracking) {
-    // add latlng point to path - only if tracking mode enabled    
-    if (workout_active.current) setUserPath(path => [...path, latLngPoint]);
-    
-    // add point to workout recorder / exercise computer
-    recorder.addCoordinate(
-      latLngPoint.latitude,
-      latLngPoint.longitude,
-      isTracking,
-    );
-  }
-
-  function toggleWorkout(conclude_workout) {
-    if (!workout_active.current) {
-      startWorkout();
-    } else {
-      stopWorkout()
-      conclude_workout(recorder)
-    }
-  } 
-
-  return [DrawUserPath, toggleWorkout, workout_active];
+  return [DrawUserPath, userPath];
 }
-
-// or make it a component
-// then pass props
-// control the props using...

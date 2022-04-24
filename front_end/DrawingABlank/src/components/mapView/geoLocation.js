@@ -9,8 +9,6 @@ const setupGeolocation = async (callback, options) => {
     // Listen for future user movement
     const watchId = Geolocation.watchPosition(
       ({coords}) => {
-        // console.log('listener Trigger', callback);
-        // testLog(coords);
         callback(coords);
       },
       e => {
@@ -30,10 +28,6 @@ const setupGeolocation = async (callback, options) => {
 
 const getCurrentPosition = callback => {
   return Geolocation.getCurrentPosition(({coords}) => callback(coords));
-};
-
-const testLog = c => {
-  console.log('TESTING LOG', c);
 };
 
 const clearWatch = ID => Geolocation.clearWatch(ID);

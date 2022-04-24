@@ -52,7 +52,6 @@ export default function useLocalGrids(
   }
 
   useEffect(() => {
-    console.log("updating local gridss")
     reScaleGrids(); // front end grid draw scaling - tiles draw style
     reSampleGrids(useCache); // cached vs live updates - tiles objects fetch
   }, [zoomLayer, renderRegion]);
@@ -71,7 +70,7 @@ export default function useLocalGrids(
       const {longitudeDelta, latitudeDelta} = zoomLevel.current;
 
       const tileSize = 5;
-      //console.log('lat', latitude, 'delta', latitudeDelta);
+      console.log('lat', latitude, 'delta', latitudeDelta);
       grids = getGrids(
         [latitude - latitudeDelta / 2, longitude - longitudeDelta / 2],
         [latitude + latitudeDelta / 2, longitude + longitudeDelta / 2],
@@ -85,8 +84,8 @@ export default function useLocalGrids(
       // should ideally use existing ones if user enters back into already cahced bound area
 
       const key = zoomLayer;
-      const tileSize = zoomLayer;
-      console.log('getting grids with tilesize from cache', tileSize);
+      const tileSize = zoomLayer //* 5;
+
       grids = await gridZoomCache.getEntryContent(key, 0, (key, entry) => {
         const renderRegionCentre = {
           latitude: renderRegion[latitude],
@@ -100,19 +99,19 @@ export default function useLocalGrids(
 
         // key is centre point of a region
       }); // flag overrides expiry_date to now
-      //console.log('Retrieved possible grids:', grids[0]);
+      console.log('Retrieved possible grids:', grids[0]);
       // if no cache entry for latlng + zoom
       // make it and save it to cache
       if (!grids) {
-        //console.log('No Cache Entry: Fetching Grids (tilsesize:)', tileSize);
+        console.log('No Cache Entry: Fetching Grids');
         entry = buildCacheEntry(renderRegion, tileSize);
-        //console.log('Entry Built, adding to cache');
+        console.log('Entry Built, adding to cache');
         entry[0] = key;
-        //console.log('entry', entry);
+        console.log('entry', entry);
 
         //
         gridZoomCache.addEntry(entry);
-        //console.log('Successfully added to cache');
+        console.log('Successfully added to cache');
         grids = entry[1];
       }
     }
@@ -129,9 +128,9 @@ export default function useLocalGrids(
     //skip
 
     requestsInFlight.current -= 1;
-    //console.log('rif', requestsInFlight.current);
+    console.log('rif', requestsInFlight.current);
     //if (requestsInFlight.current > 0) return; // dont update if there is a future update expected
-    //console.log('setting grids', grids);
+    console.log('setting grids', grids);
     setLocalGrids(grids);
   };
 
@@ -161,6 +160,20 @@ export default function useLocalGrids(
     });
   };
 
+  //Code taken from: https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
+  const hexToRGB = (hex) => {
+    var c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',0.7)';
+    }
+    throw new Error('Bad Hex');
+  }
+
   const DrawGrids = () => {
     return localGrids.map((grid, i) => {
       if (grid.bounds.length > 0) {
@@ -168,14 +181,15 @@ export default function useLocalGrids(
           <Polygon
             coordinates={grid.bounds}
             strokeColor={'#000000'}
-            fillColor={'#' + grid.colour}
+            fillColor={hexToRGB('#' + grid.colour)}
+            fillOpacity={0.7}
             strokeWidth={1}
             key={i}></Polygon>
         );
       }
     });
   };
-  return [useMemo(() => DrawGrids, [renderRegion, zoomLayer]), localGrids];
+  return [DrawGrids, localGrids];
   // return [useCallback(DrawGrids, [localGrids]), localGrids];
 }
 
