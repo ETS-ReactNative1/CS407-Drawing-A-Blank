@@ -1,4 +1,5 @@
 import React, {useState, Component} from 'react';
+import PushNotification from 'react-native-push-notification';
 import MapViewComplete from './MapViewComplete';
 
 class MapViewCompleteComponent extends Component {
@@ -10,6 +11,10 @@ class MapViewCompleteComponent extends Component {
             console.log("Changing state")
             this.setState(this.props.route.params);
         }
+    }
+
+    componentWillUnmount(){
+        PushNotification.cancelAllLocalNotifications();
     }
 
     render(){
