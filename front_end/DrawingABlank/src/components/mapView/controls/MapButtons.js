@@ -25,6 +25,12 @@ export default function MapControls({
     {key: 1, label: 'Running', customKey: 'run'},
     {key: 2, label: 'Cycling', customKey: 'cycle'},
   ];
+
+  const submission_choices = [
+    {key:0, label: 'Submit Workout', customKey:'submit'},
+    {key:1, label: 'Cancel Workout', customKey:'cancel'}
+  ]
+
   var option_selected = 'walk';
 
   return (
@@ -69,14 +75,26 @@ export default function MapControls({
           </TouchableOpacity>
           <TouchableOpacity>
             {workout_active ? (
-              <Icon
+              <ModalSelector
+              data={submission_choices}
+              ref={selector => (this.selector = selector)}
+              customSelector={  
+                <Icon
                 name={'pause'}
                 type={'feather'}
                 iconStyle={styles.paused}
                 // containerStyle={styles.menu}
                 size={30}
-                onPress={toggleWorkout} // stop workout (change to stats, -1)
+                onPress={() => this.selector.open()} // stop workout (change to stats, -1)
+                />
+              }
+              onChange={option => {
+                this.option_selected = option.customKey;
+                toggleWorkout(this.option_selected);
+              }}
               />
+              
+              
             ) : (
               <ModalSelector
                 data={workout_choices}

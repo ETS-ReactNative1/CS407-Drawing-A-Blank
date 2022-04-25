@@ -84,8 +84,11 @@ export default function useUserPath(isTracking) {
     if (!workout_active.current) {
       startWorkout(type);
     } else {
+      console.log("CLOSE OPTION:"+type);
       stopWorkout();
-      changeToStats(recorder);
+      if(type=='submit'){
+        changeToStats(recorder);
+      }
     }
   }
 
