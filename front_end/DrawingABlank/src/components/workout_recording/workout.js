@@ -78,7 +78,6 @@ export class Workout {
       this.type = type;
       this.date_start = new Date();
       this.recording = true;
-      //this.startNotification();
       this.startTracking();
     }
   }

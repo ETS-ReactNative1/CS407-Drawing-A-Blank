@@ -6,8 +6,9 @@ import {Polyline} from 'react-native-maps';
 
 import locationConfig from './constants';
 import useGeoLocation from './useGeoLocation';
+import PushNotification from 'react-native-push-notification';
 
-const recorder = new Workout();
+var recorder = new Workout();
 
 const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
@@ -20,13 +21,14 @@ export default function useUserPath(isTracking) {
 
   // init location listener
   useEffect(() => {
-    recorder.coordinates;
+    //recorder.coordinates;
+    recorder = new Workout();
     setupGeolocation(userLoc => {
       // Add every detected user location to path, conditionally on tracking
       console.log('movement');
       addPathPoint(userLoc, isTracking);
     }, locationConfig);
-    return () => {};
+    return () => {PushNotification.cancelAllLocalNotifications()};
   }, []);
 
   function clearPath() {

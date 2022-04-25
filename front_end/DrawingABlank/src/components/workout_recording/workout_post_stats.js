@@ -43,7 +43,7 @@ class WorkoutPostStats extends Component {
     var minutes = Math.floor(duration / 60);
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var seconds = duration % 60;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
+    seconds = seconds < 10 ? '0' + seconds.toFixed(0) : seconds;
     var result = [
       {
         title: 'Average Speed',
@@ -57,7 +57,7 @@ class WorkoutPostStats extends Component {
       },
       {
         title: 'Duration (mm:ss)',
-        value: minutes + ':' + seconds.toFixed(0),
+        value: minutes + ':' + seconds,
         key: 4,
       },
       {

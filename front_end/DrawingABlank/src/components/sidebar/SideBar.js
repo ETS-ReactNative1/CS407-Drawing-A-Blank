@@ -14,6 +14,10 @@ import {Alert} from 'react-native';
 import {Overlay} from '../../containers/Overlay';
 import PlayerProfile from '../leaderboard/playerProfile';
 import {getProfile, getUserWorkouts} from '../../api/api_profile';
+import PushNotification from 'react-native-push-notification';
+import * as Location from 'expo-location';
+
+const TASK_NAME = 'FRESGO_GET_LOCATION';
 
 const renderSidebar = () => {};
 
@@ -79,6 +83,11 @@ function SideBar(props) {
           {
             text: 'Yes',
             onPress: () => {
+              Location.hasStartedLocationUpdatesAsync(TASK_NAME).then(value => {
+                if (value) {
+                  Location.stopLocationUpdatesAsync(TASK_NAME);
+                }
+              });
               logout().then(_ => {
                 deleteToken().then(_ => {
                   deleteUsername().then(_ => {
