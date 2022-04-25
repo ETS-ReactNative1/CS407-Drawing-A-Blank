@@ -6,7 +6,7 @@ import {debounce, getCorners} from './utils';
 import useLocalGrids from './useLocalGrids';
 import useLocalEvents from './useLocalEvents';
 import regionTools from './regionUtils';
-import { getCurrentPosition } from './geoLocation';
+import {getCurrentPosition} from './geoLocation';
 // issue perhaps of region not being set for first load
 // due to geolocation async update
 
@@ -31,15 +31,15 @@ const initRegion = {
 // "What is the user looking at"
 export default function useRegion(setOverlayVisible, setOverlayContent) {
   // pass view region
-  console.log("Init UseRegion Hook")
+  console.log('Init UseRegion Hook');
 
   const [zoomLayer, setZoomLayer] = useState(6);
   const [viewRegion, setViewRegion] = useState(initRegion); // want view region to be more passive(state->ref) to stop snaps from setting stete too often
   //const viewRegion = useRef()
   const [renderRegion, setRenderRegion] = useState(
     regionTools.buildRegion(initRegion, RENDER_REGION_SCALING_FACTOR),
-  ); 
-  
+  );
+
   // region features (hooks)
   const [DrawGrids, localGrids] = useLocalGrids(
     [],
@@ -50,20 +50,23 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     [],
     {renderRegion, zoomLayer},
     {useCache: 1, setOverlayVisible, setOverlayContent},
-  );  
-  
+  );
+
   const regionFeatures = {localGrids, events};
 
-  // Set !inital! map location to user device location  
+  // Set !inital! map location to user device location
   useEffect(() => {
     getCurrentPosition(position => {
-      setViewRegion(regionTools.buildRegion(position)) // focus job equivalent
-      setRenderRegion(regionTools.buildRegion(position, RENDER_REGION_SCALING_FACTOR))
-    })
-  }, [])
+      setViewRegion(regionTools.buildRegion(position)); // focus job equivalent
+      setRenderRegion(
+        regionTools.buildRegion(position, RENDER_REGION_SCALING_FACTOR),
+      );
+    });
+  }, []);
 
   /**
    * Converts from longlat delta zoom to layer based zoom
+   * As of right now is directly used as grid tile size when fetching
    * @param {Object} zoom {latitdudeDelta, longitudeDelta}
    * @returns {int} zoom layer
    */
@@ -72,23 +75,22 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
 
     layer = 1;
 
-    if (dLat < 0.0005) {
+    if (dLat < 0.0025) {
       layer = 1;
-    } else if (dLat < 0.0024) {
+    } else if (dLat < 0.006) {
       layer = 2;
     } else if (dLat < 0.0089) {
-      layer = 5;
+      layer = 3;
     } else if (dLat < 0.04) {
-      layer = 10;
+      layer = 6;
     } else if (dLat < 0.3) {
-      layer = 15;
+      layer = 8;
     } else {
-      layer = 25;
+      layer = 10;
     }
 
     return layer;
   };
-  
 
   /**
    * Draws the outline of the current render region
@@ -131,9 +133,9 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
       setViewRegion(displayRegion);
       return; // dont need to compute new render region if we are still inside "best" one - must be true if we have focus job trigger (e.g. auto pan to clicked event mrker)
     }
-    console.log("zoomlayer", zoomLayer)
-    setViewRegion(displayRegion) // "backup" current view region (for anticipated upcoming re render)
-    
+    console.log('zoomlayer', zoomLayer);
+    setViewRegion(displayRegion); // "backup" current view region (for anticipated upcoming re render)
+
     const displayLocation = {
       latitude: displayRegion.latitude,
       longitude: displayRegion.longitude,
@@ -144,8 +146,6 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     };
     const displayZoomLayer = getZoomLayer(displayZoom);
 
-    
-
     // if current user view can see outside their render region, update the render region
     // to cover the wider view
     if (!regionTools.checkRegionCoverage(renderRegion, displayRegion)) {
@@ -153,12 +153,11 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
         displayRegion,
         RENDER_REGION_SCALING_FACTOR,
       );
-      setRenderRegion((r) => new_renderRegion);
+      setRenderRegion(r => new_renderRegion);
     }
 
-      // update zoomlayer if changed - for zoom depenednet features e.g. grids
-    setZoomLayer((z) => displayZoomLayer);
-    
+    // update zoomlayer if changed - for zoom depenednet features e.g. grids
+    setZoomLayer(z => displayZoomLayer);
   };
 
   return [
