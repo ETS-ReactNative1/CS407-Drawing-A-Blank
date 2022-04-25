@@ -358,7 +358,7 @@ class WorkoutSubmission(viewsets.ViewSet):
     def add_participation(player, tile):
         closest_event = Event.get_closest_active_event(tile)
         # check tile is contained within an event
-        if closest_event.check_within(tile):
+        if closest_event is not None and closest_event.check_within(tile):
             event_perf, created = EventPerformance.objects.get_or_create(player=player, event=closest_event,
                                                                          defaults={'contribution': 1})
             # update contribution for existing record
