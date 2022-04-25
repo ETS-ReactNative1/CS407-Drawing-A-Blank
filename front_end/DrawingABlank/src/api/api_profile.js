@@ -1,4 +1,4 @@
-import { request, getToken, getUsername } from "./api_networking";
+import {request, getToken, getUsername} from './api_networking';
 
 /*
         username = data["username"]
@@ -86,10 +86,9 @@ export const getUserWorkouts = () => {
       uname = username;
     }
   });
+  const query = '?username=' + uname + '&date=01/01/2020';
   return getToken()
-    .then(token =>
-      request('GET', 'workout/history/?username=', uname, '', token),
-    )
+    .then(token => request('GET', 'workout/history', query, '', token))
     .then(response => {
       if (response.status != 200) {
         throw new Error(`Could not obtain workout_history. ${response.status}`);

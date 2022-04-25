@@ -71,7 +71,7 @@ const WorkoutHistory = () => {
         }}>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontSize: 20}}>
-          {workout.date} {workout.type}
+          {workout.date.substring(0, 10)} {workout.type}
         </Text>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontWeight: 'bold'}}>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    height: '2.3%',
+    height: 100,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
