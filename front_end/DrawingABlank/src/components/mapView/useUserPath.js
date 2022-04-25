@@ -41,7 +41,7 @@ export default function useUserPath(isTracking) {
     workout_active.current = true;
     recorder.startWorkout(type);
     getCurrentPosition(({longitude, latitude}) => {
-      recorder.addCoordinate(latitude, longitude);
+      recorder.addCoordinate(latitude, longitude, true);
     });
   };
 
