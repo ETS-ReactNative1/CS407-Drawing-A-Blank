@@ -12,7 +12,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.response import Response
 
-from . import leaderboards, stats, grids, authentication
+from . import leaderboards, stats, grids, authentication, cron
 from .models import Event, Workout, WorkoutPoint, Grid, Player, Team, EventBounds, EventPerformance, ReportGrids
 
 
@@ -21,7 +21,7 @@ class Events(viewsets.ViewSet):
 
     # only allow admins to create events
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'force':
             permission_classes = [IsAdminUser]
         else:
             permission_classes = [IsAuthenticated]
@@ -82,6 +82,12 @@ class Events(viewsets.ViewSet):
             date = ''
 
         return Response(Event.event_scores(date, player), status=status.HTTP_200_OK)
+
+    @action(methods=['patch'], detail=False)
+    def force(self, request):
+        cron.event_check_today()
+
+        return Response('events force open/closed', status=status.HTTP_200_OK)
 
     # convert a list of events to a returnable JSON format
     @staticmethod
@@ -230,19 +236,18 @@ class GridView(viewsets.ViewSet):
 
     # show map tiles within given bounds at given subsample rate
     def list(self, request):
-        return Response("here", status=status.HTTP_200_OK)
-
         data = request.GET
         bl = data['bottom_left']
         tr = data['top_right']
         zoom = data['zoom']
+
         bl_lat, bl_long = bl.split(',')
         bl = [float(bl_lat), float(bl_long)]
         tr_lat, tr_long = tr.split(',')
         tr = [float(tr_lat), float(tr_long)]
 
         allGrids = grids.sub_sample((bl, tr), zoom)
-        return Response((bl,tr), status=status.HTTP_200_OK)
+        return Response(allGrids, status=status.HTTP_200_OK)
 
 
 class WorkoutSubmission(viewsets.ViewSet):
@@ -353,7 +358,7 @@ class WorkoutSubmission(viewsets.ViewSet):
     def add_participation(player, tile):
         closest_event = Event.get_closest_active_event(tile)
         # check tile is contained within an event
-        if closest_event.check_within(tile):
+        if closest_event is not None and closest_event.check_within(tile):
             event_perf, created = EventPerformance.objects.get_or_create(player=player, event=closest_event,
                                                                          defaults={'contribution': 1})
             # update contribution for existing record
