@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {View} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Animated} from 'react-native-maps';
-import MapControls from './controls/MapButtons';
+import MapControls from './MapButtons';
 import Sheet from '../bottomSheet/Sheet';
 import {styles} from './style.js';
 import {useNavigation} from '@react-navigation/native';
