@@ -29,14 +29,14 @@ export default function MapControls({
 
   return (
     <Fragment>
-      <AbsoluteComponent style={{left: -20, top: 10}}>
+      <AbsoluteComponent style={{left: -20, top: 60}}>
         <View style={styles.small_buttonContainer}>
           <TouchableOpacity>
             <Icon name={'menu'} type={'feather'} onPress={toggleSidebar}></Icon>
           </TouchableOpacity>
         </View>
       </AbsoluteComponent>
-      <AbsoluteComponent style={{left: -20, top: 60}}>
+      <AbsoluteComponent style={{top: 60, right: -30}}>
         <View style={styles.small_buttonContainer}>
           <TouchableOpacity>
             <Icon
@@ -46,7 +46,7 @@ export default function MapControls({
           </TouchableOpacity>
         </View>
       </AbsoluteComponent>
-      <AbsoluteComponent style={{bottom: 70, elevation: 0}}>
+      <AbsoluteComponent style={{left: 0, right: 0, bottom: 70, elevation: 0}}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity>
             {ghost_inactive ? (

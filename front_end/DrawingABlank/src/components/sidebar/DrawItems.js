@@ -10,21 +10,25 @@ export default [
     iconName: 'activity', //sports
   },
   {
-    label: 'Report',
-    iconType: 'material',
+    label: 'Event History',
+    iconType: 'feather',
     iconName: 'flag',
-    isFoot: true,
+  },
+  {
+    label: 'Leaderboards',
+    iconType: 'feather',
+    iconName: 'trending-up',
   },
   {
     label: 'Logout',
-    iconType: 'feather',
-    iconName: 'log-out',
+    iconType: 'material',
+    iconName: 'logout',
     isFoot: true,
   },
-  /* {
-    label: 'Refer a Friend!',
-    iconType: 'feather',
-    iconName: 'user-plus',
-    isFoot: false,
-  }, */
+  // {
+  //   label: 'Refer a Friend!',
+  //   iconType: 'material',
+  //   iconName: 'group_add',
+  //   isFoot: true,
+  // },
 ];

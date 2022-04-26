@@ -22,8 +22,8 @@ export default function useUserPath(isTracking) {
   useEffect(() => {
     recorder.coordinates;
     setupGeolocation(userLoc => {
-      // Add every detected user location to path, conditionally on tracking
-      console.log('movement');
+      // Add every detected user location to path,
+      // filtered via isTracking ref
       addPathPoint(userLoc, isTracking);
     }, locationConfig);
     return () => {};
@@ -78,7 +78,6 @@ export default function useUserPath(isTracking) {
   }
 
   function toggleWorkout(changeToStats, type) {
-    console.log('worlout active:', workout_active.current, type);
     if (!workout_active.current) {
       startWorkout(type);
     } else {
