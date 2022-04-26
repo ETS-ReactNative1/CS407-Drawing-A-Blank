@@ -29,7 +29,7 @@ function Map({
   // Map Page Navigation
   const navigation = useNavigation();
   function changeToStats(recorder) {
-    navigation.navigate('post_workout_stats', {recorder});
+    navigation.navigate('post_workout_stats', {recorder:recorder, upload:true});
   }
 
   // Debounced set region - prevents rapid renderRegion checks/changes

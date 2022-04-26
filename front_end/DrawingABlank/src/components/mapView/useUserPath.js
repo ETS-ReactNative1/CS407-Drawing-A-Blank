@@ -6,8 +6,9 @@ import {Polyline} from 'react-native-maps';
 
 import locationConfig from './constants';
 import useGeoLocation from './useGeoLocation';
+import PushNotification from 'react-native-push-notification';
 
-const recorder = new Workout();
+var recorder = new Workout();
 
 const USER_DRAW_DIAMETER = 1; // metres
 const USER_INK_COLOUR = 'rgba(0, 255, 0, 0.75)';
@@ -20,13 +21,14 @@ export default function useUserPath(isTracking) {
 
   // init location listener
   useEffect(() => {
-    recorder.coordinates;
+    //recorder.coordinates;
+    recorder = new Workout();
     setupGeolocation(userLoc => {
       // Add every detected user location to path,
       // filtered via isTracking ref
       addPathPoint(userLoc, isTracking);
     }, locationConfig);
-    return () => {};
+    return () => {PushNotification.cancelAllLocalNotifications()};
   }, []);
 
   function clearPath() {
@@ -39,7 +41,7 @@ export default function useUserPath(isTracking) {
     workout_active.current = true;
     recorder.startWorkout(type);
     getCurrentPosition(({longitude, latitude}) => {
-      recorder.addCoordinate(latitude, longitude);
+      recorder.addCoordinate(latitude, longitude, true);
     });
   };
 
@@ -81,8 +83,11 @@ export default function useUserPath(isTracking) {
     if (!workout_active.current) {
       startWorkout(type);
     } else {
+      console.log("CLOSE OPTION:"+type);
       stopWorkout();
-      changeToStats(recorder);
+      if(type=='submit'){
+        changeToStats(recorder);
+      }
     }
   }
 

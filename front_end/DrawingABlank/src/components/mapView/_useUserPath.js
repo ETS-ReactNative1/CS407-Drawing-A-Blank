@@ -51,7 +51,7 @@ export default function useUserPath() {
 
     clearPath();
     recorder.startWorkout();
-    recorder.addCoordinate(latitude, longitude);
+    recorder.addCoordinate(latitude, longitude, true);
     workout_active.current = true;
   }
 
