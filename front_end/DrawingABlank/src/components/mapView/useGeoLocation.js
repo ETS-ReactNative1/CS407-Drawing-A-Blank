@@ -1,7 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
 import setupGeolocation, {clearWatch, getCurrentPosition} from './geoLocation';
 
-
 const locationConfig = {
   enableHighAccuracy: true,
   timeout: 200, // max time for location request duration
@@ -16,17 +15,18 @@ export default function useGeoLocation(callback) {
 
   useEffect(() => {
     async function handleGeoLocation() {
-      const {ID} = await setupGeolocation(userLocation => {
+      setupGeolocation(userLocation => {
         // Listens to userlocation changes
         // setLocation(userLocation);
+
         location.current = userLocation;
       }, locationConfig);
-      watchId.current = ID;
+      //watchId.current = ID;
     }
 
     handleGeoLocation();
 
-    return () => clearWatch(watchId.current);
+    //return () => clearWatch(watchId.current);
   }, []);
 
   return location;

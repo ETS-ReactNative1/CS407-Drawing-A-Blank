@@ -6,8 +6,8 @@ export default function AbsoluteComponent(props) {
     <View
       style={{
         position: 'absolute',
-        left: 0,
-        right: 0,
+        //left: 0,
+        //right: 0,
         justifyContent: 'center',
         ...props.style,
       }}>

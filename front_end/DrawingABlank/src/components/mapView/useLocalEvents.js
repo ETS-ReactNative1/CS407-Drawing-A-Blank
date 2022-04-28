@@ -2,19 +2,62 @@ import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {getEvents} from '../../api/api_events';
 import useGeoLocation from './useGeoLocation';
 import {Marker, Polygon, Circle} from 'react-native-maps';
+import EventDetails from '../events/EventDetails';
 
 import Cache from './SimpleCache';
 export default function useEvents(
   initEvents,
   {renderRegion, zoomLayer},
-  {useCache} = {},
+  {useCache, setOverlayVisible, setOverlayContent} = {},
 ) {
   const [events, setEvents] = useState([]);
   const eventCache = useRef(new Cache({}));
 
   useEffect(() => {
+    console.log('updatng local events');
     getEvents().then(result => setEvents(result || []));
   }, []);
+
+  useEffect(() => {
+    collectEventScores();
+  }, [renderRegion]);
+
+  function collectEventScores() {
+    console.log('CALCULATING SCORES');
+    console.log('HAVE EVENTS:' + events);
+    result = {};
+    events.forEach(event => {
+      console.log('GOT EVENT:' + JSON.stringify(event));
+      var eventScore = getEventScores(grids, event['bounds']['coordinates']);
+      if (eventScore.length != 0) {
+        converted_result = [];
+        eventScore.forEach(score => {
+          converted_result.push({
+            title: score['details']['team'],
+            picture: score['details']['picture'],
+            points: score['count'],
+          });
+        });
+        result[event.id] = converted_result;
+      }
+    });
+    //TODO FIX EVENT SCORES
+    //setEventScores(result);
+    console.log(result);
+  }
+
+  function onEventPress(type, time, radius, desc) {
+    // eventType, timeRemaining, radius, desc
+    setOverlayContent(
+      <EventDetails
+        eventType={type}
+        timeRemaining={time}
+        radius={radius}
+        desc={desc}
+      />,
+    );
+    setOverlayVisible(true);
+  }
 
   function DrawEventsBounds() {
     return events.map((space, i) => {
@@ -48,11 +91,11 @@ export default function useEvents(
         key={event.id}
         coordinate={event.marker}
         title={event.title}
-        anchor={{x: 0, y: 1}}
+        /* anchor={{x: 0, y: 1}} */
         description={event.description}
-        image={{
+        /* image={{
           uri: 'http://clipart-library.com/data_images/165937.png',
-        }}
+        }} */
         onPress={() => {
           var current_date = new Date();
           var event_date = Date.parse(event.date_end);

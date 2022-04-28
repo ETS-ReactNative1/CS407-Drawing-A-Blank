@@ -6,6 +6,7 @@ import {debounce, getCorners} from './utils';
 import useLocalGrids from './useLocalGrids';
 import useLocalEvents from './useLocalEvents';
 import regionTools from './regionUtils';
+import {getCurrentPosition} from './geoLocation';
 // issue perhaps of region not being set for first load
 // due to geolocation async update
 
@@ -21,56 +22,51 @@ const INIT_ZOOM = {
   longitudeDelta: 0.5393288657069206,
 };
 
-// const buildRenderRegion = region => {
-//   const r = {
-//     ...region,
-//     latitudeDelta: region.latitudeDelta * RENDER_REGION_FACTOR,
-//     longitudeDelta: region.longitudeDelta * RENDER_REGION_FACTOR,
-//   };
-//   return r;
-// };
+const initRegion = {
+  latitude: 0,
+  longitude: 0,
+  ...INIT_ZOOM,
+};
 
 // "What is the user looking at"
-export default function useRegion() {
-  const initRegion = {
-    latitude: 0,
-    longitude: 0,
-    ...INIT_ZOOM,
-  };
+export default function useRegion(setOverlayVisible, setOverlayContent) {
+  // pass view region
+  console.log('Init UseRegion Hook');
 
-  const deviceLocation = useGeoLocation();
-  const [zoomLayer, setZoomLayer] = useState(1);
+  const [zoomLayer, setZoomLayer] = useState(6);
+  const [viewRegion, setViewRegion] = useState(initRegion); // want view region to be more passive(state->ref) to stop snaps from setting stete too often
+  //const viewRegion = useRef()
   const [renderRegion, setRenderRegion] = useState(
     regionTools.buildRegion(initRegion, RENDER_REGION_SCALING_FACTOR),
   );
-  const [focusRegion, _setFocusRegion] = useState(initRegion); // technically jsut a render trigger for below ref
-  const focusRegionRef = useRef(focusRegion); // tracks current user view
-  const setFocusRegion = region => {
-    focusRegionRef.current = region;
-    _setFocusRegion(region);
-  };
+
+  // region features (hooks)
   const [DrawGrids, localGrids] = useLocalGrids(
     [],
     {renderRegion, zoomLayer},
-    {useCache: 1},
+    {useCache: 1, setOverlayVisible, setOverlayContent},
   );
   const [DrawEvents, events] = useLocalEvents(
     [],
     {renderRegion, zoomLayer},
-    {useCache: 1},
+    {useCache: 1, setOverlayVisible, setOverlayContent},
   );
-  const isUserTrackingEnabled = useRef(false);
+
   const regionFeatures = {localGrids, events};
 
   // Set !inital! map location to user device location
-  useDidUpdateEffect(() => {
-    uLoc = deviceLocation.current;
-    r = regionTools.buildRegion({...INIT_ZOOM, ...deviceLocation.current});
-    setFocusRegion(r);
-  }, [deviceLocation.current]);
+  useEffect(() => {
+    getCurrentPosition(position => {
+      setViewRegion(regionTools.buildRegion(position)); // focus job equivalent
+      setRenderRegion(
+        regionTools.buildRegion(position, RENDER_REGION_SCALING_FACTOR),
+      );
+    });
+  }, []);
 
   /**
    * Converts from longlat delta zoom to layer based zoom
+   * As of right now is directly used as grid tile size when fetching
    * @param {Object} zoom {latitdudeDelta, longitudeDelta}
    * @returns {int} zoom layer
    */
@@ -79,18 +75,18 @@ export default function useRegion() {
 
     layer = 1;
 
-    if (dLat < 0.00029) {
+    if (dLat < 0.0025) {
       layer = 1;
-    } else if (dLat < 0.0024) {
+    } else if (dLat < 0.006) {
       layer = 2;
     } else if (dLat < 0.0089) {
-      layer = 5;
+      layer = 3;
     } else if (dLat < 0.04) {
-      layer = 10;
+      layer = 6;
     } else if (dLat < 0.3) {
-      layer = 15;
+      layer = 8;
     } else {
-      layer = 25;
+      layer = 10;
     }
 
     return layer;
@@ -114,9 +110,10 @@ export default function useRegion() {
    * Draws the features of the map, e.g. grids, events
    * @param {Object} Options
    * @param {Boolean} Options.showRegionOutline Set flag to show render region outline on map
-   * @returns {Array} Draw object
+   * @returns {Array} Draw object - Contains all drawable features for the map as JSX array
    */
   const DrawRenderRegionFeatures = ({showRegionOutline}) => {
+    // key property neccessary for react to indetify each as unique
     const Draw = [DrawEvents({key: 1}), DrawGrids({key: 2})];
     if (showRegionOutline) Draw.push(DrawRenderRegionOutline({key: 3}));
     return Draw;
@@ -126,16 +123,18 @@ export default function useRegion() {
    * Updates the region ref to backup current map location in case of re renders
    * If focusJob flag set, immediatly sets map to the new location.
    * Otherwise just store the region to be shown next re render (i.e. in the future)
-   * @param {Object} displayRegion
+   * @param {Object} displayRegion Current region the user can see on their display - the field of view (region) of the map
    * @param {Boolean} isFocusJob Flag to demand immediate refocus of map,
    *
    */
   const updateRegion = (displayRegion, isFocusJob = false) => {
-    focusRegionRef.current = displayRegion;
+    // focusRegionRef.current = displayRegion;
     if (isFocusJob) {
-      setFocusRegion(displayRegion);
-      return; // dont need to compute new render region if we are still inside "best" one
+      setViewRegion(displayRegion);
+      return; // dont need to compute new render region if we are still inside "best" one - must be true if we have focus job trigger (e.g. auto pan to clicked event mrker)
     }
+    console.log('zoomlayer', zoomLayer);
+    setViewRegion(displayRegion); // "backup" current view region (for anticipated upcoming re render)
 
     const displayLocation = {
       latitude: displayRegion.latitude,
@@ -151,23 +150,18 @@ export default function useRegion() {
     // to cover the wider view
     if (!regionTools.checkRegionCoverage(renderRegion, displayRegion)) {
       const new_renderRegion = regionTools.buildRegion(
-        displayRegion, // have managed to completly disregard zoomlevel when picking render region zoom level
+        displayRegion,
         RENDER_REGION_SCALING_FACTOR,
       );
-      setRenderRegion(new_renderRegion);
+      setRenderRegion(r => new_renderRegion);
     }
 
-    // change of zoom layer, so re render zoomlayer dependent components
-    if (zoomLayer != displayZoomLayer) {
-      // if current user zoom level is outisde current level limits,
-      // set new zoom level
-      // affects rendering level-of-detail components
-      setZoomLayer(displayZoomLayer);
-    }
+    // update zoomlayer if changed - for zoom depenednet features e.g. grids
+    setZoomLayer(z => displayZoomLayer);
   };
 
   return [
-    focusRegionRef.current, // left as ref for now, to be made properly handled state - or maybe not
+    viewRegion, // left as ref for now, to be made properly handled state - or maybe not
     updateRegion,
     regionFeatures,
     DrawRenderRegionFeatures,
