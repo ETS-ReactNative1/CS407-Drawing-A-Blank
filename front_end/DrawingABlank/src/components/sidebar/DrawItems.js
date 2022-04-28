@@ -12,17 +12,12 @@ export default [
   {
     label: 'Event History',
     iconType: 'feather',
-    iconName: 'flag'
+    iconName: 'flag',
   },
   {
     label: 'Leaderboards',
     iconType: 'feather',
-    iconName: 'trending-up'
-  },
-  {
-    label: 'Settings',
-    iconType: 'feather',
-    iconName: 'settings',
+    iconName: 'trending-up',
   },
   {
     label: 'Logout',
@@ -30,10 +25,10 @@ export default [
     iconName: 'logout',
     isFoot: true,
   },
-  {
-    label: 'Refer a Friend!',
-    iconType: 'material',
-    iconName: 'group_add',
-    isFoot: true,
-  },
+  // {
+  //   label: 'Refer a Friend!',
+  //   iconType: 'material',
+  //   iconName: 'group_add',
+  //   isFoot: true,
+  // },
 ];

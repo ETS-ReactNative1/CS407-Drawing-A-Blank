@@ -1,12 +1,19 @@
 import React, {Component, useState} from 'react';
-import {ActivityIndicator, Button, StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Button,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
 import {Workout} from './workout';
 import {styles} from './workout_style';
 import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import ExtraData from '../profile/personal_stats/extra_data.js';
-import { getTeam } from '../../api/api_networking';
+import {getTeam} from '../../api/api_networking';
 
 class WorkoutPostStats extends Component {
   recorder = this.props.route.params.recorder;
@@ -15,25 +22,28 @@ class WorkoutPostStats extends Component {
     speed_time: this.recorder.getSpeedvsTime(),
     distance_time: this.recorder.getDistanceVsTime(),
     debug_text: '',
-    submittedWorkout:!this.props.route.params.upload,
-    team:""
+    submittedWorkout: !this.props.route.params.upload,
+    team: '',
   };
   componentDidMount() {
-    console.log("RECORDER:"+JSON.stringify(this.props.route.params.recorder));
+    console.log('RECORDER:' + JSON.stringify(this.props.route.params.recorder));
     getTeam().then(team => {
-      this.setState({team:team})
-    })
+      this.setState({team: team});
+    });
     this.submitWorkout();
   }
   switchBackToMap() {
     this.props.navigation.navigate('map_view_complete');
   }
   getExtraData() {
-    var duration = (this.recorder.date_end.getTime() - this.recorder.date_start.getTime())/1000;
-    var minutes = Math.floor(duration/60);
-    minutes = minutes < 10 ? '0'+minutes : minutes;
-    var seconds = (duration%60);
-    seconds = seconds < 10 ? '0'+seconds : seconds;
+    console.log('Recorder', this.recorder);
+    var duration =
+      (this.recorder.date_end.getTime() - this.recorder.date_start.getTime()) /
+      1000;
+    var minutes = Math.floor(duration / 60);
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var seconds = duration % 60;
+    seconds = seconds < 10 ? '0' + seconds.toFixed(0) : seconds;
     var result = [
       {
         title: 'Average Speed',
@@ -47,14 +57,14 @@ class WorkoutPostStats extends Component {
       },
       {
         title: 'Duration (mm:ss)',
-        value: minutes + ":" + seconds.toFixed(0),
+        value: minutes + ':' + seconds,
         key: 4,
       },
       {
         title: 'Calories Burned',
-        value: this.recorder.getCalories() + " kcal",
-        key: 5
-      }
+        value: this.recorder.getCalories() + ' kcal',
+        key: 5,
+      },
     ];
     console.log('Returning ' + JSON.stringify(result));
     return result;
@@ -87,51 +97,64 @@ class WorkoutPostStats extends Component {
       />
     );
   }
-  generateTip(){
-    var quotes = ["After each workout, be sure to stretch your muscles in order to prevent injury.","Make sure to stay hydrated and cool yourself down.","A workout a day keeps the doctor away.","Did you know? The world's strongest man eats over 12000 calories a day."]
-    return quotes[Math.floor(Math.random()*quotes.length)]
+  generateTip() {
+    var quotes = [
+      'After each workout, be sure to stretch your muscles in order to prevent injury.',
+      'Make sure to stay hydrated and cool yourself down.',
+      'A workout a day keeps the doctor away.',
+      "Did you know? The world's strongest man eats over 12000 calories a day.",
+    ];
+    return quotes[Math.floor(Math.random() * quotes.length)];
   }
   renderExtraData() {
     this.state.extra_data = this.getExtraData();
     return <ExtraData data={this.state.extra_data} />;
   }
-  submitWorkout(){
-    if(this.props.route.params.upload){
+  submitWorkout() {
+    if (this.props.route.params.upload) {
       this.recorder.uploadWorkout().then(res => {
-          console.log("GOT WORKOUT RESULT:"+JSON.stringify(res));
-          this.recorder.setCalories(res.calories.toFixed(2));
-          this.setState({submittedWorkout:true});
-      })
+        console.log('GOT WORKOUT RESULT:' + JSON.stringify(res));
+        this.recorder.setCalories(res.calories.toFixed(2));
+        this.setState({submittedWorkout: true});
+      });
     }
   }
   render() {
     return (
-      <ScrollView style={{paddingBottom: 40,  backgroundColor:'#2179b8'}}>
-        {this.state.submittedWorkout ? 
-        <View style={{alignItems: 'center', marginTop: 20, paddingBottom: 10}}>
-          <Text style={styles.workout_button_text}>Post-Workout Summary</Text>
-          <Text style={{fontSize: 16, fontFamily:"Ubuntu-Light",color:"#fafafa"}}>
-            Workout complete! Your results have been saved to Fresgo's servers.
-          </Text>
-          <View style={{marginTop: 20, width: '90%'}}>
-            {this.getSpeedVsTimeGraph()}
-            {this.getDistanceVsTimeGraph()}
-            {this.renderExtraData()}
-          </View>
-          <TouchableOpacity style={styles.workout_button}>
+      <ScrollView style={{paddingBottom: 40, backgroundColor: '#2179b8'}}>
+        {this.state.submittedWorkout ? (
+          <View
+            style={{alignItems: 'center', marginTop: 20, paddingBottom: 10}}>
+            <Text style={styles.workout_button_text}>Post-Workout Summary</Text>
             <Text
-              style={styles.workout_button_text}
-              onPress={() => this.switchBackToMap()}>
-              Continue
+              style={{
+                fontSize: 16,
+                fontFamily: 'Ubuntu-Light',
+                color: '#fafafa',
+              }}>
+              Workout complete! Your results have been saved to Fresgo's
+              servers.
             </Text>
-          </TouchableOpacity>
-        </View>
-        : 
-        <View style={styles.activity_loader}>
-          <Text style={styles.loading_text}>Submitting your workout</Text>
-          <ActivityIndicator size="large" color="#6db0f6"/>
-          <Text style={styles.quote_text}>{this.generateTip()}</Text>
-        </View>}
+            <View style={{marginTop: 20, width: '90%'}}>
+              {this.getSpeedVsTimeGraph()}
+              {this.getDistanceVsTimeGraph()}
+              {this.renderExtraData()}
+            </View>
+            <TouchableOpacity style={styles.workout_button}>
+              <Text
+                style={styles.workout_button_text}
+                onPress={() => this.switchBackToMap()}>
+                Continue
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.activity_loader}>
+            <Text style={styles.loading_text}>Submitting your workout</Text>
+            <ActivityIndicator size="large" color="#6db0f6" />
+            <Text style={styles.quote_text}>{this.generateTip()}</Text>
+          </View>
+        )}
       </ScrollView>
     );
   }

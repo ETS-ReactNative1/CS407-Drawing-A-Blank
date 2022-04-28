@@ -23,7 +23,7 @@ const WorkoutHistory = () => {
   const [workout, setWorkout] = useState([]);
 
   //date picker states
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date(2000, 1, 1));
   const [open, setOpen] = useState(false);
   const handleChange = e => {
     console.log('fd');
@@ -35,7 +35,7 @@ const WorkoutHistory = () => {
   }, []);
 
   const filtered_workouts = workouts.filter(workout => {
-    return new Date(workout.date).getTime() <= date.getTime();
+    return new Date(workout.date).getTime() >= date.getTime();
   });
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const WorkoutHistory = () => {
     }
   }, [workout]);
 
-  const prev_workouts = workouts.map((workout, index) => {
+  const prev_workouts = filtered_workouts.map((workout, index) => {
     return (
       <TouchableOpacity
         key={index}
@@ -71,7 +71,7 @@ const WorkoutHistory = () => {
         }}>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontSize: 20}}>
-          {workout.date} {workout.type}
+          {workout.date.substring(0, 10)} {workout.type}
         </Text>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontWeight: 'bold'}}>
@@ -130,7 +130,7 @@ const WorkoutHistory = () => {
           <Text style={styles.name}>{username}: workout history</Text>
           <TouchableOpacity onPress={() => setOpen(true)}>
             <Text style={styles.info}>
-              Filter by date: {date.toDateString()}
+              Filter by date after: {date.toDateString()}
             </Text>
           </TouchableOpacity>
           <Text style={styles.description}>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    height: '2.3%',
+    height: 100,
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',

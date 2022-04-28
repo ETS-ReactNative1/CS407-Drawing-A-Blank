@@ -57,7 +57,6 @@ class LoginScreen extends Component{
     }
 
     changeToRegister = () =>{
-        //Is there a better way to do this?
         this.props.navigation.navigate('create_account_screen');
     }
     
@@ -68,7 +67,6 @@ class LoginScreen extends Component{
         })
     }
     componentWillUnmount(){
-        //L + ratio + Unsubscribed
         this.navigationListener();
     }
 

@@ -14,6 +14,10 @@ import {Alert} from 'react-native';
 import {Overlay} from '../../containers/Overlay';
 import PlayerProfile from '../leaderboard/playerProfile';
 import {getProfile, getUserWorkouts} from '../../api/api_profile';
+import PushNotification from 'react-native-push-notification';
+import * as Location from 'expo-location';
+
+const TASK_NAME = 'FRESGO_GET_LOCATION';
 
 const renderSidebar = () => {};
 
@@ -79,6 +83,11 @@ function SideBar(props) {
           {
             text: 'Yes',
             onPress: () => {
+              Location.hasStartedLocationUpdatesAsync(TASK_NAME).then(value => {
+                if (value) {
+                  Location.stopLocationUpdatesAsync(TASK_NAME);
+                }
+              });
               logout().then(_ => {
                 deleteToken().then(_ => {
                   deleteUsername().then(_ => {
@@ -108,6 +117,7 @@ function SideBar(props) {
             type={iconType}
             iconStyle={styles.icon}
             size={30}
+            key={label}
           />
           <Text style={styles.label}>{label}</Text>
         </View>
@@ -117,9 +127,29 @@ function SideBar(props) {
 
   return (
     <View style={styles.sidebarContainer}>
-      {props.DrawItems.map(entry => {
+      {/* <TouchableOpacity
+        style={styles.menu_container}
+        onPress={props.toggle && props.toggle()}>
+        <View style={styles.menu}>
+          <Icon
+            name={'menu'}
+            type={'feather'}
+            iconStyle={styles.menuIcon}
+            //containerStyle={styles.menu}
+            size={30}
+          />
+        </View>
+      </TouchableOpacity> */}
+
+      {props.DrawItems.filter(a => !a.isFoot).map(entry => {
         return drawEntry(entry);
       })}
+
+      <View style={styles.sidebarContainer_footer}>
+        {props.DrawItems.filter(a => a.isFoot).map(entry => {
+          return drawEntry(entry);
+        })}
+      </View>
     </View>
   );
 }
