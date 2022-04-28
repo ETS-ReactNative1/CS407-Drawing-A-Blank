@@ -177,7 +177,20 @@ export class Workout {
       type: this.type,
     };
   }
+  removeDuplicateCoordinates(){
+    var timestamps = [];
+    var result = [];
+    for(var i = 0; i < this.coordinates.length; i++){
+      if(!timestamps.includes(this.coordinates[i].timestamp)){
+        result.push(this.coordinates[i]);
+        timestamps.push(this.coordinates[i].timestamp);
+      }
+    }
+    return result;
+  }
   uploadWorkout() {
+    this.coordinates = this.removeDuplicateCoordinates();
+    console.log("FINAL COORDINATES:"+JSON.stringify(this.coordinates));
     return submit_workout(this.toJSON());
   }
 
