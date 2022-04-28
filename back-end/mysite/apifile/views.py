@@ -274,6 +274,9 @@ class WorkoutSubmission(viewsets.ViewSet):
         # create workout object
         workout = Workout.objects.create(player=player, duration=dur.total_seconds(), type=workout_type)
 
+        # initialise var to hold timestamp of previous waypoint
+        last_timestamp = None
+
         # record each waypoint
         for entry in waypoints:
             # get the ghost flag
@@ -281,9 +284,14 @@ class WorkoutSubmission(viewsets.ViewSet):
             # convert to east north and get timestamp
             easting, northing = grids.latlong_to_grid((entry["latitude"], entry["longitude"]))
             timestamp = datetime.datetime.strptime(entry["timestamp"][:-1], '%Y-%m-%dT%H:%M:%S.%f')
-            # record workout point
-            WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing,
-                                        ghost=ghost)
+
+            # skip waypoints with exact same time to avoid div by 0 when calculating speed
+            if timestamp != last_timestamp:
+                # update stored value
+                last_timestamp = timestamp
+                # record workout point
+                WorkoutPoint.objects.create(workout=workout, time=timestamp, easting=easting, northing=northing,
+                                            ghost=ghost)
 
         # get the workoutpoints
         bounds = WorkoutPoint.objects.filter(workout=workout).order_by('id')
