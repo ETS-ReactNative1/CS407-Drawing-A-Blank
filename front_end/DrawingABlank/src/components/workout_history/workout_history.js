@@ -20,7 +20,10 @@ const WorkoutHistory = () => {
 
   const [username, setUsername] = useState([]);
   const [workouts, setWorkouts] = useState([]);
-  const [workout, setWorkout] = useState([]);
+  const [workout, setWorkout] = useState({
+    waypoints:[],
+    calories:0
+  });
 
   //date picker states
   const [date, setDate] = useState(new Date(2000, 1, 1));
@@ -40,19 +43,22 @@ const WorkoutHistory = () => {
 
   useEffect(() => {
     // setup a recorder for the current selected workout
-    if (workout.length > 0) {
+    var waypoints = workout.waypoints;
+    var calories = workout.calories;
+    if (workout.waypoints.length > 0) {
       const recorder = new Workout();
       recorder.recording = true;
-      recorder.setWorkoutStartDate(new Date(workout[0].time));
-      workout.forEach(point => {
+      recorder.setWorkoutStartDate(new Date(waypoints[0].time));
+      waypoints.forEach(point => {
         recorder.addCoordinateAtTime(
           point.latitude,
           point.longitude,
           new Date(point.time),
         );
       });
-      recorder.setWorkoutEndDate(new Date(workout[workout.length - 1].time));
+      recorder.setWorkoutEndDate(new Date(waypoints[waypoints.length - 1].time));
       recorder.recording = false;
+      recorder.setCalories(calories);
       console.log(recorder.toJSON());
       navigation.navigate('post_workout_stats', {
         recorder: recorder,
