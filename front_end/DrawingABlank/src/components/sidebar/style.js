@@ -40,6 +40,7 @@ export const styles = StyleSheet.create({
   label: {
     paddingLeft: 10,
     fontSize: 20,
+    color:'black'
   },
   menuButton: {
     backgroundColor: 'red',
