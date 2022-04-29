@@ -36,14 +36,16 @@ class WorkoutPostStats extends Component {
     this.props.navigation.navigate('map_view_complete');
   }
   getExtraData() {
-    console.log('Recorder', this.recorder);
+    console.log('Recorder:', this.recorder);
+    console.log('Start date:' + this.recorder.date_start);
+    console.log('End Date:', this.recorder.date_end);
     var duration =
       (this.recorder.date_end.getTime() - this.recorder.date_start.getTime()) /
       1000;
     var minutes = Math.floor(duration / 60);
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var seconds = duration % 60;
-    seconds = seconds < 10 ? '0' + seconds.toFixed(0) : seconds;
+    seconds = seconds < 10 ? '0' + seconds.toFixed(0) : seconds.toFixed(0);
     var result = [
       {
         title: 'Average Speed',

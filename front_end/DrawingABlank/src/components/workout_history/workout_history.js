@@ -43,15 +43,15 @@ const WorkoutHistory = () => {
     if (workout.length > 0) {
       const recorder = new Workout();
       recorder.recording = true;
-      recorder.setWorkoutStartDate(workout[0].time);
+      recorder.setWorkoutStartDate(new Date(workout[0].time));
       workout.forEach(point => {
         recorder.addCoordinateAtTime(
           point.latitude,
           point.longitude,
-          point.time,
+          new Date(point.time),
         );
       });
-      recorder.setWorkoutEndDate(workout[workout.length - 1].time);
+      recorder.setWorkoutEndDate(new Date(workout[workout.length - 1].time));
       recorder.recording = false;
       console.log(recorder.toJSON());
       navigation.navigate('post_workout_stats', {

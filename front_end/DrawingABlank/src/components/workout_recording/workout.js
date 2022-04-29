@@ -209,11 +209,13 @@ export class Workout {
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
-      current_speed +=
-        distance /
-        ((this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
-          1000) /
-        (this.coordinates.length - 1);
+      if(this.coordinates[c].timestamp - this.coordinates[c-1].timestamp != 0){
+        current_speed +=
+          distance /
+          ((this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
+            1000) /
+          (this.coordinates.length - 1);
+      }
     }
     return current_speed;
   }
@@ -237,6 +239,7 @@ export class Workout {
       var time =
         (this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
         1000;
+      if(time==0) continue;
       var speed = distance / time;
 
       //Anomaly (noone can cycle or run at this speed)
@@ -245,6 +248,7 @@ export class Workout {
       seconds += time;
       result.push({speed: speed, time: seconds});
     }
+    console.log('RETURNING SPEED V TIME GRAPH:'+JSON.stringify(result));
     return result;
   }
   getTotalDistance() {
@@ -278,13 +282,14 @@ export class Workout {
       var time =
         (this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
         1000;
-
+      if(time == 0) continue;
       if (this.isAnomaly(distance / time)) continue;
 
       seconds += time;
       current_distance += distance;
       result.push({distance: current_distance, time: seconds});
     }
+    console.log('RETURNING DISTANCE V TIME GRAPH:'+JSON.stringify(result));
     return result;
   }
 }
