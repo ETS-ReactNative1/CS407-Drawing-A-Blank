@@ -32,16 +32,16 @@ def workoutpoints_details(workout_id, player):
     workout = Workout.objects.get(id=workout_id, player=player)
     workout_points = workout.workoutpoint_set.all()
 
-    ret_val = []
+    ret_val = {'calories': workout.calories, 'waypoints': []}
     for point in workout_points:
         try:
             convert = CoordsConvert.objects.get(easting=point.easting, northing=point.northing)
-            ret_val.append({"latitude": convert.latitude, "longitude": convert.longitude,
-                            "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
+            ret_val['waypoints'].append({"latitude": convert.latitude, "longitude": convert.longitude,
+                                         "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
         except CoordsConvert.DoesNotExist:
             lat, long = grids.grid_to_latlong((point.easting, point.northing))
-            ret_val.append({"latitude": lat, "longitude": long,
-                            "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
+            ret_val['waypoints'].append({"latitude": lat, "longitude": long,
+                                         "time": point.time.strftime("%Y-%m-%dT%H:%M:%S")})
     return ret_val
 
 
@@ -105,8 +105,8 @@ def user_workouts(username, date):
         if len(workout_points) > 0:
             ret_val.append(
                 {"id": workout.id, "date": workout.date_recorded, "duration": workout.duration,
-                "calories": workout.calories, "type": workout.type, "distance": calc_workout_distance(workout),
-                "points": workout.points})
+                 "calories": workout.calories, "type": workout.type, "distance": calc_workout_distance(workout),
+                 "points": workout.points})
 
     return ret_val
 
