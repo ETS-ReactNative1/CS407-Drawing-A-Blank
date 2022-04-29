@@ -31,6 +31,7 @@ export const createUser = (username, email, password, team) => {
     .then(res => {
       console.log('GOT TOKEN RESPONSE:' + JSON.stringify(res));
       setToken(res.token);
+      setUsername(username);
     });
 };
 

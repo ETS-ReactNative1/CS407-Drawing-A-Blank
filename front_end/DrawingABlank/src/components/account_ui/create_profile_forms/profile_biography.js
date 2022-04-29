@@ -7,6 +7,7 @@ import {withNavigation} from "react-navigation";
 import { styles } from "./style";
 import DropDownPicker from "react-native-dropdown-picker";
 import { ScrollView } from "react-native-gesture-handler";
+import { updateProfile } from "../../../api/api_profile";
 
 class ProfileBiography extends Component{
     state={
@@ -52,6 +53,32 @@ class ProfileBiography extends Component{
             return [false, "Please enter your weight."];
         }
         return [true, ""];
+    }
+
+    goToMap = () =>{
+        //this.props.navigation.navigate('loading_screen',{username:this.state.name});
+        Alert.alert('Tutorial','Would you like to proceed to the tutorial? (Recommended for first time users)',
+        [
+            {text:'Yes',onPress:()=>this.props.navigation.navigate('tutorial')},
+            {text:'No',onPress:()=>this.props.navigation.navigate('loading_screen',{username:this.state.name})}
+        ])
+    }
+
+    createProfile = (profile_name,date_of_birth,gender,height,weight) => {
+        var first_name = profile_name.split(' ')[0];
+        var last_name = (profile_name.split(' ').length > 1) ? profile_name.split(' ')[1] : "";
+        //Code taken from: https://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date
+        var full_date_string = ('0' + date_of_birth.getDate()).slice(-2) + '/'
+        + ('0' + (date_of_birth.getMonth()+1)).slice(-2) + '/'
+        + date_of_birth.getFullYear();
+        //Check what token is required here
+        updateProfile(first_name,last_name,full_date_string,gender,height,weight).then(_=>{
+            this.goToMap();
+        }).catch(err => alert(err));
+    }
+
+    completeRegistration = () => {
+        this.createProfile(this.state.name, this.state.dateofbirth, this.state.gender, this.state.height, this.state.weight);
     }
 
     componentDidMount(){
@@ -124,7 +151,7 @@ class ProfileBiography extends Component{
                 </View>
                 
                 <View style={styles.continue_button}>
-                    <Button title="Continue" color="#6db0f6" onPress={this.nextScreen}/>
+                    <Button title="Continue" color="#6db0f6" onPress={this.completeRegistration}/>
                 </View>
             </View>
         );
