@@ -48,8 +48,10 @@ export const updateProfile = (
 export const updateProfileQuick = body => {
   //https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
   body = Object.fromEntries(Object.entries(body).filter(([_, v]) => v != ''));
+  body.date_of_birth = new Date(body.date_of_birth);
+  body.date_of_birth = body.date_of_birth.getDate()+"/"+parseInt(body.date_of_birth.getMonth()+1)+"/"+body.date_of_birth.getFullYear();
+  
   console.log('Sending profile update with:' + JSON.stringify(body));
-  body.date_of_birth = new Date(body.date_of_birth).toLocaleDateString();
   //Check this URL later
   return getToken()
     .then(token =>

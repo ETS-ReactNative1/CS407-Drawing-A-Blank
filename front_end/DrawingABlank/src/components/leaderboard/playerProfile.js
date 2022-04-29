@@ -46,8 +46,10 @@ export default function PlayerProfile({
       oldEdits.height = e;
     } else if (caller === 'DOB') {
       // YYYY-MM-DD
+      //Actually needs to be D/M/Y
       console.log(date.toISOString().slice(0, 10));
       oldEdits.date_of_birth = date.toISOString().slice(0, 10);
+      oldEdits.date_of_birth = date.toString('dd/mm/YYYY');
     }
     setEdits(oldEdits);
   };
