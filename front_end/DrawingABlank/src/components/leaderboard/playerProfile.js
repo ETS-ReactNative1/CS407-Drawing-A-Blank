@@ -4,6 +4,7 @@ import {Image, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {styles} from './style.js';
 import {updateProfileQuick} from '../../api/api_profile';
 import DatePicker from 'react-native-date-picker';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 export default function PlayerProfile({
   username,
@@ -49,7 +50,6 @@ export default function PlayerProfile({
       //Actually needs to be D/M/Y
       console.log(date.toISOString().slice(0, 10));
       oldEdits.date_of_birth = date.toISOString().slice(0, 10);
-      oldEdits.date_of_birth = date.toString('dd/mm/YYYY');
     }
     setEdits(oldEdits);
   };
@@ -59,6 +59,15 @@ export default function PlayerProfile({
     windy: require('../../assets/img/windy.png'),
   };
 
+  const dateOnConfirm = (date) => {
+    setDate(date);
+    setOpen(false);
+  }
+
+  const dateOnCancel = () => {
+    setOpen(false);
+  }
+
   useEffect(() => {
     if (team.toLowerCase() === 'terra') {
       setPic(default_pictures.terra);
@@ -66,6 +75,10 @@ export default function PlayerProfile({
       setPic(default_pictures.windy);
     }
   }, [default_pictures.terra, default_pictures.windy, team, username]);
+
+  useEffect(() => {
+    handleChange('DOB',date);
+  },[date])
 
   return (
     <View style={styles.container}>
@@ -142,20 +155,12 @@ export default function PlayerProfile({
             <Text style={styles.profileInfo}>Bio</Text>
             {editing ? (
               <View>
-                <DatePicker
-                  modal
-                  open={open}
-                  textColor="#000000"
-                  date={new Date(edits.date_of_birth)}
-                  onDateChange={DOBN => handleChange('DOB', DOBN)}
+                <DateTimePicker
+                  isVisible={open}
                   mode="date"
-                  onConfirm={date => {
-                    setDate(date);
-                    setOpen(false);
-                  }}
-                  onCancel={() => {
-                    setOpen(false);
-                  }}
+                  onConfirm={dateOnConfirm}
+                  onCancel={dateOnCancel}
+                  date={new Date(edits.date_of_birth)}
                 />
                 <TextInput
                   style={styles.profileSubInfoEditing}
