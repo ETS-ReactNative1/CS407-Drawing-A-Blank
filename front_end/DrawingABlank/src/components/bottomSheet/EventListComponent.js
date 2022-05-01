@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import EventButtons from './EventButtons';
 
-const EventListComponent = ({event, onEventClick, distance}) => {
+const EventListComponent = ({event, onEventClick, distance, DrawEventDetails}) => {
   return (
     <>
       <TouchableOpacity
@@ -21,7 +21,7 @@ const EventListComponent = ({event, onEventClick, distance}) => {
             </Text>
             <Text style={styles.text__distance}> {distance} kilometres</Text>
           </View>
-          <EventButtons style={styles.buttonsContainer} />
+          <EventButtons style={styles.buttonsContainer} eventDetails={DrawEventDetails}/>
         </View>
       </TouchableOpacity>
     </>

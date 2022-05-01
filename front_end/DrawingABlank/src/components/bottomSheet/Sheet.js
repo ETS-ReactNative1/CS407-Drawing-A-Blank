@@ -5,7 +5,7 @@ import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import EventListComponent from './EventListComponent';
 
 const Sheet = forwardRef(
-  ({localEvents, calculateDistanceToUser, onEventClick}, ref) => {
+  ({localEvents, calculateDistanceToUser, onEventClick, DrawEventDetails}, ref) => {
     const snapPoints = useMemo(() => ['50%'], []);
 
     const handleSheetChanges = useCallback(index => {
@@ -31,6 +31,26 @@ const Sheet = forwardRef(
               onEventClick={onEventClick}
               event={event}
               distance={calculateDistanceToUser(event.marker)}
+              DrawEventDetails={() => {
+                var current_date = new Date();
+                var event_date = Date.parse(event.date_end);
+                var time_left = event_date - current_date;
+                console.log(current_date);
+                console.log(event.date_end);
+                var hours = Math.floor(time_left / (1000 * 3600));
+                var minutes = Math.floor(time_left / (1000 * 60)) % 60;
+                var seconds = Math.floor(time_left / 1000) % 60;
+                DrawEventDetails(
+                  'Event #' + event.id,
+                  hours +
+                    ':' +
+                    minutes +
+                    ':' +
+                    (seconds < 10 ? '0' + seconds : seconds),
+                  event.description,
+                  event.id
+                )}
+            }
             />
           ))}
         </BottomSheetScrollView>

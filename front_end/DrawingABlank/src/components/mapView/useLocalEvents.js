@@ -128,6 +128,6 @@ export default function useEvents(
     const draw = [...DrawEventsBounds(), ...DrawEventsMarkers()];
     return draw;
   }
-  return [DrawEvents, events];
+  return [DrawEvents, events, onEventPress];
   // return [useCallback(DrawEvents, [events]), events];
 }

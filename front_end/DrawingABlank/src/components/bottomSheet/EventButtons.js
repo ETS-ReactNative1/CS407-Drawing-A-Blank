@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {} from 'react-native-gesture-handler';
 
-const EventButtons = () => {
+const EventButtons = ({eventDetails}) => {
   return (
     <View style={styles.buttonBar}>
       {/* Possible Images as buttons... */}
@@ -39,11 +39,7 @@ const EventButtons = () => {
       </TouchableOpacity> */}
       <View>
         <Button
-          onPress={() => console.log('Joining Game')}
-          style={styles.button}
-          title="Join Game"></Button>
-        <Button
-          onPress={() => console.log('Opening Details Overlay')}
+          onPress={eventDetails}
           style={styles.button}
           title="Details"></Button>
       </View>

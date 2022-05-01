@@ -46,7 +46,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     {renderRegion, zoomLayer},
     {useCache: 1, setOverlayVisible, setOverlayContent},
   );
-  const [DrawEvents, events] = useLocalEvents(
+  const [DrawEvents, events, DrawEventDetails] = useLocalEvents(
     [],
     {renderRegion, zoomLayer},
     {useCache: 1, setOverlayVisible, setOverlayContent},
@@ -166,6 +166,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     updateRegion,
     regionFeatures,
     DrawRenderRegionFeatures,
+    DrawEventDetails
     // useMemo(DrawRenderRegionFeatures(), [DrawEvents, DrawGrids]),
   ];
 }

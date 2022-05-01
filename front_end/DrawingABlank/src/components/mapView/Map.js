@@ -19,6 +19,7 @@ function Map({
   regionFeatures,
   DrawRenderRegionFeatures,
   toggleSidebar,
+  DrawEventDetails
 }) {
   // Declaring Map State Hooks
   const [isMapTracking, setIsMapTracking] = useState(true);
@@ -104,6 +105,7 @@ function Map({
         calculateDistanceToUser={useCallback(dest => {
           return haversine(userLocation.current, dest, {unit: 'km'}).toFixed(2);
         })}
+        DrawEventDetails={DrawEventDetails}
       />
     </View>
   );

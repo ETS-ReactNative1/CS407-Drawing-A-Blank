@@ -16,7 +16,7 @@ function MapViewComplete() {
   const [overlayContent, setOverlayContent] = useState();
 
   // useRegion Hook - Controls user render and view regions via updates from map
-  const [region, setRegion, regionFeatures, DrawRenderRegionFeatures] =
+  const [region, setRegion, regionFeatures, DrawRenderRegionFeatures, DrawEventDetails] =
     useRegion(setOverlayVisible, setOverlayContent);
 
   // DOM Refs
@@ -77,6 +77,7 @@ function MapViewComplete() {
               regionFeatures={regionFeatures}
               DrawRenderRegionFeatures={DrawRenderRegionFeatures}
               toggleSidebar={toggleSidebar}
+              DrawEventDetails={DrawEventDetails}
             />
             <Overlay
               visible={overlayVisible}
