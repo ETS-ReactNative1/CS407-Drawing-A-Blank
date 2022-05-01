@@ -241,16 +241,16 @@ class Leaderboard extends Component {
   getOverlayContent = () => {
     return this.state.obtainedProfileContent ? (
       <PlayerProfile
+        context={'leaderboard'}
         username={this.state.profileContent.username}
-        email={'[USER.EMAIL]'}
-        country={'UK'}
         totDist={this.state.profileContent.total_distance}
         totPoints={this.state.profileContent.total_points}
-        totGrids={'[USER.TOTGRIDS]'}
         team={this.state.api_to_label_teams[this.state.profileContent.team]}
-        bio={'[USER.BIO]'}
         picture={this.getDefaultPicture(this.state.profileContent.team)}
         gender={this.state.profileContent.gender}
+        dob={this.state.profileContent.dob}
+        height={this.state.profileContent.height}
+        weight={this.state.profileContent.weight}
       />
     ) : (
       <ActivityIndicator size="large" color="#6db0f6" />
@@ -328,11 +328,11 @@ class Leaderboard extends Component {
                         placeholder="Search user"
                         placeholderTextColor="#fafafa"
                         ref="usersearch"
-                        onChangeText={this.handleUserSearch}    
+                        onChangeText={this.handleUserSearch}
                     />
                 </View>
                 <ScrollView style={styles.leaderboard_entries}
-                            showsVerticalScrollIndicator={false} 
+                            showsVerticalScrollIndicator={false}
                             ref={(ref) => this.setReference(ref)}
                 >
                     <View style={styles.leaderboard_entry}>
@@ -340,7 +340,7 @@ class Leaderboard extends Component {
                             <Text style={styles.leaderboard_entry_rank_text}>#</Text>
                         </View>
                         <View style={styles.leaderboard_entry_picture}>
-                                
+
                             </View>
                         <View style={styles.leaderboard_entry_title}>
                             <Text style={styles.leaderboard_entry_title_text}>Username</Text>

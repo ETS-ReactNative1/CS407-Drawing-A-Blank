@@ -7,6 +7,7 @@ import DatePicker from 'react-native-date-picker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 
 export default function PlayerProfile({
+  context,
   username,
   email,
   country,
@@ -97,13 +98,13 @@ export default function PlayerProfile({
               }}>
               <Text style={{color: '#ff0000', fontSize: 20}}>SAVE</Text>
             </TouchableOpacity>
-          ) : (
+          ) : context !== 'leaderboard' ? (
             <TouchableOpacity
               style={styles.editor}
               onPress={() => setEditing(true)}>
               <Text style={{color: '#ff0000', fontSize: 20}}>EDIT</Text>
             </TouchableOpacity>
-          )}
+          ) : false}
           <Image source={pic} style={styles.avatar} />
           <Text style={styles.name}>{username} </Text>
           <Text style={styles.userInfo}>{country}</Text>
