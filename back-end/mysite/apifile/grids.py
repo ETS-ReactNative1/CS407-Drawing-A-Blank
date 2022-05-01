@@ -47,6 +47,8 @@ def calculate_speed(point_a, point_b, time_in_between):
 
 def calculate_radius(speed):
     # https://www.desmos.com/calculator/5vfy0mxn6o
+
+    #new https://www.desmos.com/calculator/ckabobsp9k
     if (speed<0):
         return UNIT_TILE_SIZE / 2
     elif(speed<2):
