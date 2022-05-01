@@ -47,7 +47,16 @@ def calculate_speed(point_a, point_b, time_in_between):
 
 def calculate_radius(speed):
     # https://www.desmos.com/calculator/5vfy0mxn6o
-    return max(UNIT_TILE_SIZE / 2, math.floor((-0.1000 * speed * speed + 1.500 * speed) * UNIT_TILE_SIZE / 2))
+    if (speed<0):
+        return UNIT_TILE_SIZE / 2
+    elif(speed<2):
+        return max(UNIT_TILE_SIZE / 2, math.floor((-1.5 * speed * speed + 6.0 * speed) * UNIT_TILE_SIZE / 2))
+    elif(speed<4):
+        return max(UNIT_TILE_SIZE / 2, 5 * UNIT_TILE_SIZE / 2)
+    elif(speed<=10):
+        return max(UNIT_TILE_SIZE / 2, math.floor((-(1.0/6.0) * speed * speed + (4.0/3.0) * speed + (10.0/3.0) -1) * UNIT_TILE_SIZE / 2))
+    else:
+        return UNIT_TILE_SIZE / 2
 
 
 def grid_to_latlong(grid):
