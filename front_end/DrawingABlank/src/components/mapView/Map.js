@@ -9,6 +9,9 @@ import {debounce} from './utils';
 import {useThrottle} from 'rooks';
 import useUserPath from './useUserPath';
 import AbsoluteComponent from '../hocs/AbsoluteComponent';
+import haversine from 'haversine';
+import useGeoLocation from './useGeoLocation';
+import setupGeolocation from './geoLocation';
 
 function Map({
   region,
@@ -19,7 +22,7 @@ function Map({
 }) {
   // Declaring Map State Hooks
   const [isMapTracking, setIsMapTracking] = useState(true);
-  const [DrawUserPath, toggleWorkout, workout_active] =
+  const [DrawUserPath, toggleWorkout, workout_active, userLocation] =
     useUserPath(isMapTracking);
 
   // DOM refs Hooks
@@ -44,6 +47,21 @@ function Map({
     debouncedsetRegion(newRegion);
     return;
   }
+
+  useEffect(() => {
+    const watchId = setupGeolocation(
+      userLocation => {
+        const {latitude, longitude} = userLocation;
+        userLocation.current = {latitude, longitude}
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 200, // max time for location request duration
+        maximumAge: 1000, // max age before it will refresh cache
+        distanceFilter: 5, // min moved distance before next data point
+      }
+    )
+  })
 
   return (
     <View style={styles.mapContainer}>

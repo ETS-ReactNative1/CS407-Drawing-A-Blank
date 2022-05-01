@@ -114,7 +114,7 @@ export const getEvents = () => {
         };
         result.push(new_object);
       }
-      // console.log('Returning :' + JSON.stringify(result));
+      //console.log('Returning EVENTS:' + JSON.stringify(result));
       return result;
     });
 }//Check this

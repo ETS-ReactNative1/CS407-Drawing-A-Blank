@@ -50,6 +50,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     [],
     {renderRegion, zoomLayer},
     {useCache: 1, setOverlayVisible, setOverlayContent},
+    localGrids
   );
 
   const regionFeatures = {localGrids, events};

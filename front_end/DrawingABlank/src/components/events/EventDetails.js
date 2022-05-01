@@ -12,6 +12,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import EventLeaderboard from './EventLeaderboard';
 
 const EventDetails = ({eventType, timeRemaining, radius, desc, eventScoreData}): Node => {
+  console.log('EVENT DETAILS RECEIVED:'+JSON.stringify(eventScoreData));
   return (
     <View style={{width:"100%"}}>
       <Text style={styles.header}>Event details</Text>

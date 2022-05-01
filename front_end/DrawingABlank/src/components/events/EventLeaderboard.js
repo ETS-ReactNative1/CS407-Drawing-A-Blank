@@ -10,6 +10,10 @@ import {styles} from './style.js';
  * data : [{picture:require('...'), title:String, points:Integer}]
  */
 class EventLeaderboard extends Component {
+    componentDidMount(){
+        console.log('AND HERE IS THE DATA');
+        console.log('DATA:'+JSON.stringify(this.props.data));
+    }
     render(){
         return(
             <View style={styles.leaderboard}>

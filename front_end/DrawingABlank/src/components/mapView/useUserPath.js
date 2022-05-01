@@ -91,7 +91,7 @@ export default function useUserPath(isTracking) {
     }
   }
 
-  return [DrawUserPath, toggleWorkout, workout_active];
+  return [DrawUserPath, toggleWorkout, workout_active, userLocation];
 }
 
 // or make it a component

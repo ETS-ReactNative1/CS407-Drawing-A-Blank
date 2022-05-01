@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react';
-import {getEvents} from '../../api/api_events';
+import {getEvents, getEventScores} from '../../api/api_events';
 import useGeoLocation from './useGeoLocation';
 import {Marker, Polygon, Circle} from 'react-native-maps';
 import EventDetails from '../events/EventDetails';
@@ -9,9 +9,11 @@ export default function useEvents(
   initEvents,
   {renderRegion, zoomLayer},
   {useCache, setOverlayVisible, setOverlayContent} = {},
+  grids
 ) {
   const [events, setEvents] = useState([]);
   const eventCache = useRef(new Cache({}));
+  const [eventScores, setEventScores] = useState([]);
 
   useEffect(() => {
     console.log('updatng local events');
@@ -20,11 +22,11 @@ export default function useEvents(
 
   useEffect(() => {
     collectEventScores();
-  }, [renderRegion]);
+  }, [grids]);
 
   function collectEventScores() {
     console.log('CALCULATING SCORES');
-    console.log('HAVE EVENTS:' + events);
+    console.log('HAVE EVENTS:' + JSON.stringify(events));
     result = {};
     events.forEach(event => {
       console.log('GOT EVENT:' + JSON.stringify(event));
@@ -41,18 +43,20 @@ export default function useEvents(
         result[event.id] = converted_result;
       }
     });
-    //TODO FIX EVENT SCORES
-    //setEventScores(result);
-    console.log(result);
+    setEventScores(result);
+    console.log("SCORE RESULT:"+JSON.stringify(result));
   }
 
-  function onEventPress(type, time, radius, desc) {
+  function onEventPress(type, time, desc, id) {
     // eventType, timeRemaining, radius, desc
+    console.log('PASSING:' + JSON.stringify(eventScores));
+    console.log('DESC:'+desc);
+    console.log('GOT ID:'+id);
     setOverlayContent(
       <EventDetails
         eventType={type}
         timeRemaining={time}
-        radius={radius}
+        eventScoreData={eventScores[id]}
         desc={desc}
       />,
     );
@@ -106,13 +110,14 @@ export default function useEvents(
           var minutes = Math.floor(time_left / (1000 * 60)) % 60;
           var seconds = Math.floor(time_left / 1000) % 60;
           onEventPress(
-            'Running event #' + event.id,
+            'Event #' + event.id,
             hours +
               ':' +
               minutes +
               ':' +
               (seconds < 10 ? '0' + seconds : seconds),
             event.description,
+            event.id
           );
         }}
       />
