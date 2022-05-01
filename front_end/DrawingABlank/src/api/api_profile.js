@@ -74,7 +74,7 @@ export const getProfile = username => {
     .then(response => {
       if (response.status != 200 && response.status != 201) {
         console.log(response.status);
-        throw new Error('Could not update profile.');
+        throw new Error('Could not obtain profile.');
       }
       console.log('profile rcvd');
       return response.json();

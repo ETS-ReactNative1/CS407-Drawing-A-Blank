@@ -35,7 +35,9 @@ function SideBar(props) {
   }, []);
 
   useEffect(() => {
-    getProfile(username).then(result => setProfileContent(result));
+    if(username != ''){
+      getProfile(username).then(result => setProfileContent(result));
+    }
   }, [username]);
 
   const callbackFunctions = {
