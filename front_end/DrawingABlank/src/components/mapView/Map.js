@@ -96,10 +96,9 @@ function Map({
         ref={bottomSheetRef}
         localEvents={regionFeatures.events}
         onEventClick={eventRegion => {
-          const cam = mapRef.getCamera();
-          cam.center.latitude = eventRegion.latitude;
-          cam.center.longitude = eventRegion.longitude;
-          mapRef.animateCamera(cam);
+          console.log(mapRef);
+          var newRegion = {latitude: eventRegion.latitude, longitude: eventRegion.longitude, latitudeDelta: 0.01, longitudeDelta: 0.01};
+          mapRef.current.animateToRegion(newRegion,1000);
         }}
         // will probably need to redo how this works too at the same time
         calculateDistanceToUser={useCallback(dest => {

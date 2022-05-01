@@ -16,7 +16,7 @@ const EventListComponent = ({event, onEventClick, distance}) => {
               style={styles.eventHeader}>
               {event.title}
             </Text>
-            <Text numberOfLines={2} ellipsizeMode="tail">
+            <Text numberOfLines={2} ellipsizeMode="tail" style={{color:'black'}}>
               {event.description}
             </Text>
             <Text style={styles.text__distance}> {distance} kilometres</Text>
@@ -32,7 +32,7 @@ export default EventListComponent;
 
 const styles = StyleSheet.create({
   buttonsContainer: {flex: '1 1 1'},
-  text__distance: {marginLeft: 10, marginTop: 5},
+  text__distance: {marginLeft: 10, marginTop: 5, color:'black'},
   container: {
     flex: 1,
     padding: 4,
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   },
   eventHeader: {
     fontSize: 20,
+    color:'black'
   },
   scrollContainer: {
     top: 0,
