@@ -6,17 +6,17 @@ const convertZoomType = z => {
   z = z['latitudeDelta'];
   //console.log('z', z);
   if (z < 0.00029) {
-    return 5;
+    return 1;
   } else if (z < 0.0024) {
-    return 10;
+    return 2;
   } else if (z < 0.0089) {
-    return 15;
+    return 3;
   } else if (z < 0.4) {
-    return 20;
+    return 4;
   } else if (z < 0.3) {
-    return 25;
+    return 5;
   }
-  return 30;
+  return 6;
 };
 
 export default function useZoomLevel() {
