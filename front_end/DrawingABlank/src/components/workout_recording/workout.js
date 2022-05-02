@@ -226,17 +226,16 @@ export class Workout {
   getSpeedvsTime() {
     if (this.coordinates.length <= 1) return [];
 
-    var result = [{speed: 0.0, time: 0.0}];
+    var result = [];
     var seconds = 0.0;
 
     //Subsample factor: floor(coordinate amount/10)
     var subsample_factor = Math.ceil(
       this.coordinates.length / SUBSAMPLE_CONSTANT,
     );
-
-    for (var c = 1; c < this.coordinates.length; c++) {
-      if (subsample_factor != 1 && c % subsample_factor != 0) continue;
-
+    console.log('SUBSAMPLE FACTOR IS ' + subsample_factor);
+    console.log('COORDINATE SIZE IS ' + this.coordinates.length);
+    for (var c = subsample_factor; c < this.coordinates.length; c+=subsample_factor) {
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
@@ -245,10 +244,11 @@ export class Workout {
         1000;
       if(time==0) continue;
       var speed = distance / time;
-
+      console.log("SPEED OBTAINED:"+speed);
       //Anomaly (noone can cycle or run at this speed)
       if (this.isAnomaly(speed)) continue;
-
+      time = (this.coordinates[c].timestamp - this.coordinates[c - subsample_factor].timestamp) /
+        1000;
       seconds += time;
       result.push({speed: speed, time: seconds});
     }
@@ -278,8 +278,7 @@ export class Workout {
       this.coordinates.length / SUBSAMPLE_CONSTANT,
     );
 
-    for (var c = 1; c < this.coordinates.length; c++) {
-      if (subsample_factor != 1 && c % subsample_factor != 0) continue;
+    for (var c = 1; c < this.coordinates.length; c+=subsample_factor) {
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
@@ -292,6 +291,7 @@ export class Workout {
       seconds += time;
       current_distance += distance;
       result.push({distance: current_distance, time: seconds});
+      console.log('ADDED AT INDEX ' + c);
     }
     console.log('RETURNING DISTANCE V TIME GRAPH:'+JSON.stringify(result));
     return result;

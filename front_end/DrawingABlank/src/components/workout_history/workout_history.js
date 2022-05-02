@@ -81,7 +81,7 @@ const WorkoutHistory = () => {
         </Text>
         {/* eslint-disable-next-line react-native/no-inline-styles */}
         <Text style={{fontWeight: 'bold'}}>
-          Total Distance {workout.points}
+          Total Distance {workout.distance.toFixed(2)}m
         </Text>
         <Text>Total Points {workout.points}</Text>
       </TouchableOpacity>
