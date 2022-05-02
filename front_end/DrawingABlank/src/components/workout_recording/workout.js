@@ -205,19 +205,23 @@ export class Workout {
   getAverageSpeed() {
     if (this.coordinates.length <= 1) return 0;
     var current_speed = 0.0;
+    var total_points = 0;
     for (var c = 1; c < this.coordinates.length; c++) {
       var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
         unit: 'meter',
       });
       if(this.coordinates[c].timestamp - this.coordinates[c-1].timestamp != 0){
-        current_speed +=
+        var speed =
           distance /
           ((this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
-            1000) /
-          (this.coordinates.length - 1);
+            1000);
+        if(!this.isAnomaly(speed)){
+          current_speed += speed;
+          total_points += 1;
+        }
       }
     }
-    return current_speed;
+    return current_speed / total_points;
   }
   getSpeedvsTime() {
     if (this.coordinates.length <= 1) return [];
