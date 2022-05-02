@@ -250,7 +250,7 @@ export class Workout {
       time = (this.coordinates[c].timestamp - this.coordinates[c - subsample_factor].timestamp) /
         1000;
       seconds += time;
-      result.push({speed: speed, time: seconds});
+      result.push({speed: speed, time: Math.floor(seconds)});
     }
     console.log('RETURNING SPEED V TIME GRAPH:'+JSON.stringify(result));
     return result;
@@ -278,16 +278,15 @@ export class Workout {
       this.coordinates.length / SUBSAMPLE_CONSTANT,
     );
 
-    for (var c = 1; c < this.coordinates.length; c+=subsample_factor) {
-      var distance = haversine(this.coordinates[c - 1], this.coordinates[c], {
+    for (var c = subsample_factor; c < this.coordinates.length; c+=subsample_factor) {
+      var distance = haversine(this.coordinates[c], this.coordinates[c - subsample_factor], {
         unit: 'meter',
       });
       var time =
-        (this.coordinates[c].timestamp - this.coordinates[c - 1].timestamp) /
+        (this.coordinates[c].timestamp - this.coordinates[c - subsample_factor].timestamp) /
         1000;
       if(time == 0) continue;
       if (this.isAnomaly(distance / time)) continue;
-
       seconds += time;
       current_distance += distance;
       result.push({distance: current_distance, time: seconds});

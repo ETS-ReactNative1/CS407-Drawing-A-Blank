@@ -78,7 +78,7 @@ class WorkoutPostStats extends Component {
         graphTitle="Speed (m/s) vs. Time (s)"
         yData={this.state.speed_time.map(value => value.speed)}
         xFunction={(value, index) =>
-          this.state.speed_time[index].time.toFixed(1)
+          this.state.speed_time[index].time
         }
         height={250}
         team={this.state.team}
@@ -92,7 +92,7 @@ class WorkoutPostStats extends Component {
         graphTitle="Distance (m) vs. Time (s)"
         yData={this.state.distance_time.map(value => value.distance)}
         xFunction={(value, index) =>
-          this.state.distance_time[index].time.toFixed(1)
+          this.state.distance_time[index].time
         }
         height={250}
         team={this.state.team}

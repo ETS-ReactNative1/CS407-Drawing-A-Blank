@@ -4,6 +4,9 @@ import {Text, View} from 'react-native';
 import {styles} from './style.js';
 
 class WorkoutLineGraph extends Component{
+    componentDidMount(){
+        console.log('RECEIVED ' + JSON.stringify(this.props.yData));
+    }
     render(){
         const axesSvg = { fontSize: 12, fill: '#fafafa' };
         const verticalContentInset = { top: 10, bottom: 10 }
@@ -18,6 +21,7 @@ class WorkoutLineGraph extends Component{
                         style={{ marginBottom: xAxisHeight }}
                         contentInset={verticalContentInset}
                         svg={axesSvg}
+                        min={0}
                     />
                     <View style={{ flex: 1, marginLeft: 10 }}>
                         <LineChart
@@ -25,6 +29,7 @@ class WorkoutLineGraph extends Component{
                             data={this.props.yData}
                             contentInset={verticalContentInset}
                             svg={{ stroke: TEAM_COLOURS[this.props.team] }}
+                            yMin={0}
                         >
                             <Grid svg={{stroke:"#b5b5b5"}}/>
                         </LineChart>
