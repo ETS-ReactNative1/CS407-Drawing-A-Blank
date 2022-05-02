@@ -192,7 +192,11 @@ export default function useLocalGrids(
       }
     });
   };
-  return [useMemo(() => DrawGrids, [renderRegion, zoomLayer]), localGrids];
+  return [
+    DrawGrids /*useMemo(() => DrawGrids, [renderRegion, zoomLayer])*/,
+    ,
+    localGrids,
+  ];
   // return [useCallback(DrawGrids, [localGrids]), localGrids];
 }
 
