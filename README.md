@@ -1,22 +1,11 @@
-# CS407-Drawing-A-Blank
+# Fresgo: A Competitive Geo-social Mobile Application for Fitness
+## Developed by Jack Dawes, Adam Platt, Minhyuk Shim (back-end) and Charles Hampton-Evans, Arun Patel, Christopher Thomas (front-end).
 
-### (Project name)
-
-
-
-
-
-### Development
-
-#### Windows
-Install `virtualenv` using `pip install virtualenv`
-Create your virtual environment using: `python -m virtualenv .venv` or `virtualenv --python C:\Path\To\Python\python.exe .venv`
-
-Enter the virtual environment using: `.venv/Scripts/activate`
-- Install all dependencies using: `pip install -r requirements.txt`
-- Install any other libraries you need inside the virtual environment using `pip install`
-- Update requirements list using `pip3 freeze > requirements.txt`
-
-
-Once you are done developing, you can exit the environment using: `deactivate` 
-
+# Summary for running the project
+In order to run the project on your own system, please see the respective guides within the back-end and front-end folders for running each component of the project locally. For running both components, you will need the following:
+* Python3
+* Node.JS
+* Django with a local or remote database
+* Android Studio for emulation or an Android device.
+* Android SDK.
+* React Native.

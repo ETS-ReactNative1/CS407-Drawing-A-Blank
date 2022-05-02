@@ -1,4 +1,4 @@
-# Drawing A Blank Front-End Setup Guide 
+# Fresgo Front-End Setup Guide 
 This guide will explain how to set up the React Native project to start development. This advice is taken from the following article: https://reactnative.dev/docs/environment-setup. I have tested this on a Windows 10 PC using a Ryzen processor. If you're using Intel, this should still work, but let me know if it does not.
 
 ## Pre-requisites
@@ -9,7 +9,6 @@ You will need to have the following programs installed:
     - Android SDK
     - Android SDK Platform
     - Android Virtual Device
-- Adequate mental health (Optional)
 
 ## Android Studio Setup
 ### SDK Manager
