@@ -35,7 +35,7 @@ function SideBar(props) {
   }, []);
 
   useEffect(() => {
-    if(username != ''){
+    if (username != '') {
       getProfile(username).then(result => setProfileContent(result));
     }
   }, [username]);
@@ -121,7 +121,9 @@ function SideBar(props) {
             size={30}
             key={label}
           />
-          <Text style={styles.label}>{label}</Text>
+          <Text style={styles.label}>
+            {label == 'Saved Workouts' ? 'Previous Workouts' : label}
+          </Text>
         </View>
       </TouchableOpacity>
     );

@@ -194,7 +194,6 @@ export default function useLocalGrids(
   };
   return [
     DrawGrids /*useMemo(() => DrawGrids, [renderRegion, zoomLayer])*/,
-    ,
     localGrids,
   ];
   // return [useCallback(DrawGrids, [localGrids]), localGrids];
