@@ -7,12 +7,7 @@ import {
 } from './api_networking.js';
 import {getProfile} from './api_profile.js';
 
-/*
-    USER ACCOUNT LOGIN DETAILS FOR TESTING:
-    newtestuser
-    abc123
-*/
-
+//Create a user and obtain a token if successful
 export const createUser = (username, email, password, team) => {
   body = {
     username: username,
@@ -34,7 +29,7 @@ export const createUser = (username, email, password, team) => {
       setUsername(username);
     });
 };
-
+//Authenticate a user with a username and password for an initial sign-in
 export const authenticateUser = (username, password) => {
   body = {
     username: username,
@@ -58,7 +53,8 @@ export const authenticateUser = (username, password) => {
       });
     });
 };
-
+//Verify a user token, typically done whenever the user opens the app and has a token stored on their device.
+//If the token is valid, they will be automatically signed in.
 export const verifyToken = () => {
   return getToken()
     .then(tok => {
@@ -75,7 +71,7 @@ export const verifyToken = () => {
       return false;
     });
 };
-
+//Log out of the application.
 export const logout = () => {
   return getToken()
     .then(tok => request('DELETE', 'token/log_out/', '', '', tok))

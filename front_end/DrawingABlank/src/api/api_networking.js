@@ -1,6 +1,6 @@
 import * as SecureStorage from 'expo-secure-store';
 
-//These are just sample constants for now, update once we have back-end running.
+//These are the constant relating to the server to contact. Update these if you are running your server locally or on another service.
 const API_HOSTNAME = 'drawab.dcs.warwick.ac.uk';
 const API_PORT_NUMBER = '443';
 const API_SUFFIX = '/'; //Example only
@@ -9,7 +9,7 @@ const TOKEN_KEY_NAME = 'fresgo_access_token';
 const TEAM_KEY_NAME = 'fesgo_team';
 const USERNAME_KEY_NAME = 'fresgo_username';
 /**
- * Sends a request to the API at a specified endpoint and returns an async handler. This has not been tested yet, just writing this so that it is here.
+ * Sends a request to the API at a specified endpoint and returns an async handler.
  * @param {String} req_method The HTTP method you want to use.
  * @param {String} req_endpoint The endpoint you wish to contact.
  * @param {String} req_queries Any URL parameters go here
@@ -25,7 +25,6 @@ export const request = (
 ) => {
   var full_URL = API_URL + req_endpoint;
   if (req_queries != '') {
-    //For now let us just treat req_queries as a string, but later on we may want to use a more appropriate structure.
     full_URL += req_queries;
   }
   console.log(full_URL);
@@ -40,7 +39,11 @@ export const request = (
     body: req_body,
   });
 };
-
+/*
+  The following are storage functions for obtaining certain information about a user that is saved on the phone, such as their
+  authentication token and information about their profile (username and team), as well as functions for deleting this information,
+  which a user may want when logging out.
+*/
 export const getToken = () => {
   return SecureStorage.getItemAsync(TOKEN_KEY_NAME);
 };

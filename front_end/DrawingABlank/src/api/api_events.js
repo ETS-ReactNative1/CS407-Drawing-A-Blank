@@ -59,6 +59,8 @@ function getBoundsAsJSON(bounds) {
   This is assuming that grids obtained and passed here cover the entire event area. This is also assuming that the grid size given
   accurately reflects the status of the event. (i.e. lowest possible grid size).
 */
+//This process has been done on the client-side in order to reduce the load on the back-end. When an event finishes however,
+//this calculation is performed on the back-end.
 export const getEventScores = (grids, event_bounds) => {
   var filtered_grids = grids.filter((grid) => {
     var center_point = geolib.getCenter(grid["bounds"]);
@@ -77,7 +79,7 @@ export const getEventScores = (grids, event_bounds) => {
   });
   return results.sort((a,b) => a.count - b.count).reverse();
 }
-
+//Obtain events and format these such that they can be immediately drawn by the bottomsheet.
 export const getEvents = () => {
   return getToken()
     .then(token => request('GET', 'events/', '', '', token))
@@ -117,8 +119,8 @@ export const getEvents = () => {
       //console.log('Returning EVENTS:' + JSON.stringify(result));
       return result;
     });
-}//Check this
-
+}
+//Get the list of events a user has partaken in
 export const getEventHistory = (date="") => {
   return getToken().then(tok => request('GET','/events/history',`?date=${date}`,'',tok))
   .then(resp => {

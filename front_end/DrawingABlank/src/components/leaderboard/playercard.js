@@ -3,6 +3,7 @@ import {Text, View, TextInput, ScrollView, Image} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {styles} from './style.js';
 
+//This component is the player card that is shown at the bottom of the leaderboard
 class PlayerCard extends Component{
     render(){
         return(

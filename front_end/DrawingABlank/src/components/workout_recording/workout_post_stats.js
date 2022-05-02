@@ -15,6 +15,7 @@ import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import ExtraData from '../profile/personal_stats/extra_data.js';
 import {getTeam} from '../../api/api_networking';
 
+//This screen is resposnible for showing either a previous workout within workout history or a workout that has just been submitted.
 class WorkoutPostStats extends Component {
   recorder = this.props.route.params.recorder;
   state = {
@@ -25,6 +26,7 @@ class WorkoutPostStats extends Component {
     submittedWorkout: !this.props.route.params.upload,
     team: '',
   };
+  //Get the team in order to colour items in
   componentDidMount() {
     console.log('RECORDER:' + JSON.stringify(this.props.route.params.recorder));
     getTeam().then(team => {
@@ -35,6 +37,7 @@ class WorkoutPostStats extends Component {
   switchBackToMap() {
     this.props.navigation.navigate('map_view_complete');
   }
+  //This method obtains the data that is shown below the graphs
   getExtraData() {
     console.log('Recorder:', this.recorder);
     console.log('Start date:' + this.recorder.date_start);
@@ -71,6 +74,7 @@ class WorkoutPostStats extends Component {
     console.log('Returning ' + JSON.stringify(result));
     return result;
   }
+  //These methods return the speed vs. time and distance vs. time graphs for the workout parsed to this component
   getSpeedVsTimeGraph() {
     this.state.speed_time = this.recorder.getSpeedvsTime();
     return (
@@ -99,6 +103,7 @@ class WorkoutPostStats extends Component {
       />
     );
   }
+  //Basic tip generation for the loading screen with basic facts/slogans for banding purposes
   generateTip() {
     var quotes = [
       'After each workout, be sure to stretch your muscles in order to prevent injury.',

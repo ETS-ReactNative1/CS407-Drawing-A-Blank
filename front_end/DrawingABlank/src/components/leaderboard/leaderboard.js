@@ -80,7 +80,7 @@ class Leaderboard extends Component {
     player_card_distance: {},
     username_search: '',
   };
-
+  //Obtain the leaderboard matching these parameters from the backend
   getLeaderboards = () => {
     dateArgument =
       this.state.dateChosen != ''
@@ -107,6 +107,7 @@ class Leaderboard extends Component {
         );
       });
   };
+  //Obtain information relating to a user's playercard such as their name and what team they are on
   getPlayerCardPoints = () => {
     getUsername().then(username => {
       console.log('OBTAINED USERNAME:' + username);
@@ -130,7 +131,7 @@ class Leaderboard extends Component {
       }
     });
   };
-
+  //Get the distance a user has covered from the leaderboard
   getPlayerCardDistance = () => {
     getUsername().then(username => {
       console.log('OBTAINED USERNAME:' + username);
@@ -211,7 +212,7 @@ class Leaderboard extends Component {
   setReference = ref => {
     this.setState({scrollViewRef: ref});
   };
-
+  //Get the appropriate playercard for a user depending on the amount of points or the distance covered by a user.
   getPlayerCard = () => {
     if (
       !this.state.collectedLeaderboards ||
@@ -237,7 +238,7 @@ class Leaderboard extends Component {
       />
     );
   };
-
+  //Set the overlay content for when a user clicks on a profile
   getOverlayContent = () => {
     return this.state.obtainedProfileContent ? (
       <PlayerProfile
@@ -254,7 +255,7 @@ class Leaderboard extends Component {
       />
     ) : (
       <ActivityIndicator size="large" color="#6db0f6" />
-    ); //Maybe make this a more pretty loading screen later.
+    ); 
   };
 
   handleUserSearch = text => {

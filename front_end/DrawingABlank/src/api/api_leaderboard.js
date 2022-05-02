@@ -1,5 +1,5 @@
 import { request, getToken } from "./api_networking.js";
-
+//Obtain the points leaderboard from the back-end
 export const getPointsLeaderboard = (date, teams) =>{
     var query = "/?date="+date;
     for(const team of teams){
@@ -12,7 +12,7 @@ export const getPointsLeaderboard = (date, teams) =>{
         return response.json();
     });
 }
-
+//Obtain the distance leaderboard from the back-end
 export const getDistanceLeaderboard = (date, teams) =>{
     var query = "/?date="+date;
     for(const team of teams){

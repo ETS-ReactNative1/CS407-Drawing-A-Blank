@@ -7,8 +7,11 @@ const haversine = require('haversine');
 const TASK_NAME = 'FRESGO_GET_LOCATION';
 const SUBSAMPLE_CONSTANT = 10;
 
+/*
+This class is largely responsible for storing the attributes of a workout, as well as tracking the location of a user when they actively perform
+a workout.
+*/
 export class Workout {
-  //In the future, this constructor needs to accept a user id or JWT from secret storage.
   constructor() {
     this.date_start = new Date();
     this.date_end = new Date();
@@ -17,6 +20,7 @@ export class Workout {
     this.tracking = true;
     this.type = 'walk';
     this.calories = 0;
+    //Template taken from the ReactNativePushNotification GitHub README
     PushNotification.createChannel(
       {
         channelId: 'fresgo-workout', // (required)
@@ -30,6 +34,7 @@ export class Workout {
       created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
     );
     //https://stackoverflow.com/questions/60696365/the-best-way-of-tracking-location-in-background-using-react-native-expo-in-202
+    //This task is responsible for tracking the location of a user when they are performing a workout.
     TaskManager.defineTask(TASK_NAME, async ({data: {locations}, err}) => {
       if (err) {
         console.log(err);
@@ -38,17 +43,18 @@ export class Workout {
 
       const [location] = locations;
       console.log('GOT LOCATION IN WORKOUT:' + JSON.stringify(location));
-      if (this.recording) {
+      if (this.recording) {//If the user is working out, add this coordinate.
         console.log('ADDING COORDINATE:' + JSON.stringify(location));
         this.addCoordinate(
           location.coords.latitude,
           location.coords.longitude,
           this.tracking,
-        ); //True for now until ghost mode is chosen
+        ); 
       }
     });
   }
-
+  //This notification code was also taken from a template provided by the ReactNativePushNotification documentation:
+  //https://github.com/zo0r/react-native-push-notification
   startNotification() {
     PushNotification.localNotification({
       channelId: 'fresgo-workout',
@@ -133,7 +139,7 @@ export class Workout {
       });
     }
   }
-
+  //This adds a coordinate at a certain timestamp, mainly used by the workout history screen.
   addCoordinateAtTime(latitude, longitude, timestamp) {
     if (this.recording) {
       this.coordinates.push({
@@ -169,6 +175,7 @@ export class Workout {
     console.log('UPDATING TRACKING');
     this.tracking = newTracking;
   }
+  //Converting to a JSON format to send to the back-end API
   toJSON() {
     return {
       start: this.date_start,
@@ -177,6 +184,7 @@ export class Workout {
       type: this.type,
     };
   }
+  //Sometimes there are moments where a coordinate is added twice by the expo task, this code ensures a divide by 0 error does not occur.
   removeDuplicateCoordinates(){
     var timestamps = [];
     var result = [];
@@ -188,6 +196,7 @@ export class Workout {
     }
     return result;
   }
+  //Submit the workout to the back-end and obtain the calories burnt
   uploadWorkout() {
     this.coordinates = this.removeDuplicateCoordinates();
     console.log("FINAL COORDINATES:"+JSON.stringify(this.coordinates));

@@ -11,6 +11,7 @@ import {request, getToken, getUsername} from './api_networking';
         height = data["height"]
         weight = data["weight"]
 */
+//A function for updating a user's profile with the back-end
 export const updateProfile = (
   first_name = '',
   last_name = '',
@@ -52,7 +53,6 @@ export const updateProfileQuick = body => {
   body.date_of_birth = body.date_of_birth.getDate()+"/"+parseInt(body.date_of_birth.getMonth()+1)+"/"+body.date_of_birth.getFullYear();
   
   console.log('Sending profile update with:' + JSON.stringify(body));
-  //Check this URL later
   return getToken()
     .then(token =>
       request('PATCH', 'user/change_details/', '', JSON.stringify(body), token),
@@ -66,7 +66,7 @@ export const updateProfileQuick = body => {
       return response.json();
     });
 };
-
+//Gets a user profile based on their username
 export const getProfile = username => {
   query = '?username=' + username;
   return getToken()
@@ -80,7 +80,7 @@ export const getProfile = username => {
       return response.json();
     });
 };
-
+//Get a list of a user's workouts
 export const getUserWorkouts = () => {
   let uname = '';
   getUsername().then(username => {
@@ -104,7 +104,7 @@ export const getUserWorkouts = () => {
       return data;
     });
 };
-
+//Get data pertaining to a specific workout
 export const getUserWorkout = id => {
   return getToken()
     .then(token => request('GET', 'workout?id=', `${id}`, '', token))

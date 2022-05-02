@@ -1,6 +1,6 @@
 import {request, getToken} from './api_networking.js';
 import utils from '../components/mapView/regionUtils';
-
+//This function gets the grids from the back-end and formats this in a manner that can be immediately loaded onto the map screen.
 export const getGrids = (region, zoom = 10, {isPost = 0} = {}) => {
   //console.log("Region COrners", a, getRegionCorners)
   const corners = utils.getRegionCorners(region);
