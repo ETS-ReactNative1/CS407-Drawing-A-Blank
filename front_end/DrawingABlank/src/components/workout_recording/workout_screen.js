@@ -8,7 +8,7 @@ import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import ExtraData from '../profile/personal_stats/extra_data.js';
 
 const recorder = new Workout();
-
+//Screen that was used for debug purposes when developing the workout class
 class WorkoutScreen extends Component {
   state = {
     recording: false,
