@@ -31,6 +31,10 @@ export default function useUserPath(isTracking) {
     return () => {PushNotification.cancelAllLocalNotifications()};
   }, []);
 
+  useEffect(() => {
+    recorder.changeTracking(isTracking);
+  }, [isTracking]);
+
   function clearPath() {
     setUserPath([]);
   }
