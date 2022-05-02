@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 35,
     marginLeft: 5,
+    marginTop: 15,
     color:'black'
   },
   header2: {
