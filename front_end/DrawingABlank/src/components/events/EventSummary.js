@@ -20,8 +20,8 @@ class EventSummary extends Component {
     }
 
     getDetailText = () =>{
-        const text_winner = "Congratulations, your team won! You contributed " + this.props.route.params.personal_score + " points to this event, which is " + this.getPercentage(this.props.route.params.personal_score) + "% of your team's score for this event.";
-        const text_loser = "Your team did not win this event, better luck next time! You contributed " + this.props.route.params.personal_score + " points to this event, which is " + this.getPercentage(this.props.route.params.personal_score) + "% of your team's score for this event.";
+        const text_winner = "Congratulations, your team won! You contributed " + this.props.route.params.personal_score + " points to this event, which is " + this.getPercentage(this.props.route.params.personal_score).toFixed(1) + "% of your team's score for this event.";
+        const text_loser = "Your team did not win this event, better luck next time! You contributed " + this.props.route.params.personal_score + " points to this event, which is " + this.getPercentage(this.props.route.params.personal_score).toFixed(1) + "% of your team's score for this event.";
         return (this.userIsWinner() ? text_winner : text_loser);
     }
 
