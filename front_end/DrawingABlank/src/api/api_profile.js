@@ -51,7 +51,7 @@ export const updateProfileQuick = body => {
   body = Object.fromEntries(Object.entries(body).filter(([_, v]) => v != ''));
   body.date_of_birth = new Date(body.date_of_birth);
   body.date_of_birth = body.date_of_birth.getDate()+"/"+parseInt(body.date_of_birth.getMonth()+1)+"/"+body.date_of_birth.getFullYear();
-  
+
   console.log('Sending profile update with:' + JSON.stringify(body));
   return getToken()
     .then(token =>
@@ -99,7 +99,7 @@ export const getUserWorkouts = () => {
     })
     .then(data => {
       if (data) {
-        // console.log('workout_history Got:' + JSON.stringify(data));
+        console.log('workout_history Got:' + JSON.stringify(data));
       }
       return data;
     });
