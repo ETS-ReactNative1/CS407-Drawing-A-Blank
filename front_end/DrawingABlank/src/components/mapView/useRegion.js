@@ -50,7 +50,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     [],
     {renderRegion, zoomLayer},
     {useCache: 1, setOverlayVisible, setOverlayContent},
-    localGrids
+    localGrids,
   );
 
   const regionFeatures = {localGrids, events};
@@ -149,7 +149,10 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
 
     // if current user view can see outside their render region, update the render region
     // to cover the wider view
-    if (!regionTools.checkRegionCoverage(renderRegion, displayRegion)) {
+    if (
+      !regionTools.checkRegionCoverage(renderRegion, displayRegion) ||
+      displayZoom != zoomLayer
+    ) {
       const new_renderRegion = regionTools.buildRegion(
         displayRegion,
         RENDER_REGION_SCALING_FACTOR,
@@ -166,7 +169,7 @@ export default function useRegion(setOverlayVisible, setOverlayContent) {
     updateRegion,
     regionFeatures,
     DrawRenderRegionFeatures,
-    DrawEventDetails
+    DrawEventDetails,
     // useMemo(DrawRenderRegionFeatures(), [DrawEvents, DrawGrids]),
   ];
 }
