@@ -14,6 +14,7 @@ import {getUserWorkout, getUserWorkouts} from '../../api/api_profile';
 import {authenticateUser} from '../../api/api_authentication';
 import {getUsername} from '../../api/api_networking';
 import DatePicker from 'react-native-date-picker';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 const WorkoutHistory = () => {
   const navigation = useNavigation();
@@ -26,10 +27,14 @@ const WorkoutHistory = () => {
   });
 
   //date picker states
-  const [date, setDate] = useState(new Date(2000, 1, 1));
+  const [date, setDate] = useState(new Date(2022, 1, 1));
   const [open, setOpen] = useState(false);
-  const handleChange = e => {
-    console.log('fd');
+  const [filtered_workouts, setFilteredWorkouts] = useState([]);
+  const handleChange = () => {
+    //console.log('fd');
+    setFilteredWorkouts(workouts.filter(workout => {
+      return new Date(workout.date).getTime() >= date.getTime();
+    }));
   };
 
   useEffect(() => {
@@ -37,9 +42,25 @@ const WorkoutHistory = () => {
     getUsername().then(result => setUsername(result));
   }, []);
 
-  const filtered_workouts = workouts.filter(workout => {
-    return new Date(workout.date).getTime() >= date.getTime();
-  });
+  useEffect(() => {
+    setFilteredWorkouts(workouts.filter(workout => {
+      return new Date(workout.date).getTime() >= date.getTime();
+    }));
+  },[workouts]);
+
+
+  const dateOnConfirm = (date) => {
+    setOpen(false);
+    setDate(date);
+  }
+
+  const dateOnCancel = () => {
+    setOpen(false);
+  }
+
+  const openPicker = () => {
+    setOpen(true);
+  }
 
   useEffect(() => {
     // setup a recorder for the current selected workout
@@ -67,7 +88,7 @@ const WorkoutHistory = () => {
     }
   }, [workout]);
 
-  const prev_workouts = filtered_workouts.map((workout, index) => {
+  var prev_workouts = filtered_workouts.map((workout, index) => {
     return (
       <TouchableOpacity
         key={index}
@@ -108,6 +129,10 @@ const WorkoutHistory = () => {
     */
   };
 
+  useEffect(() => {
+    handleChange();
+  }, [date]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header} />
@@ -118,23 +143,15 @@ const WorkoutHistory = () => {
 
       <ScrollView style={styles.body}>
         <View style={styles.bodyContent}>
-          <DatePicker
-            modal
-            open={open}
-            textColor="#000000"
-            date={new Date(date)}
-            onDateChange={DOBN => handleChange('DOB', DOBN)}
+          <DateTimePicker
+            isVisible={open}
             mode="date"
-            onConfirm={date => {
-              setOpen(false);
-              setDate(date);
-            }}
-            onCancel={() => {
-              setOpen(false);
-            }}
+            onConfirm={dateOnConfirm}
+            onCancel={dateOnCancel}
+            date={new Date(date)}
           />
           <Text style={styles.name}>{username}: workout history</Text>
-          <TouchableOpacity onPress={() => setOpen(true)}>
+          <TouchableOpacity onPress={openPicker}>
             <Text style={styles.info}>
               Filter by date after: {date.toDateString()}
             </Text>
@@ -173,6 +190,7 @@ const styles = StyleSheet.create({
   },
   body: {
     marginTop: 40,
+    marginBottom:100
   },
   bodyContent: {
     flex: 1,
