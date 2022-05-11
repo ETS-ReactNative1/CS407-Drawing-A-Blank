@@ -97,4 +97,9 @@ export const styles = StyleSheet.create({
         color:"#fafafa",
         fontFamily:"Ubuntu-Light",
     },
+    quit_button:{
+        position:"absolute",
+        right:-5,
+        top:0
+    },
 });

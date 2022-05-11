@@ -25,6 +25,7 @@ import {getProfile} from '../../api/api_profile.js';
 import Overlay from '../../containers/Overlay';
 import PlayerProfile from './playerProfile';
 import {getUsername} from '../../api/api_networking.js';
+import { Icon } from 'react-native-elements/dist/icons/Icon';
 
 class Leaderboard extends Component {
   state = {
@@ -273,6 +274,17 @@ class Leaderboard extends Component {
         };
         return(
             <View style={styles.leaderboard}>
+              <View style={styles.quit_button}>
+                <TouchableOpacity>
+                    <Icon
+                        name={"x"}
+                        type={"feather"}
+                        size={30}
+                        color={"#fafafa"}
+                        onPress={() => {this.props.navigation.goBack()}}
+                    />
+                    </TouchableOpacity>
+                </View>
                 <DateTimePicker
                     isVisible={this.state.showDatePicker}
                     mode="date"

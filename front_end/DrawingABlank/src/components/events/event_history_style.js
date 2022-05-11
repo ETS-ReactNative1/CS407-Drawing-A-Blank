@@ -136,5 +136,10 @@ export const styles = StyleSheet.create({
         fontSize:24,
         textAlign:"center",
         justifyContent:"center"
-    }
+    },
+    quit_button:{
+        position:"absolute",
+        right:-10,
+        top:0
+    },
 });

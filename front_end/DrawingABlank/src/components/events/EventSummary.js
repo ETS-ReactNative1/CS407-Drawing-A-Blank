@@ -4,6 +4,7 @@ import EventPodium from './EventPodium.js';
 import WorkoutLineGraph from '../profile/personal_stats/graph/line_graph.js';
 import {styles} from './style.js';
 import { LineChart, Path, Grid } from 'react-native-svg-charts'
+import { Icon } from 'react-native-elements/dist/icons/Icon';
 
 class EventSummary extends Component {
     userIsWinner = () =>{
@@ -44,6 +45,17 @@ class EventSummary extends Component {
         console.log(LINE_DATA);*/
         return(
             <ScrollView style={styles.summary}>
+                <View style={styles.quit_button}>
+                <TouchableOpacity>
+                    <Icon
+                        name={"x"}
+                        type={"feather"}
+                        size={30}
+                        color={"#fafafa"}
+                        onPress={() => {this.props.navigation.goBack()}}
+                    />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.summary_title}>
                     <Text style={styles.summary_title_text}>Results for Event #{this.props.route.params.eventId}</Text>
                 </View>

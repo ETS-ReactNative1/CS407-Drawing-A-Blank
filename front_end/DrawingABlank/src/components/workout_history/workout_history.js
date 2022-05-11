@@ -15,6 +15,7 @@ import {authenticateUser} from '../../api/api_authentication';
 import {getUsername} from '../../api/api_networking';
 import DatePicker from 'react-native-date-picker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { Icon } from 'react-native-elements';
 
 const WorkoutHistory = () => {
   const navigation = useNavigation();
@@ -135,6 +136,17 @@ const WorkoutHistory = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.quit_button}>
+        <TouchableOpacity>
+        <Icon
+            name={"x"}
+            type={"feather"}
+            size={30}
+            color={"#ee1111"}
+            onPress={() => {navigation.goBack()}}
+        />
+        </TouchableOpacity>
+      </View>
       <View style={styles.header} />
       <Image
         style={styles.avatar}
@@ -225,6 +237,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#78daf6',
     paddingLeft: 20,
     paddingTop: 7,
+  },
+  quit_button:{
+    position:"absolute",
+    right:10,
+    top:10
   },
 });
 export default WorkoutHistory;

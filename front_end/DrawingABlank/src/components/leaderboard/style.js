@@ -261,4 +261,9 @@ export const styles = StyleSheet.create({
     marginLeft: '-100%',
     marginTop: '-10%',
   },
+  quit_button:{
+    position:"absolute",
+    right:0,
+    top:0
+  },
 });

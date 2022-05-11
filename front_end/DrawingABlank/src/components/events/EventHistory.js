@@ -6,6 +6,7 @@ import EventCard from './EventCard.js';
 import { getEventHistory } from '../../api/api_events.js';
 import { getTeam } from '../../api/api_networking.js';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { Icon } from 'react-native-elements/dist/icons/Icon';
 
 class EventHistory extends Component{
     state={
@@ -144,6 +145,17 @@ class EventHistory extends Component{
                 (<View>
                 <View style={styles.window_title}>
                     <Text style={styles.window_title_text}>Event History</Text>
+                </View>
+                <View style={styles.quit_button}>
+                <TouchableOpacity>
+                    <Icon
+                        name={"x"}
+                        type={"feather"}
+                        size={30}
+                        color={"#fafafa"}
+                        onPress={() => {this.props.navigation.goBack()}}
+                    />
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.score_summary}>
                     <Text style={styles.score_victories}>{this.state.victories} victories</Text>
